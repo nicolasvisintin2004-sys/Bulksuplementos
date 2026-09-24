@@ -45,9 +45,9 @@ export default {
   // Mientras sea null se usa el wordmark tipográfico.
   logo: null,
 
-  // ⚠ FALTA — Dominio del sitio, con https. Ej: 'https://bulksuplementos.com.ar'
+  // Dominio del sitio, con https.
   // Se usa para el sitemap, Open Graph y datos estructurados.
-  dominio: null,
+  dominio: 'https://bulksuplementos.com.ar',
 
   envios: {
     empresas: ['Correo Argentino', 'Andreani', 'OCA'],
