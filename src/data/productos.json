@@ -6551,7 +6551,7 @@
       ],
       "etiquetas": [],
       "oferta": false,
-      "desde": 63900,
+      "desde": 80000,
       "imagen": "/productos/integralmedica-whey-100-pure-82cffc.webp",
       "descripcion": "Proteína de suero de leche de Integralmedica en bolsa de 900 g. Sabores chocolate, cookies and cream y frutilla.",
       "infoNutricional": [
@@ -6583,7 +6583,7 @@
           "sabor": "Cookies and Cream",
           "presentacion": "900 g",
           "detalle": null,
-          "precio": 63900,
+          "precio": 80000,
           "mayorista": 41389,
           "oferta": false,
           "promoProveedor": null,
@@ -6591,10 +6591,10 @@
           "etiquetas": [],
           "origen": "INTEGRALMEDICA - Whey 100% Pure Cookie and Cream • 900g",
           "imagen": "/productos/integralmedica-whey-100-pure-2247f3.webp",
-          "entreno": {
-            "slug": "integralmedica-whey-100-pure-900-gr",
-            "opcion": "Cookies & Cream",
-            "precio": 64900
+          "precioFijo": {
+            "motivo": "Precio indicado por el dueño",
+            "manual": true,
+            "desde": "2026-09-24"
           }
         },
         {
@@ -9914,7 +9914,7 @@
       ],
       "etiquetas": [],
       "oferta": true,
-      "desde": 17500,
+      "desde": 21200,
       "imagen": "/productos/star-nutrition-l-glutamine-0bb30a.webp",
       "descripcion": "L-glutamina pura de Star Nutrition. Disponible en 150 g y en 300 g.",
       "infoNutricional": [
@@ -9927,7 +9927,7 @@
           "sabor": null,
           "presentacion": "150 g",
           "detalle": null,
-          "precio": 17500,
+          "precio": 21200,
           "mayorista": 19229,
           "oferta": true,
           "promoProveedor": "3x2",
@@ -9936,7 +9936,7 @@
           "origen": "STAR - L-GLUTAMINE X 150 GRS • 150GRS",
           "imagen": "/productos/star-nutrition-l-glutamine-0bb30a.webp",
           "precioFijo": {
-            "motivo": "Precio indicado por el dueño",
+            "motivo": "Precio del dueño subido al mínimo sin pérdida (mayorista + 10%)",
             "manual": true,
             "desde": "2026-09-24"
           }
