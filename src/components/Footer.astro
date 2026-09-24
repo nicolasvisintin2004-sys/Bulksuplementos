@@ -1,0 +1,94 @@
+---
+import Icon from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import Falta from './Falta.astro';
+import negocio from '../config/negocio.js';
+import { categorias } from '../lib/catalogo.js';
+import { pesos } from '../lib/formato.js';
+const dir = negocio.direccion;
+const anio = new Date().getFullYear();
+---
+<footer class="ftr">
+  <div class="wrap">
+    <div class="ftr__top">
+      <div class="ftr__brand">
+        <Wordmark size="lg" />
+        <p class="ftr__tag">{negocio.bajada}</p>
+        <p class="muted ftr__claim">Armá tu pedido en la web, mandalo por Instagram o email y pagá por transferencia o en efectivo en el local. Envíos a todo el país.</p>
+      </div>
+
+      <nav class="ftr__cols" aria-label="Pie de página">
+        <div>
+          <p class="eyebrow eyebrow--lime">Tienda</p>
+          <ul>
+            {categorias.slice(0, 6).map((c) => <li><a href={`/categoria/${c.slug}/`}>{c.corto}</a></li>)}
+            <li><a href="/tienda/">Todo el catálogo</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow eyebrow--lime">Ayuda</p>
+          <ul>
+            <li><a href="/como-comprar/">Cómo comprar</a></li>
+            <li><a href="/envios-y-pagos/">Envíos y pagos</a></li>
+            <li><a href="/preguntas-frecuentes/">Preguntas frecuentes</a></li>
+            <li><a href="/combos/">Combos por objetivo</a></li>
+            <li><a href="/blog/">Blog</a></li>
+            <li><a href="/cambios-y-devoluciones/">Cambios y devoluciones</a></li>
+            <li><a href="/terminos/">Términos y condiciones</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="eyebrow eyebrow--lime">El local</p>
+          <ul class="ftr__contact">
+            <li><Icon name="pin" size={18} /><a href="/contacto/">{dir.calle}<br />{dir.localidad}, {dir.provincia}</a></li>
+            <li><Icon name="clock" size={18} />{negocio.horarios ? <span>{negocio.horarios.join(' · ')}</span> : <Falta>horarios</Falta>}</li>
+            <li><Icon name="instagram" size={18} /><a href={negocio.instagram.dm} target="_blank" rel="noopener">@{negocio.instagram.usuario} · pedidos y consultas</a></li>
+            <li><Icon name="mail" size={18} />{negocio.email ? <a href={`mailto:${negocio.email}`}>{negocio.email}</a> : <Falta>email de contacto</Falta>}</li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="ftr__pay">
+      <span>Pagás con</span>
+      <span class="pill"><Icon name="transfer" size={16} /> Transferencia</span>
+      <span class="pill"><Icon name="cash" size={16} /> Efectivo en el local · {negocio.descuentos.efectivoPct}% OFF</span>
+      <span>Enviamos con</span>
+      {negocio.envios.empresas.map((e) => <span class="pill">{e}</span>)}
+      <span class="pill pill--lime">Gratis desde {pesos(negocio.envios.gratisDesde)}</span>
+    </div>
+
+    <p class="ftr__legal">
+      Los suplementos dietarios no reemplazan una alimentación variada y equilibrada. Consultá con un profesional de la salud antes de consumir suplementos.
+    </p>
+    <div class="ftr__bottom">
+      <span>© {anio} BULK · {dir.localidad}, {dir.provincia}</span>
+      <a href="/baja/">Darme de baja de los emails</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr { border-top: 1px solid var(--line); background: var(--ink-2); padding: clamp(48px, 7vw, 88px) 0 28px; margin-top: 0; }
+  .ftr__top { display: grid; gap: 40px; }
+  @media (min-width: 960px) { .ftr__top { grid-template-columns: 1fr 1.5fr; gap: 64px; } }
+  .ftr__brand { display: grid; gap: 12px; align-content: start; }
+  .ftr__tag { font-size: 0.75rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--soft); font-weight: 600; }
+  .ftr__claim { max-width: 40ch; font-size: 0.95rem; }
+  .ftr__cols { display: grid; grid-template-columns: repeat(2, 1fr); gap: 32px 24px; }
+  @media (min-width: 640px) { .ftr__cols { grid-template-columns: 1fr 1fr 1.3fr; } }
+  .ftr__cols ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 8px; font-size: 0.92rem; }
+  .ftr__cols a { color: var(--soft); transition: color 0.2s; }
+  .ftr__cols a:hover { color: var(--lime); }
+  /* en mobile la columna de contacto ocupa todo el ancho */
+  .ftr__cols > div:last-child { grid-column: 1 / -1; }
+  @media (min-width: 640px) { .ftr__cols > div:last-child { grid-column: auto; } }
+  .ftr__contact li { display: flex; gap: 10px; align-items: flex-start; }
+  .ftr__contact :global(svg) { color: var(--lime); flex: none; margin-top: 2px; }
+  .ftr__pay { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 48px 0 28px; padding-top: 28px; border-top: 1px solid var(--line); font-size: 0.8rem; color: var(--mute); }
+  .pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--line-2); border-radius: 999px; color: var(--soft); font-weight: 650; }
+  .pill--lime { border-color: var(--lime); color: var(--lime); }
+  .ftr__legal { font-size: 0.8rem; color: var(--mute); max-width: 80ch; }
+  .ftr__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 20px; font-size: 0.8rem; color: var(--mute); }
+  .ftr__bottom a { text-decoration: underline; text-underline-offset: 3px; }
+</style>

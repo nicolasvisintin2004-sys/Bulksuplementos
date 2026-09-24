@@ -1,0 +1,133 @@
+---
+import Icon from './Icon.astro';
+import { categorias } from '../lib/catalogo.js';
+---
+<dialog class="srch" data-search aria-label="Buscar productos">
+  <form class="srch__bar wrap" action="/tienda/" method="get" role="search">
+    <Icon name="search" class="srch__ico" />
+    <label for="q" class="sr-only">Buscar productos, marcas o sabores</label>
+    <input id="q" name="q" type="search" class="srch__input" placeholder="Buscá: creatina, ENA, chocolate…" autocomplete="off" spellcheck="false"
+      role="combobox" aria-expanded="false" aria-controls="srch-res" aria-autocomplete="list" data-q />
+    <button type="button" class="srch__x" aria-label="Cerrar buscador" data-close><Icon name="close" /></button>
+  </form>
+  <div class="wrap srch__body">
+    <div class="srch__hint" data-hint>
+      <p class="eyebrow">Categorías</p>
+      <ul class="srch__cats">
+        {categorias.map((c) => <li><a class="chip" href={`/categoria/${c.slug}/`}>{c.corto}</a></li>)}
+      </ul>
+    </div>
+    <ul id="srch-res" class="srch__res" role="listbox" aria-label="Resultados" data-res></ul>
+    <p class="srch__empty muted" data-empty hidden></p>
+  </div>
+</dialog>
+
+<script>
+  import { cargarIndice } from '../scripts/carrito.js';
+  import { pesos } from '../lib/formato.js';
+  import { esc, norm, abrirDialogo, cerrarConFondo } from '../scripts/util.js';
+
+  type P = { id: string; n: string; m: string; c: string; d: number; v: [string, string, string, number][]; _t?: string };
+  const dlg = document.querySelector<HTMLDialogElement>('[data-search]')!;
+  const input = dlg.querySelector<HTMLInputElement>('[data-q]')!;
+  const res = dlg.querySelector<HTMLElement>('[data-res]')!;
+  const hint = dlg.querySelector<HTMLElement>('[data-hint]')!;
+  const empty = dlg.querySelector<HTMLElement>('[data-empty]')!;
+  let idx: P[] = [];
+  let activo = -1;
+
+  async function abrir() {
+    abrirDialogo(dlg);
+    input.focus();
+    if (!idx.length) {
+      const data = await cargarIndice();
+      idx = (data?.p ?? []).map((p: P) => ({ ...p, _t: norm(`${p.n} ${p.m} ${p.c} ${p.v.map((v) => v[1] + ' ' + v[2]).join(' ')}`) }));
+      if (input.value) buscar();
+    }
+  }
+
+  function buscar() {
+    const q = norm(input.value.trim());
+    activo = -1;
+    hint.hidden = !!q;
+    if (!q) { res.innerHTML = ''; empty.hidden = true; input.setAttribute('aria-expanded', 'false'); return; }
+    const tokens = q.split(/\s+/);
+    const hits = idx
+      .filter((p) => tokens.every((t) => p._t!.includes(t)))
+      .map((p) => ({ p, s: (norm(p.n).startsWith(tokens[0]) ? 2 : 0) + (norm(p.m).startsWith(tokens[0]) ? 1 : 0) }))
+      .sort((a, b) => b.s - a.s)
+      .slice(0, 8)
+      .map((x) => x.p);
+    input.setAttribute('aria-expanded', String(hits.length > 0));
+    empty.hidden = hits.length > 0;
+    empty.textContent = `No encontramos "${input.value.trim()}". Probá con la marca o el tipo de producto.`;
+    res.innerHTML = hits.map((p, i) => `
+      <li role="option" id="sr-${i}" aria-selected="false">
+        <a href="/producto/${esc(p.id)}/">
+          <span class="sr__brand">${esc(p.m)} · ${esc(p.c)}</span>
+          <span class="sr__name">${esc(p.n)}</span>
+          <span class="sr__price precio num">${p.v.length > 1 ? 'desde ' : ''}${pesos(p.d)}</span>
+        </a>
+      </li>`).join('') + (hits.length ? `<li class="sr__all"><a class="link" href="/tienda/?q=${encodeURIComponent(input.value.trim())}">Ver todos los resultados →</a></li>` : '');
+  }
+
+  input.addEventListener('input', buscar);
+  input.addEventListener('keydown', (e) => {
+    const opts = [...res.querySelectorAll<HTMLElement>('[role="option"]')];
+    if (!opts.length) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      activo = (activo + (e.key === 'ArrowDown' ? 1 : -1) + opts.length) % opts.length;
+      opts.forEach((o, i) => o.setAttribute('aria-selected', String(i === activo)));
+      input.setAttribute('aria-activedescendant', opts[activo].id);
+      opts[activo].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter' && activo >= 0) {
+      e.preventDefault();
+      opts[activo].querySelector('a')?.click();
+    }
+  });
+
+  cerrarConFondo(dlg);
+  dlg.querySelector('[data-close]')?.addEventListener('click', () => dlg.close());
+  document.querySelectorAll('[data-open-search]').forEach((b) => b.addEventListener('click', abrir));
+  document.addEventListener('keydown', (e) => {
+    const t = e.target as HTMLElement;
+    if (e.key === '/' && !dlg.open && !/INPUT|TEXTAREA|SELECT/.test(t.tagName)) { e.preventDefault(); abrir(); }
+  });
+</script>
+
+<style>
+  .srch {
+    margin: 0; width: 100%; max-width: 100%; max-height: min(86dvh, 720px); padding: 0 0 20px;
+    border: 0; border-bottom: 1px solid var(--line); background: var(--ink); color: var(--paper);
+    overflow-y: auto;
+  }
+  .srch[open] { animation: sd 0.3s var(--ease); }
+  .srch::backdrop { background: rgb(0 0 0 / 0.6); backdrop-filter: blur(3px); }
+  @keyframes sd { from { transform: translateY(-16px); opacity: 0; } }
+  .srch__bar { display: flex; align-items: center; gap: 12px; height: 76px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--ink); z-index: 1; }
+  .srch__bar :global(.srch__ico) { color: var(--lime); flex: none; }
+  .srch__input {
+    flex: 1; min-width: 0; background: none; border: 0; outline: none; height: 100%;
+    font-family: var(--f-display); font-style: italic; font-weight: 800; font-stretch: 120%;
+    font-size: clamp(1.1rem, 3.5vw, 1.8rem); text-transform: uppercase; color: var(--paper);
+  }
+  .srch__input::placeholder { color: #555; }
+  .srch__input::-webkit-search-cancel-button { display: none; }
+  .srch__x { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; flex: none; }
+  .srch__x:hover { background: var(--ink-3); }
+  .srch__body { padding-top: 20px; }
+  .srch__cats { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .srch__res { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .srch__res :global(a) {
+    display: grid; grid-template-columns: 1fr auto; grid-template-areas: 'b p' 'n p'; gap: 2px 16px;
+    padding: 14px 12px; border-bottom: 1px solid var(--line); border-radius: 8px;
+  }
+  .srch__res :global([aria-selected='true'] a), .srch__res :global(a:hover) { background: var(--ink-2); }
+  .srch__res :global(.sr__brand) { grid-area: b; font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mute); font-weight: 700; }
+  .srch__res :global(.sr__name) { grid-area: n; font-weight: 750; }
+  .srch__res :global(.sr__price) { grid-area: p; align-self: center; font-size: 1rem; }
+  .srch__res :global(.sr__all) { padding: 16px 12px; }
+  .srch__res :global(.sr__all a) { display: inline-flex; padding: 0; border: 0; }
+  .srch__empty { padding: 12px 0; }
+</style>

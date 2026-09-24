@@ -1,0 +1,90 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import { combos, marca } from '../lib/catalogo.js';
+import { pesos, etiquetaVariante } from '../lib/formato.js';
+
+const lista = combos();
+const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart', 'principiantes': 'spark' };
+---
+<Base title="Combos según tu objetivo" description="Combos de suplementos armados por BULK según tu objetivo: masa muscular, definición, rendimiento y endurance, salud y bienestar, y principiantes.">
+  <PageHead eyebrow="Combos" titulo="Según tu" outline="objetivo" migas={[{ href: '/combos/', label: 'Combos' }]}
+    bajada="Productos que van bien juntos, elegidos por el equipo de BULK. Agregás el combo completo al carrito con un clic." />
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <ul class="cb">
+        {lista.map((c, i) => (
+          <li id={c.id} class="cb__card reveal" style={`--d:${(i % 3) * 0.06}s`}>
+            <div class="cb__top">
+              <span class="cb__ico"><Icon name={ICONO[c.id] ?? 'target'} size={28} /></span>
+            </div>
+            <h2 class="d cb__t">{c.objetivo}</h2>
+            <p class="cb__b">{c.bajada}</p>
+
+            {c.listo ? (
+              <>
+                <ul class="cb__items">
+                  {c.itemsResueltos.map((it: any) => (
+                    <li><a href={`/producto/${it.producto.id}/?v=${it.variante.id}`}><b>{it.cantidad}×</b> {marca(it.producto.marca)?.nombre} {it.producto.nombre}<small>{etiquetaVariante(it.variante)}</small></a></li>
+                  ))}
+                </ul>
+                <div class="cb__price">
+                  {c.precio != null && c.suma > c.precioFinal && <s class="num">{pesos(c.suma)}</s>}
+                  <strong class="precio num">{pesos(c.precioFinal)}</strong>
+                </div>
+                {c.precio == null && <Falta>precio final del combo (se muestra la suma de los productos)</Falta>}
+                <button type="button" class="btn btn--block" data-add={JSON.stringify({
+                  key: `combo::${c.id}`, tipo: 'combo', productoId: c.id, varianteId: c.id,
+                  nombre: `Combo ${c.objetivo}`, marca: 'BULK', variante: '', precio: c.precioFinal, url: `/combos/#${c.id}`,
+                  contenido: c.itemsResueltos.map((it: any) => `${it.cantidad}× ${marca(it.producto.marca)?.nombre} ${it.producto.nombre} (${etiquetaVariante(it.variante)})`),
+                })}>Agregar combo <Icon name="cart" size={18} /></button>
+              </>
+            ) : (
+              <>
+                <div class="cb__empty">
+                  <Falta block>contenido del combo (productos y precio) · se carga en src/data/combos.json</Falta>
+                </div>
+                <button type="button" class="btn btn--block" disabled aria-disabled="true">Agregar combo</button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+      <p class="cb__legal muted">Los combos son una sugerencia general, no un plan personalizado. Consultá con un profesional de la salud antes de consumir suplementos.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { agregar } from '../scripts/carrito.js';
+  import { toast } from '../scripts/util.js';
+  document.querySelectorAll<HTMLElement>('.cb [data-add]').forEach((b) => b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const item = JSON.parse(b.dataset.add!);
+    agregar(item, 1);
+    toast(`Agregaste el ${item.nombre}`);
+    window.dispatchEvent(new CustomEvent('carrito:abrir'));
+  }));
+</script>
+
+<style>
+  .cb { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .cb__card { display: flex; flex-direction: column; gap: 14px; padding: 26px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--ink-2); scroll-margin-top: calc(var(--header-h) + 24px); transition: border-color 0.25s; }
+  .cb__card:hover, .cb__card:target { border-color: var(--lime); }
+  .cb__top { display: flex; justify-content: space-between; align-items: center; }
+  .cb__ico { width: 54px; height: 54px; border-radius: 999px; display: grid; place-items: center; background: var(--lime); color: var(--ink); }
+  .cb__t { font-size: clamp(1.1rem, 5.8vw, 1.8rem); line-height: 0.95; overflow-wrap: anywhere; }
+  .cb__b { color: var(--soft); font-size: 0.95rem; }
+  .cb__items { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .cb__items a { display: block; font-size: 0.9rem; }
+  .cb__items a:hover { color: var(--lime); }
+  .cb__items small { display: block; color: var(--mute); }
+  .cb__price { display: flex; gap: 12px; align-items: baseline; margin-top: auto; }
+  .cb__price s { color: var(--mute); }
+  .cb__price .precio { font-size: 1.8rem; }
+  .cb__empty { margin-top: auto; }
+  .cb__legal { margin-top: 28px; font-size: 0.85rem; }
+</style>

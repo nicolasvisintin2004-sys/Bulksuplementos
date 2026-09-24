@@ -1,0 +1,23 @@
+---
+/** Botones flotantes visibles en todo el sitio: Instagram (pedidos y consultas) y email. */
+import Icon from './Icon.astro';
+import negocio from '../config/negocio.js';
+---
+<div class="fab">
+  <a class="fab__mail" href={`mailto:${negocio.email}`} aria-label={`Escribinos por email a ${negocio.email}`}>
+    <Icon name="mail" size={20} />
+  </a>
+  <a class="fab__ig" href={negocio.instagram.dm} target="_blank" rel="noopener" aria-label={`Escribinos por Instagram a @${negocio.instagram.usuario}`}>
+    <Icon name="instagram" size={28} />
+  </a>
+</div>
+<style>
+  .fab { position: fixed; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); z-index: 40; display: grid; gap: 10px; justify-items: center; transition: transform 0.3s var(--ease); }
+  :global(body.has-sticky-bar) .fab { transform: translateY(-76px); }
+  .fab a { display: grid; place-items: center; border-radius: 999px; transition: transform 0.2s var(--ease), box-shadow 0.2s; }
+  .fab a:hover { transform: translateY(-2px) scale(1.04); }
+  .fab__mail { width: 44px; height: 44px; background: var(--ink-2); border: 1px solid var(--line-2); color: var(--paper); }
+  .fab__mail:hover { color: var(--lime); border-color: var(--lime); }
+  .fab__ig { width: 58px; height: 58px; background: var(--lime); color: var(--ink); box-shadow: 0 10px 30px rgb(200 255 0 / 0.25); }
+  .fab__ig:hover { box-shadow: 0 0 0 8px var(--lime-a20); }
+</style>

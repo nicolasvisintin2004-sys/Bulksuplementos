@@ -1,0 +1,40 @@
+---
+/** Encabezado de páginas internas: migas + título display (una palabra en contorno) + bajada. */
+interface Props { eyebrow?: string; titulo: string; outline?: string; bajada?: string; migas?: { href: string; label: string }[] }
+const { eyebrow, titulo, outline, bajada, migas = [] } = Astro.props;
+const site = Astro.site ?? new URL('http://localhost:4321');
+const breadcrumbLd = migas.length ? {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [{ href: '/', label: 'Inicio' }, ...migas].map((m, i) => ({ '@type': 'ListItem', position: i + 1, name: m.label, item: new URL(m.href, site).href })),
+} : null;
+---
+<header class="ph">
+  <svg class="slashes ph__sl" viewBox="0 0 200 200" aria-hidden="true"><line x1="40" y1="210" x2="200" y2="10" stroke-width="6" /><line x1="90" y1="210" x2="215" y2="55" stroke-width="2.5" /></svg>
+  <div class="wrap ph__in">
+    {migas.length > 0 && (
+      <nav aria-label="Migas de pan" class="ph__bc">
+        <ol>
+          <li><a href="/">Inicio</a></li>
+          {migas.map((m, i) => <li>{i === migas.length - 1 ? <span aria-current="page">{m.label}</span> : <a href={m.href}>{m.label}</a>}</li>)}
+        </ol>
+      </nav>
+    )}
+    {eyebrow && <p class="eyebrow eyebrow--lime">{eyebrow}</p>}
+    <h1 class="d h1 ph__t">{titulo}{outline && <> <span class="d-outline">{outline}</span></>}</h1>
+    {bajada && <p class="lead">{bajada}</p>}
+    <slot />
+  </div>
+  {breadcrumbLd && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />}
+</header>
+<style>
+  .ph { position: relative; overflow: hidden; padding: clamp(28px, 5vw, 64px) 0 clamp(28px, 4vw, 48px); border-bottom: 1px solid var(--line); isolation: isolate; }
+  .ph::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(40% 80% at 100% 0%, rgb(200 255 0 / 0.08), transparent 70%); }
+  .ph__sl { right: 0; top: 0; width: clamp(80px, 12vw, 150px); height: auto; aspect-ratio: 1; }
+  .ph__in { display: grid; gap: 14px; justify-items: start; }
+  .ph__t { --stroke: 1.6px; overflow-wrap: anywhere; }
+  .ph__bc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.8rem; color: var(--mute); }
+  .ph__bc li + li::before { content: '/'; margin-right: 6px; color: var(--line-2); }
+  .ph__bc a:hover { color: var(--lime); }
+  .ph__bc [aria-current] { color: var(--soft); }
+</style>

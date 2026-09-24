@@ -1,0 +1,90 @@
+---
+/**
+ * Ticket de pedido del hero: muestra cómo nos llega tu pedido (por Instagram o email),
+ * con productos y precios reales del catálogo.
+ */
+import { producto, marca } from '../lib/catalogo.js';
+import { pesos } from '../lib/formato.js';
+import { calcularTotales } from '../lib/descuentos.js';
+
+const pick = [
+  ['ena-whey-protein-true-made', 'chocolate-2-05-lb-930-g'],
+  ['star-nutrition-creatina-monohidrato', 'sin-sabor-doypack-300-g'],
+  ['gentech-iron-bar', 'dulce-de-leche-display-x20'],
+];
+const lineas = pick.map(([pid, vid]) => {
+  const p = producto(pid);
+  const v = p?.variantes.find((x: any) => x.id === vid) ?? p?.variantes[0];
+  return p && v ? { marca: marca(p.marca)?.nombre, nombre: p.nombre, variante: [v.sabor, v.presentacion].filter(Boolean).join(' · '), precio: v.precio, cantidad: 1 } : null;
+}).filter(Boolean) as any[];
+const t = calcularTotales({ items: lineas, medioPago: 'transferencia', entrega: 'envio' });
+---
+<figure class="tk" aria-label="Ejemplo de pedido armado en la web">
+  <div class="tk__paper">
+    <div class="tk__head">
+      <span class="tk__live"><i></i> Pedido listo para enviar</span>
+      <span class="tk__id num">BK-0001</span>
+    </div>
+    <ul class="tk__lines">
+      {lineas.map((l, i) => (
+        <li style={`--i:${i}`}>
+          <span class="tk__q num">1×</span>
+          <span class="tk__n"><b>{l.marca}</b> {l.nombre}<small>{l.variante}</small></span>
+          <span class="tk__p num">{pesos(l.precio)}</span>
+        </li>
+      ))}
+    </ul>
+    <dl class="tk__sum">
+      <div><dt>Subtotal</dt><dd class="num">{pesos(t.subtotal)}</dd></div>
+      {t.descuentos.map((d) => <div class="tk__off"><dt>{d.etiqueta}</dt><dd class="num">−{pesos(d.monto)}</dd></div>)}
+      <div><dt>Pago</dt><dd>Transferencia</dd></div>
+      <div><dt>Envío</dt><dd>{t.envioGratis ? 'GRATIS' : 'a cotizar'}</dd></div>
+      <div class="tk__total"><dt>Total</dt><dd class="num">{pesos(t.total)}</dd></div>
+    </dl>
+    <span class="tk__stamp d" aria-hidden="true">Envío<br />gratis</span>
+  </div>
+  <figcaption class="tk__cap">Así nos llega tu pedido. Vos elegís, nosotros lo preparamos.</figcaption>
+</figure>
+
+<style>
+  .tk { margin: 0; position: relative; width: min(100%, 420px); justify-self: center; }
+  .tk__paper {
+    position: relative; padding: 22px 22px 92px;
+    background: var(--paper); color: var(--ink);
+    border-radius: 14px 14px 0 0;
+    transform: rotate(-3deg);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.55), 0 0 0 1px rgb(255 255 255 / 0.05);
+    /* borde troquelado inferior */
+    -webkit-mask: radial-gradient(9px at 50% 100%, #0000 98%, #000) 0 0 / 22px 100% repeat-x;
+            mask: radial-gradient(9px at 50% 100%, #0000 98%, #000) 0 0 / 22px 100% repeat-x;
+    animation: tkin 0.9s 0.1s var(--ease) both;
+  }
+  @keyframes tkin { from { opacity: 0; transform: rotate(-8deg) translateY(40px); } }
+  .tk__head { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 14px; border-bottom: 2px dashed #cfcfc8; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+  .tk__live { display: inline-flex; align-items: center; gap: 8px; }
+  .tk__live i { width: 8px; height: 8px; border-radius: 999px; background: #1fa855; box-shadow: 0 0 0 4px rgb(31 168 85 / 0.2); animation: pulse 1.8s infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 0 8px rgb(31 168 85 / 0); } }
+  .tk__id { color: #6b6b66; }
+  .tk__lines { list-style: none; margin: 0; padding: 12px 0; display: grid; gap: 10px; border-bottom: 2px dashed #cfcfc8; }
+  .tk__lines li { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; font-size: 0.88rem; line-height: 1.3; animation: line 0.5s calc(0.6s + var(--i) * 0.18s) var(--ease) both; }
+  @keyframes line { from { opacity: 0; transform: translateX(-10px); } }
+  .tk__q { font-weight: 800; color: #6b6b66; }
+  .tk__n b { font-weight: 800; }
+  .tk__n small { display: block; color: #6b6b66; font-size: 0.78rem; }
+  .tk__p { font-weight: 800; }
+  .tk__sum { margin: 0; padding-top: 12px; display: grid; gap: 4px; font-size: 0.85rem; }
+  .tk__sum div { display: flex; justify-content: space-between; }
+  .tk__sum dd { margin: 0; font-weight: 700; }
+  .tk__off { color: #2d7a00; }
+  .tk__total { margin-top: 6px; padding-top: 8px; border-top: 2px solid var(--ink); font-size: 1.15rem; }
+  .tk__total dt, .tk__total dd { font-family: var(--f-display); font-style: italic; font-weight: 900; font-stretch: 125%; text-transform: uppercase; }
+  .tk__stamp {
+    position: absolute; right: 22px; bottom: 30px;
+    font-size: 0.95rem; line-height: 0.95; text-align: center;
+    color: var(--ink); background: var(--lime); padding: 8px 10px; border-radius: 6px;
+    transform: rotate(-12deg); box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px var(--ink);
+    animation: stamp 0.45s 1.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  }
+  @keyframes stamp { from { opacity: 0; transform: rotate(-12deg) scale(2.2); } }
+  .tk__cap { margin-top: 26px; font-size: 0.8rem; color: var(--mute); text-align: center; }
+</style>

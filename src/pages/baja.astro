@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+---
+<Base title="Darme de baja" description="Dejá de recibir los emails de ofertas de BULK." noindex>
+  <PageHead eyebrow="Emails" titulo="Darme de" outline="baja"
+    bajada="Escribí el email con el que te registraste y no te mandamos más ofertas. Tu código de primera compra, si no lo usaste, sigue valiendo." />
+  <section class="section section--tight">
+    <div class="wrap">
+      <form class="bj" data-baja novalidate>
+        <div class="field">
+          <label for="bj-email">Email</label>
+          <input id="bj-email" name="email" type="email" class="input" autocomplete="email" required />
+        </div>
+        <button class="btn" type="submit">Darme de baja</button>
+        <p class="bj__msg" role="status" aria-live="polite" data-msg></p>
+      </form>
+    </div>
+  </section>
+</Base>
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-baja]')!;
+  const msg = form.querySelector<HTMLElement>('[data-msg]')!;
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = String(new FormData(form).get('email') || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { msg.textContent = 'Revisá el email: parece que le falta algo.'; return; }
+    msg.textContent = 'Procesando…';
+    try {
+      const r = await fetch('/api/baja', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      if (!r.ok) throw new Error();
+      msg.textContent = 'Listo: no vas a recibir más emails de ofertas.';
+      form.reset();
+    } catch {
+      msg.textContent = 'No pudimos procesar la baja en este momento. Escribinos por Instagram o por email y la hacemos a mano.';
+    }
+  });
+</script>
+<style>
+  .bj { display: grid; gap: 16px; max-width: 460px; justify-items: start; }
+  .bj .field { width: 100%; }
+  .bj__msg { color: var(--lime); font-weight: 650; }
+</style>

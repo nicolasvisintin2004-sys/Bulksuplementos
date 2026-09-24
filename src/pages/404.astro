@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+---
+<Base title="Página no encontrada" description="La página que buscás no existe." noindex>
+  <section class="nf">
+    <div class="wrap nf__in">
+      <p class="d nf__n d-outline" aria-hidden="true">404</p>
+      <h1 class="d h2">Esta página <span class="d-lime">no existe</span></h1>
+      <p class="lead">Puede que el producto ya no esté o que el link tenga un error. Buscalo en la tienda o desde el buscador.</p>
+      <div class="nf__cta">
+        <a href="/tienda/" class="btn">Ir a la tienda <Icon name="arrow" size={18} class="arrow" /></a>
+        <button type="button" class="btn btn--line" data-open-search><Icon name="search" size={18} /> Buscar</button>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .nf { padding: clamp(56px, 10vw, 120px) 0; }
+  .nf__in { display: grid; gap: 20px; justify-items: start; }
+  .nf__n { font-size: clamp(6rem, 26vw, 16rem); line-height: 0.8; --stroke: 3px; }
+  .nf__cta { display: flex; gap: 12px; flex-wrap: wrap; }
+</style>

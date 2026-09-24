@@ -1,0 +1,349 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Falta from '../../components/Falta.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import negocio from '../../config/negocio.js';
+import { productos, marca, categoria, relacionados, ICONO_CATEGORIA } from '../../lib/catalogo.js';
+import { pesos } from '../../lib/formato.js';
+import { precioEfectivo } from '../../lib/descuentos.js';
+
+export function getStaticPaths() {
+  return productos.map((p) => ({ params: { slug: p.id }, props: { p } }));
+}
+const { p } = Astro.props;
+const m = marca(p.marca);
+const c = categoria(p.categoria);
+const v0 = p.variantes[0];
+const presentaciones = [...new Set(p.variantes.map((v: any) => v.presentacion).filter(Boolean))] as string[];
+const sabores = [...new Set(p.variantes.map((v: any) => v.sabor).filter(Boolean))] as string[];
+const rel = relacionados(p, 4);
+const precios = p.variantes.map((v: any) => v.precio);
+const site = Astro.site ?? new URL('http://localhost:4321');
+const url = new URL(`/producto/${p.id}/`, site).href;
+
+const productLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${m?.nombre} ${p.nombre}`,
+  brand: { '@type': 'Brand', name: m?.nombre },
+  category: c?.nombre,
+  sku: p.id,
+  url,
+  ...(p.imagen ? { image: new URL(p.imagen, site).href } : {}),
+  ...(p.descripcion ? { description: p.descripcion } : {}),
+  offers: p.variantes.length > 1 ? {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'ARS',
+    lowPrice: Math.min(...precios),
+    highPrice: Math.max(...precios),
+    offerCount: p.variantes.length,
+    seller: { '@id': new URL('/#negocio', site).href },
+  } : {
+    '@type': 'Offer',
+    priceCurrency: 'ARS',
+    price: v0.precio,
+    url,
+    seller: { '@id': new URL('/#negocio', site).href },
+  },
+};
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Inicio', item: site.href },
+    { '@type': 'ListItem', position: 2, name: c?.nombre, item: new URL(`/categoria/${c?.slug}/`, site).href },
+    { '@type': 'ListItem', position: 3, name: p.nombre, item: url },
+  ],
+};
+const variantesCliente = p.variantes.map((v: any) => ({ id: v.id, s: v.sabor, p: v.presentacion, d: v.detalle, $: v.precio, e: precioEfectivo(v.precio), i: v.imagen ?? p.imagen ?? null }));
+const desc = `${m?.nombre} ${p.nombre}${presentaciones.length ? ` (${presentaciones.join(', ')})` : ''}${sabores.length > 1 ? ` en ${sabores.length} sabores` : ''}. ${pesos(p.desde)}${p.variantes.length > 1 ? ' desde' : ''} · 10% OFF en efectivo en el local. Envíos a todo el país desde Carmen de Patagones.`;
+// si hay descripción cargada, se usa para buscadores y redes (recortada a ~160 caracteres)
+const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.slice(0, 147).replace(/\s+\S*$/, '') + '…' : p.descripcion} ${pesos(p.desde)} · Envíos a todo el país.` : desc;
+---
+<Base title={`${p.nombre} · ${m?.nombre}`} description={metaDesc} jsonLd={[productLd, breadcrumbLd]} type="product" image={p.imagen ?? '/og.jpg'}>
+  <div class="wrap">
+    <nav aria-label="Migas de pan" class="bc">
+      <ol>
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/tienda/">Tienda</a></li>
+        <li><a href={`/categoria/${c?.slug}/`}>{c?.corto}</a></li>
+        <li><span aria-current="page">{p.nombre}</span></li>
+      </ol>
+    </nav>
+
+    <div class="pd" data-producto={JSON.stringify({ id: p.id, nombre: p.nombre, marca: m?.nombre, variantes: variantesCliente })}>
+      <div class="pd__media">
+        {p.imagen ? (
+          <img src={v0.imagen ?? p.imagen} alt={`${m?.nombre} ${p.nombre}${v0.sabor ? ` sabor ${v0.sabor}` : ''}`} width="720" height="720" fetchpriority="high" data-img />
+        ) : (
+          <div class="pd__ph">
+            <Icon name={ICONO_CATEGORIA[p.categoria] ?? 'spark'} size={44} stroke={1.4} class="pd__ico" />
+            <span class="pd__phb d" aria-hidden="true">{m?.nombre}</span>
+            <span class="pd__phn d" aria-hidden="true">{p.nombre}</span>
+            <div class="pd__falta"><Falta block>foto del producto</Falta></div>
+          </div>
+        )}
+        {p.oferta && <span class="pd__badge">Oferta</span>}
+      </div>
+
+      <div class="pd__info">
+        <a class="eyebrow eyebrow--lime pd__brand" href={`/marca/${p.marca}/`}>{m?.nombre}</a>
+        <h1 class="pd__t d">{p.nombre}</h1>
+        <div class="pd__tags">
+          <a class="tag" href={`/categoria/${c?.slug}/`}>{c?.corto}</a>
+          {p.subcategoria && <span class="tag">{p.subcategoria}</span>}
+          {p.etiquetas.includes('sin-tacc') && <span class="tag tag--lime">Sin TACC</span>}
+          {p.etiquetas.includes('vegano') && <span class="tag tag--lime">Vegano</span>}
+        </div>
+
+        <div class="pd__price">
+          <strong class="precio num" data-precio>{pesos(v0.precio)}</strong>
+          <div class="pd__cash">
+            <Icon name="cash" size={20} />
+            <span>En efectivo en el local <b class="num" data-efectivo>{pesos(precioEfectivo(v0.precio))}</b> <small>({negocio.descuentos.efectivoPct}% OFF)</small></span>
+          </div>
+        </div>
+
+        {presentaciones.length > 0 && (
+          <fieldset class="opt">
+            <legend>Presentación{presentaciones.length === 1 && <span class="opt__v">: {presentaciones[0]}</span>}</legend>
+            {presentaciones.length > 1 && (
+              <div class="opt__chips">
+                {presentaciones.map((x) => <button type="button" class="chip" data-pres={x} aria-pressed={x === v0.presentacion ? 'true' : 'false'}>{x}</button>)}
+              </div>
+            )}
+          </fieldset>
+        )}
+        {sabores.length > 0 && (
+          <fieldset class="opt" data-fs-sabor hidden={!v0.sabor}>
+            <legend>Sabor{sabores.length === 1 && <span class="opt__v">: {sabores[0]}</span>}</legend>
+            {sabores.length > 1 && (
+              <div class="opt__chips">
+                {sabores.map((x) => <button type="button" class="chip" data-sabor={x} aria-pressed={x === v0.sabor ? 'true' : 'false'}>{x}</button>)}
+              </div>
+            )}
+          </fieldset>
+        )}
+        <p class="pd__det" data-detalle hidden={!v0.detalle}>{v0.detalle ? `Contenido: ${v0.detalle}` : ''}</p>
+
+        <div class="pd__buy" data-buy>
+          <div class="qty qty--lg" role="group" aria-label="Cantidad">
+            <button type="button" data-q="-1" aria-label="Restar uno">−</button>
+            <span class="num" data-qty aria-live="polite">1</span>
+            <button type="button" data-q="1" aria-label="Sumar uno">+</button>
+          </div>
+          <button type="button" class="btn pd__add" data-add-pd>Agregar al carrito <Icon name="cart" size={18} /></button>
+        </div>
+
+        <ul class="pd__perks">
+          <li><Icon name="truck" size={20} /> Envíos a todo el país por {negocio.envios.empresas.join(', ')}. <b>Gratis desde {pesos(negocio.envios.gratisDesde)}</b>.</li>
+          <li><Icon name="store" size={20} /> Retiro en el local: {negocio.direccion.calle}, {negocio.direccion.localidad}.</li>
+          <li><Icon name="instagram" size={20} /> Mandás el pedido por Instagram o email. Pagás por transferencia, o en efectivo en el local.</li>
+        </ul>
+      </div>
+    </div>
+
+    <section class="acc" aria-label="Información del producto">
+      <details open>
+        <summary class="d">Descripción</summary>
+        <div class="acc__b">{p.descripcion ? <p>{p.descripcion}</p> : <Falta block>descripción del producto</Falta>}</div>
+      </details>
+      <details>
+        <summary class="d">Información nutricional</summary>
+        <div class="acc__b">
+          {p.infoNutricional ? (
+            <>
+              {Array.isArray(p.infoNutricional)
+                ? <ul class="nutri">{p.infoNutricional.map((n: string) => <li>{n}</li>)}</ul>
+                : <div set:html={p.infoNutricional} />}
+              <p class="acc__nota">Datos informados por el fabricante. La tabla nutricional completa está en el envase.</p>
+            </>
+          ) : <Falta block>tabla nutricional (tal cual figura en el envase)</Falta>}
+        </div>
+      </details>
+      <details>
+        <summary class="d">Modo de uso</summary>
+        <div class="acc__b">{p.modoDeUso ? <><p>{p.modoDeUso}</p><p class="acc__nota">Respetá siempre la porción y las advertencias del envase.</p></> : <Falta block>modo de uso indicado por el fabricante</Falta>}</div>
+      </details>
+      <p class="acc__legal">Consultá con un profesional de la salud antes de consumir suplementos. Los suplementos dietarios no reemplazan una alimentación variada y equilibrada.</p>
+    </section>
+
+    {rel.length > 0 && (
+      <section class="rel">
+        <div class="sec-head">
+          <h2 class="d h2">También <span class="d-outline">te puede servir</span></h2>
+          <a class="link" href={`/categoria/${c?.slug}/`}>Más {c?.corto} <Icon name="arrow" size={16} /></a>
+        </div>
+        <div class="hscroll">{rel.map((r) => <ProductCard p={r} />)}</div>
+      </section>
+    )}
+  </div>
+
+  <!-- barra fija mobile -->
+  <div class="sticky" data-sticky aria-hidden="true">
+    <div class="sticky__in">
+      <div class="sticky__txt">
+        <span class="sticky__n">{p.nombre}</span>
+        <strong class="precio num" data-precio>{pesos(v0.precio)}</strong>
+      </div>
+      <button type="button" class="btn btn--sm" data-add-pd tabindex="-1">Agregar</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { agregar } from '../../scripts/carrito.js';
+  import { pesos } from '../../lib/formato.js';
+  import { toast } from '../../scripts/util.js';
+
+  type V = { id: string; s: string | null; p: string | null; d: string | null; $: number; e: number };
+  const root = document.querySelector<HTMLElement>('[data-producto]')!;
+  const data = JSON.parse(root.dataset.producto!) as { id: string; nombre: string; marca: string; variantes: V[] };
+  const vs = data.variantes;
+  let pres: string | null = vs[0].p;
+  let sabor: string | null = vs[0].s;
+  let qty = 1;
+
+  // ?v=id-de-variante preselecciona
+  const pre = vs.find((v) => v.id === new URLSearchParams(location.search).get('v'));
+  if (pre) { pres = pre.p; sabor = pre.s; }
+
+  const actual = () => vs.find((v) => v.p === pres && v.s === sabor) ?? vs.find((v) => v.p === pres) ?? vs[0];
+
+  function pintar() {
+    const v = actual();
+    sabor = v.s; pres = v.p;
+    document.querySelectorAll('[data-precio]').forEach((el) => { el.textContent = pesos(v.$); });
+    document.querySelector('[data-efectivo]')!.textContent = pesos(v.e);
+    const img = document.querySelector<HTMLImageElement>('[data-img]');
+    if (img && v.i && !img.src.endsWith(v.i)) { img.src = v.i; img.alt = `${data.marca} ${data.nombre}${v.s ? ` sabor ${v.s}` : ''}`; }
+    const det = document.querySelector<HTMLElement>('[data-detalle]')!;
+    det.hidden = !v.d; det.textContent = v.d ? `Contenido: ${v.d}` : '';
+    root.querySelectorAll<HTMLElement>('[data-pres]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pres === pres)));
+    // si la presentación elegida no tiene sabores, se oculta el selector de sabor
+    const fs = root.querySelector<HTMLElement>('[data-fs-sabor]');
+    if (fs) fs.hidden = !vs.some((x) => x.p === pres && x.s);
+    root.querySelectorAll<HTMLButtonElement>('[data-sabor]').forEach((b) => {
+      const ok = vs.some((x) => x.p === pres && x.s === b.dataset.sabor);
+      b.disabled = !ok;
+      b.title = ok ? '' : 'No disponible en esta presentación';
+      b.setAttribute('aria-pressed', String(b.dataset.sabor === sabor));
+    });
+  }
+
+  root.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    const bp = t.closest<HTMLElement>('[data-pres]');
+    const bs = t.closest<HTMLElement>('[data-sabor]');
+    if (bp) {
+      pres = bp.dataset.pres!;
+      if (!vs.some((x) => x.p === pres && x.s === sabor)) sabor = vs.find((x) => x.p === pres)!.s;
+      pintar();
+    }
+    if (bs) { sabor = bs.dataset.sabor!; pintar(); }
+    const q = t.closest<HTMLElement>('[data-q]');
+    if (q) { qty = Math.max(1, Math.min(99, qty + Number(q.dataset.q))); root.querySelector('[data-qty]')!.textContent = String(qty); }
+  });
+
+  document.querySelectorAll('[data-add-pd]').forEach((b) => b.addEventListener('click', () => {
+    const v = actual();
+    agregar({
+      key: `${data.id}::${v.id}`, tipo: 'producto', productoId: data.id, varianteId: v.id,
+      nombre: data.nombre, marca: data.marca, variante: [v.s, v.p].filter(Boolean).join(' · '),
+      precio: v.$, url: `/producto/${data.id}/?v=${v.id}`, img: v.i,
+    }, qty);
+    toast(`Agregaste ${qty} × ${data.nombre}`);
+    window.dispatchEvent(new CustomEvent('carrito:abrir'));
+  }));
+
+  // barra fija cuando el botón principal sale de pantalla (mobile)
+  const buy = document.querySelector('[data-buy]')!;
+  const sticky = document.querySelector<HTMLElement>('[data-sticky]')!;
+  new IntersectionObserver(([e]) => {
+    const on = !e.isIntersecting && e.boundingClientRect.top < 0;
+    sticky.classList.toggle('is-on', on);
+    sticky.setAttribute('aria-hidden', String(!on));
+    sticky.querySelector('button')!.tabIndex = on ? 0 : -1;
+    document.body.classList.toggle('has-sticky-bar', on && innerWidth < 900);
+  }).observe(buy);
+
+  pintar();
+</script>
+
+<style>
+  .bc ol { list-style: none; margin: 0; padding: 18px 0; display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.8rem; color: var(--mute); }
+  .bc li + li::before { content: '/'; margin-right: 6px; color: var(--line-2); }
+  .bc a:hover { color: var(--lime); }
+  .bc [aria-current] { color: var(--soft); }
+
+  .pd { display: grid; gap: 28px; padding-bottom: 40px; }
+  @media (min-width: 900px) { .pd { grid-template-columns: 1.05fr 1fr; gap: 56px; align-items: start; } }
+  .pd__media { position: relative; aspect-ratio: 4 / 3; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--ink-3); }
+  @media (min-width: 900px) { .pd__media { position: sticky; top: calc(var(--header-h) + 20px); aspect-ratio: 1; } }
+  /* fotos sobre fondo claro: el blanco de la foto se funde con el papel */
+  .pd__media:has(img) { background: var(--paper); border-color: var(--paper); }
+  .pd__media img { width: 100%; height: 100%; object-fit: contain; padding: 6%; mix-blend-mode: multiply; }
+  .pd__ph { position: absolute; inset: 0; padding: 24px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+    background: repeating-linear-gradient(-60deg, transparent 0 30px, rgb(255 255 255 / 0.025) 30px 31px), radial-gradient(80% 60% at 90% 0%, rgb(200 255 0 / 0.1), transparent 70%), var(--ink-3); }
+  .pd__ph :global(.pd__ico) { position: absolute; top: 24px; right: 24px; color: var(--lime); }
+  .pd__phb { font-size: clamp(2.2rem, 8vw, 4rem); color: transparent; -webkit-text-stroke: 1.5px rgb(200 255 0 / 0.6); line-height: 0.9; overflow-wrap: anywhere; }
+  .pd__phn { font-size: clamp(1rem, 3vw, 1.4rem); color: var(--soft); line-height: 1; }
+  .pd__falta { position: absolute; top: 20px; left: 20px; right: 84px; }
+  .pd__badge { position: absolute; top: 18px; right: 70px; background: var(--lime); color: var(--ink); font-weight: 900; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 12px; clip-path: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%); }
+  .pd__media:has(img) .pd__badge { right: 18px; }
+
+  .pd__info { display: grid; gap: 18px; align-content: start; }
+  .pd__brand::before { display: none; }
+  .pd__t { font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 0.95; font-stretch: 130%; font-variation-settings: 'wdth' 130; overflow-wrap: anywhere; }
+  .pd__tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { font-size: 0.75rem; font-weight: 750; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--soft); }
+  a.tag:hover { border-color: var(--paper); color: var(--paper); }
+  .tag--lime { border-color: var(--lime); color: var(--lime); }
+  .pd__price { display: grid; gap: 10px; padding: 18px 0; border-block: 1px solid var(--line); }
+  .pd__price .precio { font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; }
+  .pd__cash { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px dashed var(--lime); border-radius: var(--r-sm); background: var(--lime-a10); font-size: 0.92rem; justify-self: start; }
+  .pd__cash :global(svg) { color: var(--lime); flex: none; }
+  .pd__cash b { color: var(--lime); font-size: 1.05rem; }
+  .pd__cash small { color: var(--soft); }
+  .opt { border: 0; margin: 0; padding: 0; min-width: 0; }
+  .opt[hidden] { display: none; }
+  .opt legend { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft); padding: 0; margin-bottom: 10px; }
+  .opt__v { color: var(--paper); letter-spacing: 0.05em; text-transform: none; font-size: 0.9rem; }
+  .opt__chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pd__det { font-size: 0.85rem; color: var(--mute); }
+  .pd__det[hidden] { display: none; }
+  .pd__buy { display: grid; grid-template-columns: auto 1fr; gap: 10px; margin-top: 4px; }
+  .pd__add { min-height: 54px; font-size: 1rem; min-width: 0; }
+  :global(.qty--lg) { height: 54px !important; }
+  :global(.qty--lg button) { width: 46px !important; }
+  :global(.qty--lg span) { min-width: 28px !important; font-size: 1.05rem !important; }
+  .pd__perks { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 10px; font-size: 0.88rem; color: var(--soft); }
+  .pd__perks li { display: flex; gap: 10px; align-items: flex-start; }
+  .pd__perks :global(svg) { color: var(--lime); flex: none; margin-top: 1px; }
+  .pd__perks b { color: var(--paper); }
+
+  .acc { max-width: 860px; border-top: 1px solid var(--line); margin-bottom: 56px; }
+  .acc details { border-bottom: 1px solid var(--line); }
+  .acc summary { list-style: none; cursor: pointer; padding: 22px 0; font-size: clamp(1.05rem, 2.5vw, 1.35rem); display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .acc summary::-webkit-details-marker { display: none; }
+  .acc summary::after { content: '+'; font-size: 1.6rem; color: var(--lime); font-style: normal; transition: transform 0.3s var(--ease); }
+  .acc details[open] summary::after { transform: rotate(45deg); }
+  .acc summary:hover { color: var(--lime); }
+  .acc__b { padding: 0 0 24px; color: var(--soft); }
+  .acc__legal { font-size: 0.82rem; color: var(--mute); padding-top: 18px; }
+  .acc__b > p + p { margin-top: 10px; }
+  .acc__nota { font-size: 0.82rem; color: var(--mute); margin-top: 12px; }
+  .nutri { list-style: none; margin: 0; padding: 0; display: grid; max-width: 520px; }
+  .nutri li { padding: 10px 0; border-bottom: 1px solid var(--line); color: var(--paper); font-variant-numeric: tabular-nums; }
+  .nutri li:first-child { border-top: 1px solid var(--line); }
+  .rel { padding-bottom: 72px; }
+
+  .sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; transform: translateY(110%); transition: transform 0.35s var(--ease); background: rgb(17 17 17 / 0.96); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom)); }
+  .sticky:global(.is-on) { transform: none; }
+  .sticky__in { display: flex; align-items: center; gap: 12px; max-width: var(--maxw); margin: 0 auto; }
+  .sticky__txt { display: grid; min-width: 0; flex: 1; }
+  .sticky__n { font-size: 0.8rem; color: var(--soft); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sticky .precio { font-size: 1.25rem; }
+  @media (min-width: 900px) { .sticky { display: none; } }
+</style>

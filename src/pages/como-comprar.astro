@@ -1,0 +1,61 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import negocio from '../config/negocio.js';
+import { pesos } from '../lib/formato.js';
+
+const d = negocio.descuentos;
+const pasos = [
+  { t: 'Armá tu carrito', i: 'cart', txt: 'Elegí productos, sabor, presentación y cantidad. El carrito queda guardado aunque cierres la página.', extra: `Si es tu primera compra, pedí tu código de ${d.bienvenidaPct}% OFF en la ventana de bienvenida.` },
+  { t: 'Mandanos el pedido', i: 'instagram', txt: `En el carrito completás tus datos, la forma de entrega y el medio de pago. Tocás "Enviar pedido por Instagram": copiamos el pedido y se abre el chat con @${negocio.instagram.usuario}, sólo lo pegás y lo mandás. También lo podés enviar por email.`, extra: 'Te respondemos para confirmar stock y el total.' },
+  { t: 'Pagá por transferencia o efectivo', i: 'transfer', txt: `Transferencia bancaria, o efectivo en el local con ${d.efectivoPct}% OFF.`, extra: 'Si transferís, mandanos el comprobante por el mismo chat o por email.' },
+  { t: 'Te lo enviamos o lo retirás', i: 'truck', txt: `Enviamos a todo el país por ${negocio.envios.empresas.join(', ')}, gratis desde ${pesos(negocio.envios.gratisDesde)}. O lo retirás en ${negocio.direccion.calle}, ${negocio.direccion.localidad}.`, extra: '' },
+];
+const howToLd = {
+  '@context': 'https://schema.org', '@type': 'HowTo', name: 'Cómo comprar en BULK',
+  step: pasos.map((p, i) => ({ '@type': 'HowToStep', position: i + 1, name: p.t, text: p.txt })),
+};
+---
+<Base title="Cómo comprar" description="Comprar en BULK es simple: armá tu carrito en la web, mandanos el pedido por Instagram o email, pagá por transferencia o en efectivo en el local y recibilo en tu casa o retiralo." jsonLd={howToLd}>
+  <PageHead eyebrow="Paso a paso" titulo="Cómo" outline="comprar" migas={[{ href: '/como-comprar/', label: 'Cómo comprar' }]}
+    bajada="Sin pago online, sin registrarte. Armás el pedido acá y lo cerramos por Instagram o email." />
+
+  <section class="section">
+    <div class="wrap">
+      <ol class="steps">
+        {pasos.map((p, i) => (
+          <li class="step reveal">
+            <span class="step__n d d-outline" aria-hidden="true">{i + 1}</span>
+            <div class="step__b">
+              <Icon name={p.i} size={32} class="step__i" />
+              <h2 class="d step__t">{p.t}</h2>
+              <p>{p.txt}</p>
+              {p.extra && <p class="muted">{p.extra}</p>}
+              {i === 2 && !negocio.datosBancarios && <Falta>datos bancarios para transferencia</Falta>}
+              {i === 2 && d.efectivoSoloRetiro == null && <Falta>si el efectivo es sólo retirando en el local o también contra entrega</Falta>}
+              {i === 3 && !negocio.envios.costoYTiempos && <Falta>costos y tiempos de envío por debajo de {pesos(negocio.envios.gratisDesde)}</Falta>}
+              {i === 3 && !negocio.horarios && <Falta>horarios para retirar en el local</Falta>}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <div class="cta">
+        <a href="/tienda/" class="btn">Empezar a armar mi pedido <Icon name="arrow" size={18} class="arrow" /></a>
+        <a href="/preguntas-frecuentes/" class="btn btn--line">Preguntas frecuentes</a>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .step { display: grid; grid-template-columns: clamp(56px, 14vw, 180px) minmax(0, 1fr); gap: clamp(12px, 3vw, 40px); padding: clamp(24px, 4vw, 40px) 0; border-top: 1px solid var(--line); }
+  .step:last-child { border-bottom: 1px solid var(--line); }
+  .step__n { font-size: clamp(4rem, 13vw, 10rem); line-height: 0.8; --stroke: 2px; }
+  .step:hover .step__n { color: var(--lime); }
+  .step__b { display: grid; gap: 12px; justify-items: start; align-content: start; max-width: 60ch; min-width: 0; color: var(--soft); }
+  .step__b :global(.step__i) { color: var(--lime); }
+  .step__t { font-size: clamp(1.05rem, 5.2vw, 2.2rem); color: var(--paper); line-height: 1; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 40px; }
+</style>

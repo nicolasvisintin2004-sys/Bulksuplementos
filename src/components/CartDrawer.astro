@@ -1,0 +1,176 @@
+---
+import Icon from './Icon.astro';
+import negocio from '../config/negocio.js';
+import { pesos } from '../lib/formato.js';
+---
+<dialog class="drawer" data-cart aria-labelledby="cart-title">
+  <div class="drawer__head">
+    <h2 id="cart-title" class="d">Tu carrito <span class="drawer__n" data-cart-n></span></h2>
+    <button class="drawer__x" type="button" aria-label="Cerrar carrito" data-close><Icon name="close" /></button>
+  </div>
+
+  <div class="ship" data-ship>
+    <p class="ship__txt" data-ship-txt>Envío gratis desde {pesos(negocio.envios.gratisDesde)}</p>
+    <div class="ship__bar" role="progressbar" aria-label="Progreso hacia el envío gratis" aria-valuemin="0" aria-valuemax="100" data-ship-bar>
+      <span data-ship-fill></span>
+    </div>
+  </div>
+
+  <div class="drawer__body" data-cart-body>
+    <!-- se completa con JS -->
+  </div>
+
+  <div class="drawer__foot" data-cart-foot hidden>
+    <div class="tot">
+      <span>Subtotal</span>
+      <strong class="precio num" data-cart-sub>$0</strong>
+    </div>
+    <p class="cash" data-cart-cash></p>
+    <a href="/carrito/" class="btn btn--block">Finalizar pedido <Icon name="arrow" size={18} class="arrow" /></a>
+    <button type="button" class="btn btn--line btn--block" data-close>Seguir comprando</button>
+  </div>
+</dialog>
+
+<script>
+  import { leer, setCantidad, quitar, sincronizar } from '../scripts/carrito.js';
+  import { calcularTotales } from '../lib/descuentos.js';
+  import { pesos } from '../lib/formato.js';
+  import { esc, abrirDialogo, cerrarConFondo, toast } from '../scripts/util.js';
+
+  const dlg = document.querySelector<HTMLDialogElement>('[data-cart]')!;
+  const body = dlg.querySelector<HTMLElement>('[data-cart-body]')!;
+  const foot = dlg.querySelector<HTMLElement>('[data-cart-foot]')!;
+  const $ = (s: string) => dlg.querySelector<HTMLElement>(s)!;
+
+  function render() {
+    const items = leer();
+    const t = calcularTotales({ items });
+    const n = items.reduce((s, i) => s + i.cantidad, 0);
+    $('[data-cart-n]').textContent = n ? `(${n})` : '';
+
+    // barra de envío gratis (sobre subtotal; el cálculo final se ve en el resumen)
+    const pct = Math.min(100, Math.round((t.subtotal / (t.subtotal + t.faltaParaGratis || 1)) * 100));
+    $('[data-ship-fill]').style.width = `${items.length ? pct : 0}%`;
+    $('[data-ship-bar]').setAttribute('aria-valuenow', String(pct));
+    $('[data-ship]').classList.toggle('is-done', t.envioGratis && items.length > 0);
+    $('[data-ship-txt]').innerHTML = !items.length
+      ? `Envío gratis desde <b>${pesos(t.subtotal + t.faltaParaGratis)}</b>`
+      : t.envioGratis
+        ? '<b>¡Tenés envío gratis!</b>'
+        : `Te faltan <b>${pesos(t.faltaParaGratis)}</b> para el envío <b>GRATIS</b>`;
+
+    if (!items.length) {
+      body.innerHTML = `
+        <div class="empty">
+          <p class="d empty__t">Vacío.<br><span class="d-outline">Por ahora.</span></p>
+          <p class="muted">Sumá productos y armá tu pedido. Lo mandás por Instagram o email y pagás por transferencia o en efectivo en el local.</p>
+          <a class="btn" href="/tienda/">Ver productos</a>
+        </div>`;
+      foot.hidden = true;
+      return;
+    }
+    foot.hidden = false;
+    body.innerHTML = `<ul class="lines">${items.map((i) => `
+      <li class="line" data-key="${esc(i.key)}">
+        ${i.img ? `<img class="line__img" src="${esc(i.img)}" alt="" width="56" height="56" loading="lazy">` : '<span class="line__img line__img--ph" aria-hidden="true"></span>'}
+        <div class="line__main">
+          <a class="line__name" href="${esc(i.url)}">${i.marca ? `<span class="line__brand">${esc(i.marca)}</span>` : ''}${esc(i.nombre)}</a>
+          ${i.variante ? `<span class="line__var">${esc(i.variante)}</span>` : ''}
+          <span class="line__unit num">${pesos(i.precio)} c/u</span>
+        </div>
+        <div class="line__side">
+          <strong class="precio num">${pesos(i.precio * i.cantidad)}</strong>
+          <div class="qty" role="group" aria-label="Cantidad de ${esc(i.nombre)}">
+            <button type="button" data-q="-1" aria-label="Restar uno">−</button>
+            <span class="num" aria-live="polite">${i.cantidad}</span>
+            <button type="button" data-q="1" aria-label="Sumar uno">+</button>
+          </div>
+          <button type="button" class="line__rm" data-rm aria-label="Quitar ${esc(i.nombre)}">Quitar</button>
+        </div>
+      </li>`).join('')}</ul>`;
+    $('[data-cart-sub]').textContent = pesos(t.subtotal);
+    $('[data-cart-cash]').innerHTML = t.ahorroEfectivo
+      ? `Pagando en efectivo en el local ahorrás <b>${pesos(t.ahorroEfectivo)}</b>`
+      : '';
+  }
+
+  body.addEventListener('click', (e) => {
+    const el = e.target as HTMLElement;
+    const li = el.closest<HTMLElement>('[data-key]');
+    if (!li) return;
+    const key = li.dataset.key!;
+    const it = leer().find((i) => i.key === key);
+    if (!it) return;
+    const q = el.closest<HTMLElement>('[data-q]');
+    if (q) setCantidad(key, it.cantidad + Number(q.dataset.q));
+    if (el.closest('[data-rm]')) quitar(key);
+  });
+
+  cerrarConFondo(dlg);
+  dlg.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dlg.close()));
+
+  async function abrir() {
+    render();
+    abrirDialogo(dlg);
+    const quitados = await sincronizar();
+    if (quitados.length) toast(`Sacamos del carrito productos que ya no están: ${quitados.join(', ')}`);
+  }
+  document.querySelectorAll('[data-open-cart]').forEach((b) => b.addEventListener('click', abrir));
+  window.addEventListener('carrito:cambio', render);
+  window.addEventListener('carrito:abrir', abrir);
+  render();
+</script>
+
+<style>
+  .drawer {
+    margin: 0 0 0 auto; height: 100dvh; max-height: 100dvh; width: min(440px, 100vw); max-width: 100vw;
+    padding: 0; border: 0; border-left: 1px solid var(--line);
+    background: var(--ink); color: var(--paper);
+    display: none; flex-direction: column;
+  }
+  .drawer[open] { display: flex; animation: dr 0.4s var(--ease); }
+  .drawer::backdrop { background: rgb(0 0 0 / 0.65); backdrop-filter: blur(3px); }
+  @keyframes dr { from { transform: translateX(100%); } }
+  .drawer__head { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+  .drawer__head h2 { font-size: 1.35rem; }
+  .drawer__n { color: var(--lime); }
+  .drawer__x { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; }
+  .drawer__x:hover { background: var(--ink-3); }
+
+  .ship { padding: 14px 20px 16px; border-bottom: 1px solid var(--line); background: var(--ink-2); }
+  .ship__txt { font-size: 0.875rem; color: var(--soft); margin-bottom: 10px; }
+  :global(.ship__txt b) { color: var(--paper); }
+  .ship__bar { height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+  .ship__bar span { display: block; height: 100%; width: 0; background: repeating-linear-gradient(-60deg, var(--lime) 0 8px, var(--lime-2) 8px 12px); border-radius: inherit; transition: width 0.6s var(--ease); }
+  .ship.is-done .ship__txt { color: var(--lime); }
+  :global(.ship.is-done .ship__txt b) { color: var(--lime); }
+
+  .drawer__body { flex: 1; overflow-y: auto; padding: 8px 20px; overscroll-behavior: contain; }
+  :global(.drawer .lines) { list-style: none; margin: 0; padding: 0; }
+  :global(.drawer .line) { display: grid; grid-template-columns: 56px 1fr auto; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  :global(.drawer .line__img) { width: 56px; height: 56px; border-radius: 10px; background: var(--paper); object-fit: contain; padding: 4px; mix-blend-mode: normal; }
+  :global(.drawer .line__img--ph) { display: block; background: var(--ink-3); border: 1px solid var(--line); }
+  :global(.drawer .line__main) { display: grid; gap: 3px; align-content: start; min-width: 0; }
+  :global(.drawer .line__name) { font-weight: 750; line-height: 1.3; }
+  :global(.drawer .line__name:hover) { color: var(--lime); }
+  :global(.drawer .line__brand) { display: block; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); font-weight: 700; }
+  :global(.drawer .line__var) { font-size: 0.82rem; color: var(--soft); }
+  :global(.drawer .line__unit) { font-size: 0.78rem; color: var(--mute); }
+  :global(.drawer .line__side) { display: grid; justify-items: end; gap: 8px; align-content: start; }
+  :global(.drawer .line__rm) { font-size: 0.75rem; color: var(--mute); text-decoration: underline; text-underline-offset: 2px; padding: 4px 0; }
+  :global(.drawer .line__rm:hover) { color: var(--paper); }
+  :global(.qty) { display: inline-flex; align-items: center; border: 1.5px solid var(--line-2); border-radius: 999px; height: 36px; }
+  :global(.qty button) { width: 34px; height: 100%; font-size: 1.1rem; font-weight: 700; color: var(--paper); border-radius: 999px; }
+  :global(.qty button:hover) { color: var(--lime); }
+  :global(.qty span) { min-width: 22px; text-align: center; font-weight: 800; font-size: 0.9rem; }
+
+  :global(.drawer .empty) { display: grid; gap: 16px; justify-items: start; padding: 40px 0; }
+  :global(.drawer .empty__t) { font-size: 2.4rem; }
+
+  .drawer__foot { padding: 16px 20px calc(16px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); display: grid; gap: 10px; background: var(--ink-2); }
+  .drawer__foot[hidden] { display: none; }
+  .tot { display: flex; justify-content: space-between; align-items: baseline; font-weight: 700; }
+  .tot .precio { font-size: 1.5rem; }
+  .cash { font-size: 0.85rem; color: var(--lime); min-height: 1em; }
+  :global(.cash b) { font-weight: 800; }
+</style>

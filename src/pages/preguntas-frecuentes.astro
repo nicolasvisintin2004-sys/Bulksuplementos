@@ -1,0 +1,24 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import FaqList from '../components/FaqList.astro';
+import { faq } from '../data/faq.js';
+
+// FAQPage sólo con respuestas completas (sin datos faltantes)
+const quitarHtml = (s: string) => s.replace(/<[^>]+>/g, '');
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.filter((f) => f.a && !f.falta).map((f) => ({
+    '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: quitarHtml(f.a) },
+  })),
+};
+---
+<Base title="Preguntas frecuentes" description="Cómo comprar en BULK, medios de pago, descuentos, envíos a todo el país y retiro en el local de Carmen de Patagones." jsonLd={faqLd}>
+  <PageHead eyebrow="Ayuda" titulo="Preguntas" outline="frecuentes" migas={[{ href: '/blog/', label: 'Blog y FAQ' }, { href: '/preguntas-frecuentes/', label: 'Preguntas frecuentes' }]} />
+  <section class="section section--tight">
+    <div class="wrap">
+      <FaqList />
+    </div>
+  </section>
+</Base>

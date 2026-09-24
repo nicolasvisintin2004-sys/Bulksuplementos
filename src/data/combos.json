@@ -1,0 +1,40 @@
+{
+  "_leeme": "Combos según objetivo. Para cargar un combo: completá 'items' con productos del catálogo (id del producto + id de la variante, ver src/data/productos.json) y poné el 'precio' final del combo en pesos. Mientras 'items' esté vacío, la card muestra un cartel rojo y el botón de agregar queda desactivado. Ejemplo de item: { \"producto\": \"ena-whey-protein-true-made\", \"variante\": \"chocolate-2-05-lb-930-g\", \"cantidad\": 1 }",
+  "combos": [
+    {
+      "id": "masa-muscular",
+      "objetivo": "Ganar masa muscular",
+      "bajada": "Proteína y creatina para acompañar tu entrenamiento de fuerza y tu alimentación.",
+      "items": [],
+      "precio": null
+    },
+    {
+      "id": "definicion",
+      "objetivo": "Definición",
+      "bajada": "Para sostener la proteína del día mientras ajustás calorías, sin resignar sabor.",
+      "items": [],
+      "precio": null
+    },
+    {
+      "id": "rendimiento",
+      "objetivo": "Rendimiento / endurance",
+      "bajada": "Hidratación, geles y energía para fondos largos, running, ciclismo y trail.",
+      "items": [],
+      "precio": null
+    },
+    {
+      "id": "bienestar",
+      "objetivo": "Salud y bienestar",
+      "bajada": "Vitaminas, minerales, omega 3 y colágeno para completar tu rutina diaria.",
+      "items": [],
+      "precio": null
+    },
+    {
+      "id": "principiantes",
+      "objetivo": "Principiantes",
+      "bajada": "Lo básico para arrancar: pocos productos, fáciles de usar y bien explicados.",
+      "items": [],
+      "precio": null
+    }
+  ]
+}

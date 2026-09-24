@@ -1,0 +1,237 @@
+---
+import Icon from './Icon.astro';
+import Wordmark from './Wordmark.astro';
+import negocio from '../config/negocio.js';
+import { categorias, marcas, contarPorCategoria, contarPorMarca } from '../lib/catalogo.js';
+import { pesos } from '../lib/formato.js';
+
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/tienda/', label: 'Tienda', match: /^\/(tienda|producto|categoria)/ },
+  { href: '/marcas/', label: 'Marcas', match: /^\/marca/ },
+  { href: '/combos/', label: 'Combos', match: /^\/combos/ },
+  { href: '/como-comprar/', label: 'Cómo comprar', match: /^\/como-comprar/ },
+  { href: '/blog/', label: 'Blog y FAQ', match: /^\/(blog|preguntas)/ },
+  { href: '/contacto/', label: 'Local', match: /^\/contacto/ },
+];
+const destacadas = marcas.filter((m) => m.destacada);
+const avisos = [
+  `Envío gratis desde ${pesos(negocio.envios.gratisDesde)}`,
+  `${negocio.descuentos.efectivoPct}% OFF en efectivo en el local`,
+  'Envíos a todo el país',
+  `${negocio.descuentos.bienvenidaPct}% OFF en tu primera compra`,
+];
+---
+<div class="topbar" aria-label="Beneficios">
+  <div class="topbar__track">
+    {[...avisos, ...avisos].map((a, i) => <span aria-hidden={i >= avisos.length ? 'true' : undefined}>{a}</span>)}
+  </div>
+</div>
+
+<header class="hdr" data-hdr>
+  <div class="wrap hdr__in">
+    <button class="hdr__icon hdr__burger" type="button" aria-label="Abrir menú" data-open-menu>
+      <Icon name="menu" />
+    </button>
+
+    <a href="/" class="hdr__logo" aria-label="BULK — inicio"><Wordmark size="sm" /></a>
+
+    <nav class="hdr__nav" aria-label="Principal">
+      <ul>
+        <li class="has-mega">
+          <a href="/tienda/" aria-current={nav[0].match.test(path) ? 'page' : undefined}>Tienda</a>
+          <button class="mega-toggle" type="button" aria-expanded="false" aria-controls="mega" aria-label="Ver categorías y marcas">
+            <svg width="10" height="7" viewBox="0 0 10 7" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m1 1 4 4 4-4"/></svg>
+          </button>
+          <div class="mega" id="mega" hidden>
+            <div class="mega__col">
+              <p class="eyebrow eyebrow--lime">Por categoría</p>
+              <ul class="mega__list">
+                {categorias.map((c) => (
+                  <li><a href={`/categoria/${c.slug}/`}>{c.nombre} <span class="cnt">{contarPorCategoria(c.slug)}</span></a></li>
+                ))}
+              </ul>
+            </div>
+            <div class="mega__col">
+              <p class="eyebrow eyebrow--lime">Por marca</p>
+              <ul class="mega__list mega__list--brands">
+                {destacadas.map((m) => (
+                  <li><a href={`/marca/${m.slug}/`}>{m.nombre} <span class="cnt">{contarPorMarca(m.slug)}</span></a></li>
+                ))}
+              </ul>
+              <a class="link" href="/marcas/">Las {marcas.length} marcas <Icon name="arrow" size={16} /></a>
+            </div>
+          </div>
+        </li>
+        {nav.slice(1).map((n) => (
+          <li><a href={n.href} aria-current={n.match.test(path) ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="hdr__actions">
+      <button class="hdr__icon" type="button" aria-label="Buscar productos" data-open-search>
+        <Icon name="search" />
+      </button>
+      <a class="hdr__icon hdr__ig" href={negocio.instagram.url} target="_blank" rel="noopener" aria-label={`Instagram @${negocio.instagram.usuario}`}>
+        <Icon name="instagram" />
+      </a>
+      <button class="hdr__icon hdr__cart" type="button" aria-label="Abrir carrito" data-open-cart>
+        <Icon name="cart" />
+        <span class="hdr__badge" data-cart-count hidden>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Menú mobile -->
+<dialog class="mmenu" data-menu aria-label="Menú">
+  <div class="mmenu__top">
+    <Wordmark size="sm" />
+    <button class="hdr__icon" type="button" aria-label="Cerrar menú" data-close><Icon name="close" /></button>
+  </div>
+  <nav aria-label="Menú mobile">
+    <ul class="mmenu__main">
+      {nav.map((n) => <li><a class="d" href={n.href}>{n.label}</a></li>)}
+    </ul>
+    <p class="eyebrow eyebrow--lime">Categorías</p>
+    <ul class="mmenu__chips">
+      {categorias.map((c) => <li><a class="chip" href={`/categoria/${c.slug}/`}>{c.corto}</a></li>)}
+    </ul>
+    <p class="eyebrow eyebrow--lime">Marcas</p>
+    <ul class="mmenu__chips">
+      {destacadas.map((m) => <li><a class="chip" href={`/marca/${m.slug}/`}>{m.nombre}</a></li>)}
+      <li><a class="chip" href="/marcas/">Ver todas →</a></li>
+    </ul>
+  </nav>
+  <a class="mmenu__ig" href={negocio.instagram.url} target="_blank" rel="noopener"><Icon name="instagram" size={20} /> @{negocio.instagram.usuario}</a>
+</dialog>
+
+<script>
+  import { abrirDialogo, cerrarConFondo } from '../scripts/util.js';
+  import { cantidadTotal } from '../scripts/carrito.js';
+
+  // contador del carrito
+  const badges = document.querySelectorAll<HTMLElement>('[data-cart-count]');
+  const pintar = () => {
+    const n = cantidadTotal();
+    badges.forEach((b) => { b.textContent = String(n); b.hidden = n === 0; });
+  };
+  pintar();
+  window.addEventListener('carrito:cambio', pintar);
+  window.addEventListener('carrito:agregado', () => {
+    badges.forEach((b) => { b.classList.remove('bump'); void b.offsetWidth; b.classList.add('bump'); });
+  });
+
+  // menú mobile
+  const menu = document.querySelector<HTMLDialogElement>('[data-menu]')!;
+  cerrarConFondo(menu);
+  document.querySelector('[data-open-menu]')?.addEventListener('click', () => abrirDialogo(menu));
+  menu.querySelector('[data-close]')?.addEventListener('click', () => menu.close());
+
+  // mega menú (click + hover en desktop)
+  const li = document.querySelector<HTMLElement>('.has-mega');
+  const btn = li?.querySelector<HTMLButtonElement>('.mega-toggle');
+  const panel = li?.querySelector<HTMLElement>('.mega');
+  if (li && btn && panel) {
+    let t: number | undefined;
+    const set = (open: boolean) => { btn.setAttribute('aria-expanded', String(open)); panel.hidden = !open; };
+    btn.addEventListener('click', () => set(panel.hidden));
+    li.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') { clearTimeout(t); set(true); } });
+    li.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') t = window.setTimeout(() => set(false), 140); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !panel.hidden) { set(false); btn.focus(); } });
+    document.addEventListener('click', (e) => { if (!li.contains(e.target as Node)) set(false); });
+  }
+
+  // header compacto al scrollear
+  const hdr = document.querySelector<HTMLElement>('[data-hdr]');
+  const onScroll = () => hdr?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .topbar {
+    background: var(--lime); color: var(--ink); overflow: hidden;
+    font-size: 0.75rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+    height: 32px; display: flex; align-items: center;
+  }
+  .topbar__track { display: flex; gap: 48px; white-space: nowrap; animation: tb 40s linear infinite; padding-left: 48px; }
+  .topbar__track span { display: inline-flex; align-items: center; gap: 48px; }
+  .topbar__track span::after { content: '/'; font-style: italic; opacity: 0.5; }
+  @keyframes tb { to { transform: translateX(-50%); } }
+
+  .hdr {
+    position: sticky; top: 0; z-index: 50;
+    background: rgb(10 10 10 / 0.72);
+    backdrop-filter: saturate(140%) blur(14px); -webkit-backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s, background-color 0.3s;
+  }
+  .hdr.is-scrolled { border-bottom-color: var(--line); background: rgb(10 10 10 / 0.88); }
+  .hdr__in { height: var(--header-h); display: flex; align-items: center; gap: 8px; }
+  .hdr__logo { display: flex; align-items: center; margin-right: auto; padding: 6px 0; }
+  .hdr__icon {
+    width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px;
+    color: var(--paper); position: relative; transition: background-color 0.2s, color 0.2s;
+  }
+  .hdr__icon:hover { background: var(--ink-3); color: var(--lime); }
+  .hdr__actions { display: flex; align-items: center; gap: 2px; }
+  .hdr__ig { display: none; }
+  .hdr__badge {
+    position: absolute; top: 4px; right: 2px; min-width: 19px; height: 19px; padding: 0 5px;
+    border-radius: 999px; background: var(--lime); color: var(--ink);
+    font-size: 0.75rem; font-weight: 800; display: grid; place-items: center; line-height: 1;
+  }
+  .hdr__badge[hidden] { display: none; }
+  :global(.hdr__badge.bump) { animation: bump 0.5s var(--ease); }
+  @keyframes bump { 40% { transform: scale(1.4); } }
+
+  .hdr__nav { display: none; }
+  @media (min-width: 1024px) {
+    .hdr__burger { display: none; }
+    .hdr__logo { margin-right: 32px; }
+    .hdr__nav { display: block; margin-right: auto; }
+    .hdr__nav > ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; align-items: center; }
+    .hdr__nav > ul > li { position: relative; display: flex; align-items: center; }
+    .hdr__nav a {
+      display: inline-flex; padding: 10px 12px; font-size: 0.9rem; font-weight: 650; color: var(--soft);
+      border-radius: 999px; transition: color 0.2s;
+    }
+    .hdr__nav a:hover, .hdr__nav a[aria-current='page'] { color: var(--paper); }
+    .hdr__nav > ul > li > a[aria-current='page'] { color: var(--lime); }
+    .hdr__ig { display: grid; }
+  }
+  .mega-toggle { width: 22px; height: 32px; display: grid; place-items: center; color: var(--soft); margin-left: -8px; }
+  .mega-toggle[aria-expanded='true'] svg { transform: rotate(180deg); }
+  .mega {
+    position: absolute; top: calc(100% + 10px); left: -12px; width: min(720px, 80vw);
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 32px; padding: 28px;
+    background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.6);
+    animation: pop 0.2s var(--ease);
+  }
+  .mega[hidden] { display: none; }
+  .mega::before { content: ''; position: absolute; inset: -12px 0 auto; height: 12px; }
+  @keyframes pop { from { opacity: 0; transform: translateY(-6px); } }
+  .mega__list { list-style: none; margin: 14px 0 16px; padding: 0; display: grid; gap: 0; }
+  .mega__list a { display: flex !important; justify-content: space-between; gap: 12px; padding: 7px 0 !important; border-radius: 0 !important; border-bottom: 1px solid var(--line); color: var(--paper) !important; }
+  .mega__list a:hover { color: var(--lime) !important; }
+  .cnt { color: var(--mute); font-size: 0.78rem; font-variant-numeric: tabular-nums; }
+
+  /* menú mobile */
+  .mmenu {
+    margin: 0; width: 100%; max-width: 100%; height: 100dvh; max-height: 100dvh;
+    background: var(--ink); color: var(--paper); border: 0; padding: 0 var(--gutter) 32px;
+    overflow-y: auto;
+  }
+  .mmenu[open] { animation: slidein 0.35s var(--ease); }
+  .mmenu::backdrop { background: rgb(0 0 0 / 0.6); }
+  @keyframes slidein { from { transform: translateX(-24px); opacity: 0; } }
+  .mmenu__top { height: var(--header-h); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+  .mmenu__main { list-style: none; padding: 0; margin: 0 0 28px; }
+  .mmenu__main a { display: block; font-size: clamp(1.7rem, 8vw, 2.4rem); padding: 8px 0; }
+  .mmenu__main a:hover { color: var(--lime); }
+  .mmenu__chips { list-style: none; padding: 0; margin: 12px 0 24px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .mmenu__ig { display: inline-flex; gap: 8px; align-items: center; color: var(--lime); font-weight: 700; }
+</style>

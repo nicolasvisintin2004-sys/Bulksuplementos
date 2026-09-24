@@ -1,0 +1,78 @@
+{
+  "sinRegla": [],
+  "duplicados": [
+    {
+      "variante": "ena-starter-protein|Café con Leche|400 g",
+      "linea": "ENA - ENA Starter Protein 400 GRS - Café con Leche"
+    },
+    {
+      "variante": "ena-truemade-pure-collagen|Lemonade|",
+      "linea": "ENA - ENA Truemade Pure Collagen 350 GRS - Lemonade"
+    },
+    {
+      "variante": "ena-truemade-pure-collagen|Blueberry|",
+      "linea": "ENA - ENA Truemade Pure Collagen 360 GRS - Blueberry"
+    },
+    {
+      "variante": "ena-electrolitos|Berries Bomb|15 sobres x 5 g",
+      "linea": "ENA - ENA Electrolitos Hidratacion Y Recuperacion Muscular 15 sobres 5g c/u - Berries Bomb"
+    },
+    {
+      "variante": "star-nutrition-collagen|Frutos Rojos|210 g",
+      "linea": "STAR - STAR NUTRITION Collagen Limón 210gr - Frutos Rojos"
+    }
+  ],
+  "conflictosDePrecio": [
+    {
+      "variante": "suma-electrolitos|Naranja|Caja x30 sobres",
+      "seUso": {
+        "linea": "SUMA - SUMA Electrolitos Caja 30 Sobres - Naranja",
+        "mayorista": 54337
+      },
+      "descartada": {
+        "linea": "SUMA - SUMA Electrolitos CAJA 30 Sobres - Naranja • 255g",
+        "mayorista": 42263
+      }
+    },
+    {
+      "variante": "suma-electrolitos|Lima Limón|Caja x30 sobres",
+      "seUso": {
+        "linea": "SUMA - SUMA Electrolitos Caja 30 Sobres - Lima Limón",
+        "mayorista": 54337
+      },
+      "descartada": {
+        "linea": "SUMA - SUMA Electrolitos CAJA 30 Sobres - LIMA/LIMON • 255g",
+        "mayorista": 42263
+      }
+    },
+    {
+      "variante": "suma-electrolitos|Frutos Rojos|Caja x30 sobres",
+      "seUso": {
+        "linea": "SUMA - SUMA Electrolitos Caja 30 Sobres - Frutos Rojos",
+        "mayorista": 54337
+      },
+      "descartada": {
+        "linea": "SUMA - SUMA Electrolitos CAJA 30 Sobres - FRUTOS ROJOS • 255g",
+        "mayorista": 42263
+      }
+    }
+  ],
+  "notas": [
+    {
+      "linea": "ENA - CARBO ENERGY",
+      "nota": "La lista no indica el sabor de esta variante."
+    },
+    {
+      "linea": "NUTREMAX - NUTREMAX Hydromax Naranja Display 33gr (1 sobre) - Pomelo",
+      "nota": "El nombre dice \"Naranja\" pero la variante dice \"Pomelo\". Se tomó Pomelo."
+    },
+    {
+      "linea": "STAR - STAR NUTRITION Collagen Limón 210gr - Frutos Rojos",
+      "nota": "Nombre \"Collagen Limón\" con variante \"Frutos Rojos\": se tomó como duplicado de STAR-COLLAGEN-FRUTOSROJOS-210 (mismo precio)."
+    },
+    {
+      "linea": "TASTE - SALSAS DULCES NATURAL - MIEL - VEGANO • FRASCO 280g",
+      "nota": "La lista dice \"MIEL - VEGANO\": la miel no es vegana, no se marcó como vegano."
+    }
+  ]
+}

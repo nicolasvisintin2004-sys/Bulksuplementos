@@ -1,0 +1,89 @@
+---
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { getCollection, render } from 'astro:content';
+import { producto, categoria } from '../../lib/catalogo.js';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+const { post } = Astro.props;
+const { Content } = await render(post);
+const relacionados = post.data.productos.map(producto).filter(Boolean);
+const cat = post.data.categoria ? categoria(post.data.categoria) : null;
+const otros = (await getCollection('blog')).filter((p) => p.id !== post.id).sort((a, b) => a.data.orden - b.data.orden).slice(0, 2);
+const site = Astro.site ?? new URL('http://localhost:4321');
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.titulo,
+  description: post.data.descripcion,
+  datePublished: post.data.fecha.toISOString(),
+  inLanguage: 'es-AR',
+  author: { '@type': 'Organization', name: 'BULK' },
+  publisher: { '@id': new URL('/#negocio', site).href },
+  mainEntityOfPage: new URL(`/blog/${post.id}/`, site).href,
+};
+const fecha = post.data.fecha.toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+---
+<Base title={post.data.titulo} description={post.data.descripcion} jsonLd={articleLd} type="article">
+  <article>
+    <header class="ah">
+      <svg class="slashes ah__sl" viewBox="0 0 200 200" aria-hidden="true"><line x1="40" y1="210" x2="200" y2="10" stroke-width="6" /><line x1="90" y1="210" x2="215" y2="55" stroke-width="2.5" /></svg>
+      <div class="wrap ah__in">
+        <nav aria-label="Migas de pan" class="ah__bc"><a href="/blog/">← Blog y FAQ</a></nav>
+        <p class="eyebrow eyebrow--lime">{post.data.etiqueta}</p>
+        <h1 class="d ah__t">{post.data.titulo}</h1>
+        <p class="lead">{post.data.descripcion}</p>
+        <p class="ah__meta"><time datetime={post.data.fecha.toISOString()}>{fecha}</time> · {post.data.minutos} min de lectura</p>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <div class="prose ab">
+        <Content />
+        <aside class="ab__legal" role="note">
+          <Icon name="shield" size={22} />
+          <p><b>Consultá con un profesional de la salud antes de consumir suplementos.</b> Esta nota es información general y no reemplaza una consulta personalizada.</p>
+        </aside>
+      </div>
+
+      {relacionados.length > 0 && (
+        <section class="rel">
+          <div class="sec-head">
+            <h2 class="d h2">Productos <span class="d-outline">relacionados</span></h2>
+            {cat && <a class="link" href={`/categoria/${cat.slug}/`}>Ver todo en {cat.corto} <Icon name="arrow" size={16} /></a>}
+          </div>
+          <div class="hscroll">{relacionados.map((p) => <ProductCard p={p} />)}</div>
+        </section>
+      )}
+
+      <section class="more">
+        <p class="eyebrow">Seguí leyendo</p>
+        <ul>
+          {otros.map((o) => <li><a href={`/blog/${o.id}/`}>{o.data.titulo} <Icon name="arrow" size={18} /></a></li>)}
+        </ul>
+      </section>
+    </div>
+  </article>
+</Base>
+<style>
+  .ah { position: relative; overflow: hidden; padding: clamp(28px, 5vw, 64px) 0 clamp(32px, 5vw, 56px); border-bottom: 1px solid var(--line); }
+  .ah__sl { right: 0; top: 0; width: clamp(80px, 12vw, 150px); height: auto; aspect-ratio: 1; }
+  .ah__in { display: grid; gap: 16px; max-width: 900px; margin-left: 0; }
+  @media (min-width: 1320px) { .ah__in { margin-left: auto; } }
+  .ah__bc a { font-size: 0.85rem; color: var(--mute); }
+  .ah__bc a:hover { color: var(--lime); }
+  .ah__t { font-size: clamp(1.9rem, 5vw, 3.4rem); font-stretch: 125%; font-variation-settings: 'wdth' 125; line-height: 0.98; }
+  .ah__meta { font-size: 0.85rem; color: var(--mute); }
+  .ab { padding: 40px 0 56px; }
+  .ab__legal { display: flex; gap: 14px; align-items: flex-start; margin-top: 2.5em; padding: 18px 20px; border: 1px solid var(--lime); border-radius: var(--r); background: var(--lime-a10); color: var(--paper); font-size: 0.95rem; line-height: 1.55; }
+  .ab__legal :global(svg) { color: var(--lime); flex: none; margin-top: 2px; }
+  .rel { padding-bottom: 48px; }
+  .more { padding: 32px 0 72px; border-top: 1px solid var(--line); }
+  .more ul { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px; }
+  .more a { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); font-weight: 750; font-size: 1.1rem; }
+  .more a:hover { color: var(--lime); }
+</style>

@@ -1,0 +1,51 @@
+---
+/** Mapa del local con carga diferida: el iframe de Google Maps se carga recién al tocar (rendimiento + privacidad). */
+import Icon from './Icon.astro';
+import negocio from '../config/negocio.js';
+const d = negocio.direccion;
+const query = encodeURIComponent(`${d.calle}, ${d.localidad}, ${d.provincia}, Argentina`);
+const embed = `https://www.google.com/maps?q=${query}&z=16&output=embed`;
+const link = `https://www.google.com/maps/search/?api=1&query=${query}`;
+---
+<div class="map" data-map={embed}>
+  <div class="map__grid" aria-hidden="true"></div>
+  <div class="map__pin"><Icon name="pin" size={34} stroke={2} /></div>
+  <div class="map__ui">
+    <p class="map__addr"><b>{d.calle}</b><br />{d.localidad}, {d.provincia}</p>
+    <div class="map__btns">
+      <button type="button" class="btn btn--sm" data-load-map>Ver mapa</button>
+      <a class="btn btn--ghost btn--sm" href={link} target="_blank" rel="noopener">Cómo llegar <Icon name="arrow" size={16} class="arrow" /></a>
+    </div>
+  </div>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-map]').forEach((m) => {
+    m.querySelector('[data-load-map]')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = m.dataset.map!;
+      f.title = 'Mapa del local BULK';
+      f.loading = 'lazy';
+      f.referrerPolicy = 'no-referrer-when-downgrade';
+      f.className = 'map__frame';
+      m.appendChild(f);
+      m.classList.add('is-loaded');
+    });
+  });
+</script>
+<style>
+  .map { position: relative; min-height: 340px; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); background: var(--ink-3); isolation: isolate; }
+  .map__grid {
+    position: absolute; inset: 0; z-index: -1; opacity: 0.6;
+    background:
+      linear-gradient(transparent 0 calc(100% - 1px), var(--line) 0) 0 0 / 100% 48px,
+      linear-gradient(90deg, transparent 0 calc(100% - 1px), var(--line) 0) 0 0 / 48px 100%,
+      linear-gradient(-30deg, transparent 46%, rgb(200 255 0 / 0.14) 46% 48%, transparent 48%),
+      linear-gradient(60deg, transparent 60%, rgb(255 255 255 / 0.06) 60% 63%, transparent 63%);
+  }
+  .map__pin { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); color: var(--ink); background: var(--lime); width: 64px; height: 64px; border-radius: 999px; display: grid; place-items: center; box-shadow: 0 0 0 12px var(--lime-a20), 0 0 0 26px var(--lime-a10); }
+  .map__ui { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px; display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between; background: linear-gradient(transparent, rgb(10 10 10 / 0.95) 40%); }
+  .map__addr { font-size: 0.95rem; }
+  .map__btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  :global(.map__frame) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; filter: invert(0.9) hue-rotate(180deg) saturate(0.6); }
+  .map:global(.is-loaded) .map__ui, .map:global(.is-loaded) .map__pin { display: none; }
+</style>

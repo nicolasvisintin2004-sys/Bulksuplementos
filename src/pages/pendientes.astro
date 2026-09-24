@@ -1,0 +1,80 @@
+---
+/** Página interna (noindex) con todos los datos que faltan completar. */
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import { listaFaltantes } from '../lib/faltantes.js';
+import revisar from '../../data/revisar.json';
+import catalogo from '../data/productos.json';
+
+const items = listaFaltantes();
+const faltan = items.filter((i) => i.falta);
+const listos = items.filter((i) => !i.falta);
+const marcaNombre = Object.fromEntries(catalogo.marcas.map((m) => [m.slug, m.nombre]));
+const fila = (p: any, v: any) => ({ nombre: `${marcaNombre[p.marca]} ${p.nombre}`, variante: [v.sabor, v.presentacion].filter(Boolean).join(' · '), precio: v.precio, mayorista: v.mayorista });
+const bajoCosto = catalogo.productos.flatMap((p: any) => p.variantes.filter((v: any) => v.mayorista != null && v.precio < v.mayorista).map((v: any) => fila(p, v)));
+// precio elegido contra la competencia que igual quedó más caro (el costo mayorista no deja bajarlo)
+const caros = catalogo.productos.flatMap((p: any) => p.variantes
+  .filter((v: any) => v.precioFijo?.competencia && !v.precioFijo.competitivo)
+  .map((v: any) => ({ ...fila(p, v), minimo: Math.min(...Object.values(v.precioFijo.competencia as Record<string, number>)) })));
+---
+<Base title="Pendientes" description="Datos que faltan completar en el sitio." noindex>
+  <PageHead eyebrow="Uso interno" titulo="Datos" outline="pendientes"
+    bajada={`Faltan ${faltan.length} de ${items.length}. Cada uno se completa en el archivo indicado y después se vuelve a publicar el sitio (ver README.md).`} />
+  <section class="section section--tight">
+    <div class="wrap pn">
+      <ul class="pn__list">
+        {faltan.map((i) => (
+          <li class="pn__it"><span class="falta">⚠ FALTA</span><div><b>{i.que}</b><code>{i.donde}</code></div></li>
+        ))}
+        {listos.map((i) => (
+          <li class="pn__it pn__it--ok"><span class="ok"><Icon name="check" size={16} /> Listo</span><div><b>{i.que}</b></div></li>
+        ))}
+      </ul>
+
+      {bajoCosto.length > 0 && (
+        <>
+          <h2 class="d h3 pn__h">Precios por debajo del mayorista</h2>
+          <p class="muted">Precio de Entreno − $1.000 menor al costo de la lista mayorista. Se corrige en <code>src/data/productos.json</code> (campo <code>precio</code>; si le sacás <code>entreno</code>, vuelve a mayorista × 1,4 con <code>npm run precios</code>).</p>
+          <ul class="pn__rev">
+            {bajoCosto.map((b) => <li><b>{b.nombre}</b> {b.variante}: ${b.precio.toLocaleString('es-AR')} (mayorista ${b.mayorista.toLocaleString('es-AR')})</li>)}
+          </ul>
+        </>
+      )}
+
+      {caros.length > 0 && (
+        <>
+          <h2 class="d h3 pn__h">Más caros que la competencia</h2>
+          <p class="muted">Precio = mayorista + 10% (lo mínimo para no perder plata), pero otras tiendas lo venden más barato. Conviene pedirle mejor precio al proveedor o dejar de traerlos. Las tiendas comparadas están en <code>precioFijo.competencia</code> de cada variante.</p>
+          <ul class="pn__rev">
+            {caros.map((b) => <li><b>{b.nombre}</b> {b.variante}: ${b.precio.toLocaleString('es-AR')} · competencia desde ${b.minimo.toLocaleString('es-AR')} · mayorista ${b.mayorista.toLocaleString('es-AR')}</li>)}
+          </ul>
+        </>
+      )}
+
+      <h2 class="d h3 pn__h">Revisar en el catálogo</h2>
+      <p class="muted">Detectado al importar la lista mayorista (<code>data/revisar.json</code>).</p>
+      <ul class="pn__rev">
+        {revisar.conflictosDePrecio.map((c: any) => (
+          <li><b>Precio duplicado distinto:</b> {c.seUso.linea} (${c.seUso.mayorista.toLocaleString('es-AR')}, se usó este) vs. {c.descartada.linea} (${c.descartada.mayorista.toLocaleString('es-AR')}, descartada)</li>
+        ))}
+        {revisar.notas.map((n: any) => <li><b>{n.linea}:</b> {n.nota}</li>)}
+        {revisar.duplicados.map((d: any) => <li><b>Duplicado descartado:</b> {d.linea}</li>)}
+        {revisar.sinRegla.map((l: string) => <li><b>Sin regla de agrupación (revisar nombre y variantes):</b> {l}</li>)}
+      </ul>
+    </div>
+  </section>
+</Base>
+<style>
+  .pn__list { list-style: none; margin: 0 0 48px; padding: 0; display: grid; gap: 8px; }
+  .pn__it { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--r-sm); background: var(--ink-2); }
+  .pn__it div { display: grid; gap: 4px; min-width: 0; }
+  .pn__it code { overflow-wrap: anywhere; }
+  .pn__it code { font-size: 0.78rem; color: var(--mute); }
+  .pn__it .falta { flex: none; font-size: 0.75rem; }
+  .pn__it--ok { opacity: 0.7; }
+  .ok { display: inline-flex; gap: 6px; align-items: center; color: var(--lime); font-weight: 800; font-size: 0.8rem; flex: none; }
+  .pn__h { margin-bottom: 8px; }
+  .pn__rev { margin: 16px 0 0; padding-left: 1.2em; display: grid; gap: 10px; color: var(--soft); font-size: 0.92rem; }
+  .pn__rev b { color: var(--paper); }
+</style>

@@ -1,0 +1,15 @@
+---
+/**
+ * Cartel rojo de dato faltante. Uso: <Falta>datos bancarios</Falta>
+ * Se oculta globalmente con mostrarFaltantes: false en src/config/negocio.js
+ */
+import negocio from '../config/negocio.js';
+interface Props { block?: boolean; donde?: string; class?: string }
+const { block = false, donde, class: cls = '' } = Astro.props;
+---
+{negocio.mostrarFaltantes && (
+  <span class:list={['falta', { 'falta--block': block }, cls]} role="note">
+    <span aria-hidden="true">⚠</span>
+    <span>FALTA: <slot />{donde && <> · <code>{donde}</code></>}</span>
+  </span>
+)}

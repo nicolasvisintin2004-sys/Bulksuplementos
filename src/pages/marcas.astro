@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import { productos, marcas, categoria } from '../lib/catalogo.js';
+import { pesos } from '../lib/formato.js';
+
+const info = marcas.map((m) => {
+  const lista = productos.filter((p) => p.marca === m.slug);
+  const cats = [...new Set(lista.map((p) => categoria(p.categoria)?.corto))];
+  return { ...m, n: lista.length, cats, desde: Math.min(...lista.map((p) => p.desde)) };
+});
+const destacadas = info.filter((m) => m.destacada);
+const resto = info.filter((m) => !m.destacada);
+// agrupado A–Z
+const letras = [...new Set(resto.map((m) => m.nombre[0].toUpperCase()))].sort();
+---
+<Base title="Marcas" description={`Las ${marcas.length} marcas de suplementos que trabajamos en BULK: ENA, Star Nutrition, Gold Nutrition, Granger, Integralmedica, Myprotein, ProteAr, Raw y más.`}>
+  <PageHead eyebrow={`${marcas.length} marcas`} titulo="Marcas que" outline="trabajamos" migas={[{ href: '/marcas/', label: 'Marcas' }]}
+    bajada="Elegí una marca para ver todos sus productos." />
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <ul class="bgrid">
+        {destacadas.map((m, i) => (
+          <li class="reveal" style={`--d:${(i % 4) * 0.05}s`}>
+            <a href={`/marca/${m.slug}/`} class="bcard">
+              <span class="bcard__n d">{m.nombre}</span>
+              <span class="bcard__meta">{m.n} productos · desde {pesos(m.desde)}</span>
+              <span class="bcard__cats">{m.cats.join(' · ')}</span>
+              <Icon name="arrow" size={22} class="bcard__arr" />
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <h2 class="eyebrow az-t">Y mucho más, de la A a la Z</h2>
+      <div class="az">
+        {letras.map((l) => (
+          <div class="az__g">
+            <span class="az__l d d-outline">{l}</span>
+            <ul>
+              {resto.filter((m) => m.nombre[0].toUpperCase() === l).map((m) => (
+                <li><a href={`/marca/${m.slug}/`}><span>{m.nombre}</span><span class="az__n">{m.n}</span></a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .bgrid { list-style: none; margin: 0 0 56px; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .bcard { position: relative; display: grid; gap: 6px; min-height: 170px; align-content: end; padding: 22px; border: 1px solid var(--lime); border-radius: var(--r); background: var(--ink-2); overflow: hidden; transition: background-color 0.25s; }
+  .bcard:hover { background: var(--lime); color: var(--ink); }
+  .bcard__n { font-size: clamp(1.5rem, 3vw, 2rem); overflow-wrap: anywhere; }
+  .bcard__meta { font-size: 0.82rem; font-weight: 700; }
+  .bcard__cats { font-size: 0.78rem; color: var(--mute); }
+  .bcard:hover .bcard__cats { color: var(--ink); }
+  .bcard :global(.bcard__arr) { position: absolute; top: 18px; right: 18px; color: var(--lime); transition: transform 0.3s var(--ease), color 0.2s; }
+  .bcard:hover :global(.bcard__arr) { color: var(--ink); transform: translateX(4px); }
+  .az-t { margin-bottom: 20px; }
+  .az { display: grid; gap: 0 32px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+  .az__g { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .az__l { font-size: 1.8rem; --stroke: 1.3px; }
+  .az ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .az a { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; font-weight: 650; }
+  .az a:hover { color: var(--lime); }
+  .az__n { color: var(--mute); font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+</style>

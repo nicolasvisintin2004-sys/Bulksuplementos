@@ -1,0 +1,140 @@
+---
+import Icon from './Icon.astro';
+import negocio from '../config/negocio.js';
+import { marca, categoria, resumenVariantes, urlProducto, ICONO_CATEGORIA } from '../lib/catalogo.js';
+import { pesos, etiquetaVariante } from '../lib/formato.js';
+import { precioEfectivo } from '../lib/descuentos.js';
+
+interface Props { p: any; filtrable?: boolean; orden?: number; eager?: boolean }
+const { p, filtrable = false, orden = 0, eager = false } = Astro.props;
+const m = marca(p.marca);
+const c = categoria(p.categoria);
+const url = urlProducto(p);
+const unica = p.variantes.length === 1 ? p.variantes[0] : null;
+const variable = new Set(p.variantes.map((v: any) => v.precio)).size > 1;
+const texto = [p.nombre, m?.nombre, c?.nombre, ...p.variantes.map((v: any) => `${v.sabor ?? ''} ${v.presentacion ?? ''}`)].join(' ');
+const data = filtrable ? {
+  'data-cat': p.categoria,
+  'data-marca': p.marca,
+  'data-precio': p.desde,
+  'data-obj': p.objetivos.join(' '),
+  'data-tags': p.etiquetas.join(' '),
+  'data-nombre': p.nombre,
+  'data-orden': orden,
+  'data-oferta': p.oferta ? '1' : '0',
+  'data-texto': texto,
+} : {};
+---
+<article class="pc" {...data}>
+  <a href={url} class="pc__media" tabindex="-1" aria-hidden="true">
+    {p.imagen ? (
+      <img src={p.imagen} alt="" loading={eager ? 'eager' : 'lazy'} decoding="async" width="720" height="720" />
+    ) : (
+      <div class="pc__ph">
+        <Icon name={ICONO_CATEGORIA[p.categoria] ?? 'spark'} size={28} class="pc__ico" stroke={1.6} />
+        <span class="pc__phbrand d" aria-hidden="true">{m?.nombre}</span>
+        {negocio.mostrarFaltantes && <span class="falta pc__falta">⚠ FALTA: foto</span>}
+      </div>
+    )}
+    {p.oferta && <span class="pc__badge">Oferta</span>}
+  </a>
+  <div class="pc__body">
+    <p class="pc__brand">{m?.nombre}</p>
+    <h3 class="pc__name"><a href={url}>{p.nombre}</a></h3>
+    <p class="pc__vars">{resumenVariantes(p)}</p>
+    <div class="pc__foot">
+      <div class="pc__price">
+        {variable && <span class="pc__from">desde</span>}
+        <strong class="precio num">{pesos(p.desde)}</strong>
+        <span class="pc__cash num">{pesos(precioEfectivo(p.desde))} en efectivo</span>
+      </div>
+      {unica ? (
+        <button type="button" class="pc__add" aria-label={`Agregar ${p.nombre} al carrito`}
+          data-add={JSON.stringify({ key: `${p.id}::${unica.id}`, tipo: 'producto', productoId: p.id, varianteId: unica.id, nombre: p.nombre, marca: m?.nombre, variante: etiquetaVariante(unica), precio: unica.precio, url, img: unica.imagen ?? p.imagen })}>
+          <Icon name="plus" size={20} stroke={2.2} />
+        </button>
+      ) : (
+        <a href={url} class="pc__add pc__add--go" aria-label={`Elegir variante de ${p.nombre}`}>
+          <Icon name="arrow" size={20} stroke={2.2} />
+        </a>
+      )}
+    </div>
+  </div>
+</article>
+
+<script>
+  import { agregar } from '../scripts/carrito.js';
+  import { toast } from '../scripts/util.js';
+  // delegado global: sirve para todas las cards de la página
+  document.addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('.pc [data-add]');
+    if (!b) return;
+    const item = JSON.parse(b.dataset.add!);
+    agregar(item, 1);
+    b.classList.add('is-added');
+    setTimeout(() => b.classList.remove('is-added'), 900);
+    toast(`Agregaste ${item.nombre}`);
+  });
+</script>
+
+<style>
+  .pc {
+    position: relative; display: flex; flex-direction: column; min-width: 0;
+    background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--r);
+    overflow: hidden; transition: border-color 0.25s, transform 0.35s var(--ease);
+  }
+  .pc:hover { border-color: var(--lime); }
+  .pc__media { position: relative; display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--ink-3); }
+  .pc__media:has(img) { background: var(--paper); }
+  .pc__media img { width: 100%; height: 100%; object-fit: contain; padding: 8%; mix-blend-mode: multiply; transition: transform 0.5s var(--ease); }
+  .pc:hover .pc__media img { transform: scale(1.04); }
+  .pc__ph {
+    position: absolute; inset: 0;
+    background:
+      repeating-linear-gradient(-60deg, transparent 0 22px, rgb(255 255 255 / 0.025) 22px 23px),
+      radial-gradient(90% 70% at 90% 0%, rgb(200 255 0 / 0.08), transparent 70%),
+      var(--ink-3);
+  }
+  /* slash que cruza al hover */
+  .pc__ph::after {
+    content: ''; position: absolute; top: -20%; bottom: -20%; left: -30%; width: 3px; background: var(--lime);
+    transform: skewX(-30deg); opacity: 0; transition: left 0.6s var(--ease), opacity 0.2s;
+  }
+  .pc:hover .pc__ph::after { left: 120%; opacity: 1; }
+  .pc__ph :global(.pc__ico) { position: absolute; top: 14px; right: 14px; color: var(--lime); }
+  .pc__phbrand {
+    position: absolute; left: 12px; bottom: 6px; right: -20%;
+    font-size: clamp(1.6rem, 5.5vw, 2.6rem); line-height: 0.85; white-space: nowrap;
+    color: transparent; -webkit-text-stroke: 1.2px rgb(200 255 0 / 0.55);
+    overflow: hidden; text-overflow: clip;
+  }
+  .pc__falta { position: absolute; top: 10px; left: 10px; font-size: 0.75rem; padding: 0.35em 0.6em; border-width: 1.5px; }
+  .pc__badge {
+    position: absolute; left: 10px; bottom: 10px; z-index: 1;
+    background: var(--lime); color: var(--ink); font-size: 0.75rem; font-weight: 900; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 5px 10px 5px 8px; clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
+  }
+  /* sin foto: el badge va debajo del cartel de faltante para no pisarlo */
+  .pc__ph ~ .pc__badge { bottom: auto; top: 40px; }
+  .pc__media img ~ .pc__badge { bottom: auto; top: 10px; }
+  .pc__body { display: flex; flex-direction: column; gap: 4px; padding: 12px 12px 14px; flex: 1; }
+  @media (min-width: 768px) { .pc__body { padding: 16px 16px 18px; } }
+  .pc__brand { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mute); }
+  .pc__name a { display: inline-block; min-height: 24px; }
+  .pc__name { font-size: 0.95rem; font-weight: 750; line-height: 1.25; }
+  @media (min-width: 768px) { .pc__name { font-size: 1.02rem; } }
+  .pc__name a::after { content: ''; position: absolute; inset: 0; z-index: 0; }
+  .pc__vars { font-size: 0.78rem; color: var(--mute); }
+  .pc__foot { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: auto; padding-top: 10px; }
+  .pc__price { display: grid; line-height: 1.15; min-width: 0; }
+  .pc__from { font-size: 0.75rem; color: var(--mute); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+  .pc__price .precio { font-size: clamp(1.05rem, 3.6vw, 1.3rem); }
+  .pc__cash { font-size: 0.75rem; color: var(--soft); margin-top: 3px; }
+  .pc__add {
+    position: relative; z-index: 1; flex: none;
+    width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center;
+    border: 1.5px solid var(--lime); color: var(--lime); transition: background-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .pc__add:hover { background: var(--lime); color: var(--ink); }
+  .pc__add:global(.is-added) { background: var(--lime); color: var(--ink); transform: rotate(90deg); }
+</style>

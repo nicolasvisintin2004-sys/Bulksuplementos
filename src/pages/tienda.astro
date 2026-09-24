@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import VistaSwitch from '../components/VistaSwitch.astro';
+import Catalogo from '../components/Catalogo.astro';
+import { productos, marcas } from '../lib/catalogo.js';
+---
+<Base title="Tienda" description={`Catálogo completo de BULK: ${productos.length} suplementos de ${marcas.length} marcas. Proteínas, creatinas, pre-entrenos, barras, hidratación y más. Envíos a todo el país.`}>
+  <PageHead eyebrow="Tienda" titulo="Todo el" outline="catálogo" migas={[{ href: '/tienda/', label: 'Tienda' }]}>
+    <VistaSwitch />
+  </PageHead>
+  <section class="wrap">
+    <Catalogo productos={productos} />
+  </section>
+  <div style="height:64px"></div>
+</Base>

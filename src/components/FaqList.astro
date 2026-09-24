@@ -1,0 +1,63 @@
+---
+/** Acordeón de preguntas frecuentes con buscador. */
+import Falta from './Falta.astro';
+import { faq } from '../data/faq.js';
+interface Props { buscador?: boolean; limite?: number }
+const { buscador = true, limite } = Astro.props;
+const items = limite ? faq.slice(0, limite) : faq;
+const grupos = [...new Set(items.map((f) => f.grupo))];
+---
+<div class="faq" data-faq>
+  {buscador && (
+    <div class="faq__search">
+      <label for="faq-q" class="sr-only">Buscar en preguntas frecuentes</label>
+      <input id="faq-q" type="search" class="input" placeholder="Buscá: envío, efectivo, código…" data-faq-q autocomplete="off" />
+    </div>
+  )}
+  {grupos.map((g) => (
+    <section class="faq__g" data-faq-g>
+      <h3 class="eyebrow eyebrow--lime">{g}</h3>
+      {items.filter((f) => f.grupo === g).map((f) => (
+        <details class="faq__it" data-faq-it>
+          <summary>{f.q}</summary>
+          <div class="faq__a">
+            {f.a && <p set:html={f.a} />}
+            {f.falta && <Falta>{f.falta}</Falta>}
+          </div>
+        </details>
+      ))}
+    </section>
+  ))}
+  <p class="muted faq__none" data-faq-none hidden>No hay preguntas con esas palabras. Escribinos por Instagram o email y te respondemos.</p>
+</div>
+<script>
+  import { norm } from '../scripts/util.js';
+  document.querySelectorAll<HTMLElement>('[data-faq]').forEach((root) => {
+    const q = root.querySelector<HTMLInputElement>('[data-faq-q]');
+    if (!q) return;
+    const its = [...root.querySelectorAll<HTMLDetailsElement>('[data-faq-it]')];
+    const txt = new Map(its.map((d) => [d, norm(d.textContent)]));
+    q.addEventListener('input', () => {
+      const t = norm(q.value.trim()).split(/\s+/).filter(Boolean);
+      let n = 0;
+      its.forEach((d) => { const ok = t.every((w) => txt.get(d)!.includes(w)); d.hidden = !ok; if (ok) n++; d.open = ok && t.length > 0 && n <= 3; });
+      root.querySelectorAll<HTMLElement>('[data-faq-g]').forEach((g) => { g.hidden = ![...g.querySelectorAll('[data-faq-it]')].some((d) => !(d as HTMLElement).hidden); });
+      root.querySelector<HTMLElement>('[data-faq-none]')!.hidden = n > 0;
+    });
+  });
+</script>
+<style>
+  .faq { display: grid; gap: 28px; max-width: 860px; }
+  .faq__g { display: grid; }
+  .faq__g[hidden], .faq__it[hidden], .faq__none[hidden] { display: none; }
+  .faq__g h3 { margin-bottom: 8px; }
+  .faq__it { border-bottom: 1px solid var(--line); }
+  .faq__it summary { list-style: none; cursor: pointer; display: flex; justify-content: space-between; gap: 16px; padding: 18px 0; font-weight: 750; font-size: 1.02rem; }
+  .faq__it summary::-webkit-details-marker { display: none; }
+  .faq__it summary::after { content: '+'; color: var(--lime); font-size: 1.4rem; line-height: 1; transition: transform 0.3s var(--ease); flex: none; }
+  .faq__it[open] summary::after { transform: rotate(45deg); }
+  .faq__it summary:hover { color: var(--lime); }
+  .faq__a { display: grid; gap: 10px; justify-items: start; padding: 0 0 20px; color: var(--soft); max-width: 68ch; }
+  .faq__a :global(a) { color: var(--lime); text-decoration: underline; text-underline-offset: 3px; }
+  .faq__a :global(b) { color: var(--paper); }
+</style>

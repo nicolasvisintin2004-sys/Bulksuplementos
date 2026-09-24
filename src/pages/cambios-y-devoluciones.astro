@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Falta from '../components/Falta.astro';
+import negocio from '../config/negocio.js';
+---
+<Base title="Cambios y devoluciones" description="Política de cambios y devoluciones de BULK.">
+  <PageHead titulo="Cambios y" outline="devoluciones" migas={[{ href: '/cambios-y-devoluciones/', label: 'Cambios y devoluciones' }]} />
+  <section class="section section--tight">
+    <div class="wrap prose">
+      {negocio.politicas.cambios ? <div set:html={negocio.politicas.cambios} /> : <Falta block>política de cambios y devoluciones (src/config/negocio.js → politicas.cambios)</Falta>}
+    </div>
+  </section>
+</Base>

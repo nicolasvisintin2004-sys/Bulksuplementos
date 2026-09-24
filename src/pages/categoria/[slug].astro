@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import VistaSwitch from '../../components/VistaSwitch.astro';
+import Catalogo from '../../components/Catalogo.astro';
+import { productos, categorias, marcas } from '../../lib/catalogo.js';
+
+export function getStaticPaths() {
+  return categorias.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+const { c } = Astro.props;
+const lista = productos.filter((p) => p.categoria === c.slug);
+const nMarcas = new Set(lista.map((p) => p.marca)).size;
+const palabras = c.nombre.split(' ');
+const outline = palabras.length > 1 ? palabras.pop() : undefined;
+---
+<Base title={c.nombre} description={`${c.nombre} en BULK: ${lista.length} productos de ${nMarcas} marcas. ${c.desc} Envíos a todo el país y 10% OFF en efectivo.`}>
+  <PageHead eyebrow={`${lista.length} productos · ${nMarcas} marcas`} titulo={palabras.join(' ')} outline={outline} bajada={c.desc}
+    migas={[{ href: '/tienda/', label: 'Tienda' }, { href: `/categoria/${c.slug}/`, label: c.nombre }]}>
+    <VistaSwitch activo={c.slug} />
+  </PageHead>
+  <section class="wrap">
+    <Catalogo productos={lista} fijo="cat" />
+  </section>
+  <div style="height:64px"></div>
+</Base>

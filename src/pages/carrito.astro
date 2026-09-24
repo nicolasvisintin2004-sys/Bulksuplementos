@@ -1,0 +1,484 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import negocio from '../config/negocio.js';
+import { pesos } from '../lib/formato.js';
+
+const PROVINCIAS = ['Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Chubut', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'];
+const d = negocio.descuentos;
+const banco = negocio.datosBancarios;
+---
+<Base title="Tu pedido" description="Revisá tu carrito, completá tus datos y mandanos el pedido por Instagram o por email." noindex>
+  <PageHead eyebrow="Último paso" titulo="Tu" outline="pedido" bajada="Revisá los productos, completá tus datos y mandanos el pedido por Instagram o por email. Nada se cobra online." />
+
+  <section class="wrap co" data-checkout>
+    <!-- carrito vacío -->
+    <div class="co__empty" data-empty hidden>
+      <p class="d h2">Tu carrito está <span class="d-outline">vacío</span></p>
+      <p class="muted">Sumá productos desde la tienda y volvé acá para mandar el pedido.</p>
+      <a class="btn" href="/tienda/">Ver productos <Icon name="arrow" size={18} class="arrow" /></a>
+    </div>
+
+    <div class="co__grid" data-full hidden>
+      <div class="co__main">
+        <!-- 1. Productos -->
+        <section class="co__block" aria-labelledby="h-prod">
+          <h2 id="h-prod" class="co__h"><span class="co__n">1</span> Productos</h2>
+          <ul class="co__items" data-items></ul>
+        </section>
+
+        <form class="co__form" data-form novalidate>
+          <!-- 2. Datos -->
+          <section class="co__block" aria-labelledby="h-datos">
+            <h2 id="h-datos" class="co__h"><span class="co__n">2</span> Tus datos</h2>
+            <div class="co__fields">
+              <div class="field co__full">
+                <label for="f-nombre">Nombre y apellido</label>
+                <input id="f-nombre" name="nombre" class="input" autocomplete="name" placeholder="Nico" required />
+              </div>
+              <div class="field">
+                <label for="f-tel">Teléfono</label>
+                <input id="f-tel" name="telefono" type="tel" class="input" autocomplete="tel" inputmode="tel" placeholder="2920 123456" required />
+              </div>
+              <div class="field">
+                <label for="f-email">Email</label>
+                <input id="f-email" name="email" type="email" class="input" autocomplete="email" inputmode="email" placeholder="nico@gmail.com" required />
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. Entrega -->
+          <section class="co__block" aria-labelledby="h-ent">
+            <h2 id="h-ent" class="co__h"><span class="co__n">3</span> Entrega</h2>
+            <div class="seg" role="radiogroup" aria-labelledby="h-ent">
+              <label><input type="radio" name="entrega" value="envio" checked /><strong>Envío a domicilio</strong><small>A todo el país · gratis desde {pesos(negocio.envios.gratisDesde)}</small></label>
+              <label><input type="radio" name="entrega" value="retiro" /><strong>Retiro en el local</strong><small>{negocio.direccion.calle}, {negocio.direccion.localidad}</small></label>
+            </div>
+            <div class="co__fields co__envio" data-envio>
+              <div class="field co__full">
+                <label for="f-dir">Calle, número, piso/depto</label>
+                <input id="f-dir" name="direccion" class="input" autocomplete="street-address" required />
+              </div>
+              <div class="field">
+                <label for="f-loc">Localidad</label>
+                <input id="f-loc" name="localidad" class="input" autocomplete="address-level2" required />
+              </div>
+              <div class="field">
+                <label for="f-prov">Provincia</label>
+                <select id="f-prov" name="provincia" class="select" autocomplete="address-level1" required>
+                  {PROVINCIAS.map((p) => <option value={p} selected={p === 'Buenos Aires'}>{p}</option>)}
+                </select>
+              </div>
+              <div class="field">
+                <label for="f-cp">Código postal</label>
+                <input id="f-cp" name="cp" class="input" autocomplete="postal-code" inputmode="numeric" maxlength="8" required />
+              </div>
+              <fieldset class="field co__full co__emp">
+                <legend class="label">Empresa de envío preferida</legend>
+                <div class="seg seg--3">
+                  {negocio.envios.empresas.map((e, i) => <label><input type="radio" name="empresa" value={e} checked={i === 0} /><strong>{e}</strong></label>)}
+                </div>
+              </fieldset>
+              {!negocio.envios.costoYTiempos
+                ? <div class="co__full"><Falta block>costos y tiempos de envío para compras menores a {pesos(negocio.envios.gratisDesde)}</Falta></div>
+                : <p class="co__full muted co__note">{negocio.envios.costoYTiempos}</p>}
+            </div>
+            <div class="co__retiro" data-retiro hidden>
+              <p><Icon name="pin" size={18} /> {negocio.direccion.calle}, {negocio.direccion.localidad}, {negocio.direccion.provincia}</p>
+              <p><Icon name="clock" size={18} /> {negocio.horarios ? negocio.horarios.join(' · ') : <Falta>horarios del local</Falta>}</p>
+            </div>
+          </section>
+
+          <!-- 4. Pago -->
+          <section class="co__block" aria-labelledby="h-pago">
+            <h2 id="h-pago" class="co__h"><span class="co__n">4</span> Pago</h2>
+            <div class="seg" role="radiogroup" aria-labelledby="h-pago">
+              <label><input type="radio" name="pago" value="transferencia" checked /><strong>Transferencia</strong><small>Te pasamos los datos al confirmar</small></label>
+              <label data-opt-efectivo><input type="radio" name="pago" value="efectivo" /><strong>Efectivo · {d.efectivoPct}% OFF</strong><small data-efectivo-sub>{d.efectivoSoloRetiro ? 'Sólo en el local · ' : ''}ahorrás <span data-ahorro>$0</span></small></label>
+            </div>
+            {d.efectivoSoloRetiro == null && <p class="co__warn"><Falta>si el efectivo es sólo con retiro en el local o también contra entrega</Falta></p>}
+            <p class="co__note muted" data-efectivo-nota hidden>El pago en efectivo es sólo en el local: elegí "Retiro en el local" para usarlo.</p>
+            <div class="co__banco" data-banco>
+              <p class="label">Datos para transferir</p>
+              {banco ? (
+                <dl>
+                  <div><dt>Titular</dt><dd>{banco.titular}</dd></div>
+                  <div><dt>Banco</dt><dd>{banco.banco}</dd></div>
+                  <div><dt>CBU/CVU</dt><dd class="num">{banco.cbu}</dd></div>
+                  <div><dt>Alias</dt><dd>{banco.alias}</dd></div>
+                  <div><dt>CUIT</dt><dd class="num">{banco.cuit}</dd></div>
+                </dl>
+              ) : <Falta block>datos bancarios para transferencia (titular, CBU/CVU, alias, banco, CUIT)</Falta>}
+              <p class="muted co__note">Transferí el total y mandanos el comprobante por Instagram o por email.</p>
+            </div>
+          </section>
+
+          <!-- 5. Código -->
+          <section class="co__block" aria-labelledby="h-cod">
+            <h2 id="h-cod" class="co__h"><span class="co__n">5</span> Código de descuento <span class="muted co__opt">(opcional)</span></h2>
+            <div class="co__code">
+              <label for="f-cod" class="sr-only">Código de descuento</label>
+              <input id="f-cod" name="codigo" class="input" placeholder="BULK10-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              <button type="button" class="btn btn--ghost" data-aplicar>Aplicar</button>
+            </div>
+            <p class="co__codemsg" data-codemsg role="status" aria-live="polite"></p>
+            {d.acumulables == null && <p class="co__warn"><Falta>si el {d.efectivoPct}% efectivo y el {d.bienvenidaPct}% de bienvenida se acumulan (por ahora se aplica uno solo)</Falta></p>}
+          </section>
+
+          <section class="co__block">
+            <div class="field">
+              <label for="f-notas">Notas para el local <span class="muted">(opcional)</span></label>
+              <textarea id="f-notas" name="notas" class="textarea" maxlength="500" placeholder="Horario para recibir, alguna aclaración, etc."></textarea>
+            </div>
+          </section>
+        </form>
+      </div>
+
+      <!-- Resumen -->
+      <aside class="co__sum" aria-labelledby="h-sum">
+        <div class="sum">
+          <h2 id="h-sum" class="d sum__t">Resumen</h2>
+          <dl class="sum__rows" data-rows></dl>
+          <div class="sum__total"><span>Total</span><strong class="precio num" data-total>$0</strong></div>
+          <p class="sum__cash" data-cash></p>
+          {d.envioGratisCalculo == null && <p class="sum__warn"><Falta>si el envío gratis se calcula antes o después de descuentos (hoy: antes)</Falta></p>}
+          <p class="error-msg" data-formerr role="alert" hidden></p>
+          <button type="button" class="btn btn--block sum__send" data-enviar="ig"><Icon name="instagram" size={20} /> Enviar pedido por Instagram</button>
+          <button type="button" class="btn btn--line btn--block" data-enviar="mail"><Icon name="mail" size={20} /> Enviar por email</button>
+          <p class="sum__legal">Por Instagram copiamos el pedido y abrimos el chat con @{negocio.instagram.usuario}: sólo lo pegás y lo mandás. No se cobra nada online.</p>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Confirmación -->
+    <div class="co__ok" data-ok hidden tabindex="-1">
+      <svg class="slashes co__oksl" viewBox="0 0 200 200" aria-hidden="true"><line x1="40" y1="210" x2="200" y2="10" stroke-width="6" /><line x1="90" y1="210" x2="215" y2="55" stroke-width="2.5" /></svg>
+      <p class="eyebrow eyebrow--lime">Pedido <span data-ok-num></span></p>
+      <h2 class="d h2">Mandanos <span class="d-outline">tu pedido</span></h2>
+      <p class="lead" data-ok-txt></p>
+      <div class="co__msg">
+        <label for="ok-msg" class="label">Tu pedido</label>
+        <textarea id="ok-msg" class="textarea co__msgtxt" readonly data-ok-msg></textarea>
+      </div>
+      <div class="co__okbtns">
+        <button type="button" class="btn" data-ok-copiar><Icon name="copy" size={18} /> Copiar pedido</button>
+        <a class="btn btn--ghost" href={negocio.instagram.dm} target="_blank" rel="noopener"><Icon name="instagram" size={18} /> Abrir Instagram</a>
+        <a class="btn btn--ghost" href="#" data-ok-mail><Icon name="mail" size={18} /> Enviar por email</a>
+      </div>
+      <button type="button" class="btn btn--line" data-ok-vaciar>Ya lo envié · vaciar carrito</button>
+      <div class="co__okbanco" data-ok-banco hidden>
+        <p class="label">Datos para transferir <b data-ok-total></b></p>
+        {banco ? (
+          <p class="num">{banco.titular} · {banco.banco} · CBU/CVU {banco.cbu} · Alias {banco.alias} · CUIT {banco.cuit}</p>
+        ) : <Falta block>datos bancarios para transferencia</Falta>}
+      </div>
+    </div>
+  </section>
+  <div style="height:72px"></div>
+</Base>
+
+<script>
+  import { leer, setCantidad, quitar, vaciar, sincronizar, leerCodigo } from '../scripts/carrito.js';
+  import { calcularTotales, reglas } from '../lib/descuentos.js';
+  import { mensajePedido, linkInstagram, linkEmail, numeroPedido } from '../lib/pedido.js';
+  import negocio from '../config/negocio.js';
+  import { pesos } from '../lib/formato.js';
+  import { esc, toast } from '../scripts/util.js';
+
+  const root = document.querySelector<HTMLElement>('[data-checkout]')!;
+  const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+  const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
+
+  // estado del código: validado por el servidor o provisorio (a verificar por el local)
+  let codigo: { valor: string; email: string; verificado: boolean } | null = null;
+
+  const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | RadioNodeList | null)?.value?.trim() ?? '';
+
+  function totales() {
+    return calcularTotales({
+      items: leer(),
+      medioPago: val('pago') as 'efectivo' | 'transferencia',
+      entrega: val('entrega') as 'envio' | 'retiro',
+      codigoValido: !!codigo,
+    });
+  }
+
+  function renderItems() {
+    const items = leer();
+    $('[data-empty]').hidden = items.length > 0 || !$('[data-ok]').hidden;
+    $('[data-full]').hidden = items.length === 0 || !$('[data-ok]').hidden;
+    $('[data-items]').innerHTML = items.map((i) => `
+      <li class="it" data-key="${esc(i.key)}">
+        ${i.img ? `<img class="it__img" src="${esc(i.img)}" alt="" width="64" height="64" loading="lazy">` : '<span class="it__img it__img--ph" aria-hidden="true"></span>'}
+        <div class="it__m">
+          ${i.marca ? `<span class="it__b">${esc(i.marca)}</span>` : ''}
+          <a href="${esc(i.url)}" class="it__n">${esc(i.nombre)}</a>
+          ${i.variante ? `<span class="it__v">${esc(i.variante)}</span>` : ''}
+          ${i.contenido?.length ? `<span class="it__v">${i.contenido.map(esc).join(' · ')}</span>` : ''}
+        </div>
+        <div class="qty" role="group" aria-label="Cantidad de ${esc(i.nombre)}">
+          <button type="button" data-q="-1" aria-label="Restar uno">−</button><span class="num">${i.cantidad}</span><button type="button" data-q="1" aria-label="Sumar uno">+</button>
+        </div>
+        <strong class="precio num it__p">${pesos(i.precio * i.cantidad)}</strong>
+        <button type="button" class="it__rm" data-rm aria-label="Quitar ${esc(i.nombre)}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      </li>`).join('');
+    renderResumen();
+  }
+
+  function renderResumen() {
+    const t = totales();
+    const entrega = val('entrega');
+    // efectivo sólo con retiro (si así está configurado)
+    const optEf = $('[data-opt-efectivo]');
+    const inEf = optEf.querySelector('input') as HTMLInputElement;
+    inEf.disabled = !t.efectivoPermitido;
+    optEf.classList.toggle('is-off', !t.efectivoPermitido);
+    $('[data-efectivo-nota]').hidden = t.efectivoPermitido;
+    if (!t.efectivoPermitido && inEf.checked) { (form.querySelector('input[name=pago][value=transferencia]') as HTMLInputElement).checked = true; return renderResumen(); }
+    $('[data-ahorro]').textContent = pesos(t.ahorroEfectivo);
+
+    $('[data-envio]').hidden = entrega !== 'envio';
+    $('[data-envio]').querySelectorAll<HTMLInputElement>('input, select').forEach((el) => { el.disabled = entrega !== 'envio'; });
+    $('[data-retiro]').hidden = entrega !== 'retiro';
+    $('[data-banco]').hidden = val('pago') !== 'transferencia';
+
+    const filas: string[] = [`<div><dt>Subtotal</dt><dd class="num">${pesos(t.subtotal)}</dd></div>`];
+    t.descuentos.forEach((d) => filas.push(`<div class="off"><dt>${esc(d.etiqueta)}</dt><dd class="num">−${pesos(d.monto)}</dd></div>`));
+    if (entrega === 'envio') {
+      filas.push(`<div><dt>Envío</dt><dd>${t.envioGratis ? '<b class="lime">GRATIS</b>' : 'a cotizar'}</dd></div>`);
+      if (!t.envioGratis) filas.push(`<div class="ship"><dt>Te faltan ${pesos(t.faltaParaGratis)} para el envío GRATIS</dt></div>`);
+    } else filas.push(`<div><dt>Retiro en el local</dt><dd>sin cargo</dd></div>`);
+    $('[data-rows]').innerHTML = filas.join('');
+    $('[data-total]').textContent = pesos(t.total);
+    $('[data-cash]').innerHTML = !t.aplicaEfectivo && t.ahorroEfectivo
+      ? `Pagando en efectivo ahorrás <b>${pesos(t.ahorroEfectivo)}</b>`
+      : t.aplicaEfectivo ? `Estás ahorrando <b>${pesos(t.totalDescuentos)}</b>` : '';
+    const msg = $('[data-codemsg]');
+    if (codigo && t.codigoGuardado) {
+      msg.className = 'co__codemsg is-warn';
+      msg.textContent = `El código ${codigo.valor} no se acumula con el ${reglas.efectivoPct}% de efectivo: se aplica el de efectivo y el código queda para otra compra.`;
+    } else if (codigo) {
+      msg.className = 'co__codemsg is-ok';
+      msg.textContent = codigo.verificado
+        ? `Código ${codigo.valor} aplicado: ${reglas.bienvenidaPct}% OFF.`
+        : `Código ${codigo.valor} aplicado. El local lo verifica al confirmar tu pedido.`;
+    }
+  }
+
+  // cantidades
+  $('[data-items]').addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    const li = t.closest<HTMLElement>('[data-key]'); if (!li) return;
+    const it = leer().find((i) => i.key === li.dataset.key); if (!it) return;
+    const q = t.closest<HTMLElement>('[data-q]');
+    if (q) setCantidad(it.key, it.cantidad + Number(q.dataset.q));
+    if (t.closest('[data-rm]')) quitar(it.key);
+  });
+  window.addEventListener('carrito:cambio', renderItems);
+  form.addEventListener('change', renderResumen);
+
+  // código de bienvenida
+  const guardado = leerCodigo();
+  if (guardado?.codigo) {
+    (form.elements.namedItem('codigo') as HTMLInputElement).value = guardado.codigo;
+    const em = form.elements.namedItem('email') as HTMLInputElement;
+    if (!em.value) em.value = guardado.email ?? '';
+  }
+
+  $('[data-aplicar]').addEventListener('click', async () => {
+    const input = form.elements.namedItem('codigo') as HTMLInputElement;
+    const valor = input.value.trim().toUpperCase();
+    const email = val('email').toLowerCase();
+    const msg = $('[data-codemsg]');
+    input.value = valor;
+    if (!valor) { codigo = null; msg.textContent = ''; renderResumen(); return; }
+    if (!/^BULK10-[A-Z0-9]{6}$/.test(valor)) {
+      codigo = null; msg.className = 'co__codemsg is-err'; msg.textContent = 'Ese código no existe. Revisá que sea como BULK10-XXXXXX.'; renderResumen(); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      msg.className = 'co__codemsg is-err'; msg.textContent = 'Completá tu email arriba: el código va asociado al email con el que te registraste.';
+      (form.elements.namedItem('email') as HTMLInputElement).focus(); return;
+    }
+    msg.className = 'co__codemsg'; msg.textContent = 'Validando…';
+    try {
+      const r = await fetch('/api/validar-codigo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, codigo: valor }) });
+      if (r.status === 404 || r.status >= 500) throw new Error('sin servicio');
+      const j = await r.json();
+      if (!j.valido) { codigo = null; msg.className = 'co__codemsg is-err'; msg.textContent = j.motivo ?? 'El código no es válido para este email.'; renderResumen(); return; }
+      codigo = { valor, email, verificado: true };
+    } catch {
+      // sin backend configurado: se aplica y el local lo verifica a mano
+      codigo = { valor, email, verificado: false };
+    }
+    renderResumen();
+  });
+
+  // validación y envío
+  function validar(): string | null {
+    const req = [...form.querySelectorAll<HTMLInputElement>('[required]')].filter((el) => !el.disabled);
+    let primero: HTMLInputElement | null = null;
+    req.forEach((el) => {
+      let ok = !!el.value.trim();
+      if (ok && el.type === 'email') ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(el.value.trim());
+      if (ok && el.type === 'tel') ok = el.value.replace(/\D/g, '').length >= 8;
+      el.setAttribute('aria-invalid', String(!ok));
+      if (!ok && !primero) primero = el;
+    });
+    if (primero) { (primero as HTMLInputElement).focus(); return 'Revisá los campos marcados: falta completar o hay un dato con formato incorrecto.'; }
+    return null;
+  }
+  form.addEventListener('input', (e) => (e.target as HTMLElement).removeAttribute('aria-invalid'));
+
+  // copia el pedido al portapapeles (si el navegador no deja, queda seleccionado para copiar a mano)
+  async function copiar(texto: string) {
+    try { await navigator.clipboard.writeText(texto); return true; } catch {
+      const ta = $<HTMLTextAreaElement>('[data-ok-msg]'); ta.focus(); ta.select();
+      try { return document.execCommand('copy'); } catch { return false; }
+    }
+  }
+
+  let pedido: { numero: string; texto: string } | null = null;
+
+  root.querySelectorAll<HTMLButtonElement>('[data-enviar]').forEach((btn) => btn.addEventListener('click', async () => {
+    const canal = btn.dataset.enviar as 'ig' | 'mail';
+    const err = $('[data-formerr]');
+    const e = validar();
+    err.hidden = !e; err.textContent = e ?? '';
+    if (e) return;
+    const items = leer();
+    const t = totales();
+    const numero = numeroPedido();
+    const datos = {
+      nombre: val('nombre'), telefono: val('telefono'), email: val('email'),
+      entrega: val('entrega'), direccion: val('direccion'), localidad: val('localidad'), provincia: val('provincia'), cp: val('cp'),
+      empresa: val('empresa'), medioPago: val('pago'), notas: val('notas'),
+    };
+    let texto = mensajePedido({ numero, items, totales: t, datos, codigo: codigo?.valor });
+    if (codigo && !codigo.verificado && t.aplicaBienvenida) texto += `
+
+(Código ${codigo.valor} a verificar por el local)`;
+    pedido = { numero, texto };
+
+    // marca el código como usado (si el servicio está configurado)
+    if (codigo?.verificado && t.aplicaBienvenida) {
+      fetch('/api/canjear-codigo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: codigo.email, codigo: codigo.valor, pedido: numero }), keepalive: true }).catch(() => {});
+    }
+
+    $<HTMLTextAreaElement>('[data-ok-msg]').value = texto;
+    $('[data-ok-mail]').setAttribute('href', linkEmail(numero, texto));
+    $('[data-ok-num]').textContent = numero;
+    $('[data-ok-total]').textContent = pesos(t.total);
+    $('[data-ok-banco]').hidden = datos.medioPago !== 'transferencia';
+
+    if (canal === 'ig') {
+      // el copiado arranca dentro del click; Instagram se abre en otra pestaña
+      const copiado = copiar(texto);
+      window.open(linkInstagram(), '_blank', 'noopener');
+      $('[data-ok-txt]').innerHTML = (await copiado)
+        ? `Copiamos tu pedido y abrimos el chat con <b>@${negocio.instagram.usuario}</b>. <b>Pegalo en el mensaje y envialo</b>: te respondemos para confirmar stock y coordinar el pago.`
+        : `Abrimos el chat con <b>@${negocio.instagram.usuario}</b>. Copiá el pedido de abajo, pegalo en el mensaje y envialo.`;
+    } else {
+      location.href = linkEmail(numero, texto);
+      $('[data-ok-txt]').innerHTML = `Se abrió tu programa de email con el pedido escrito. Si no se abrió, copiá el pedido de abajo y mandalo a <b>${esc(negocio.email)}</b>.`;
+    }
+    $('[data-full]').hidden = true;
+    const ok = $('[data-ok]'); ok.hidden = false; ok.focus();
+    scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+
+  $('[data-ok-copiar]').addEventListener('click', async () => {
+    if (pedido && await copiar(pedido.texto)) toast('Pedido copiado');
+  });
+
+  $('[data-ok-vaciar]').addEventListener('click', () => {
+    vaciar();
+    toast('¡Gracias por tu compra!');
+    setTimeout(() => { location.href = '/'; }, 900);
+  });
+
+  renderItems();
+  sincronizar().then((q) => { if (q.length) toast(`Sacamos del carrito productos que ya no están: ${q.join(', ')}`); });
+</script>
+
+<style>
+  .co { padding-top: 32px; }
+  .co__empty { display: grid; gap: 16px; justify-items: start; padding: 24px 0 48px; }
+  .co__empty[hidden], .co__grid[hidden], .co__ok[hidden] { display: none; }
+  .co__grid { display: grid; gap: 32px; }
+  @media (min-width: 1024px) { .co__grid { grid-template-columns: minmax(0, 1fr) 380px; gap: 48px; align-items: start; } }
+  .co__block { padding: 28px 0; border-bottom: 1px solid var(--line); display: grid; gap: 16px; }
+  .co__block:first-child { padding-top: 0; }
+  .co__h { display: flex; align-items: center; gap: 12px; font-size: 1.15rem; font-weight: 800; }
+  .co__n { width: 30px; height: 30px; border-radius: 999px; background: var(--lime); color: var(--ink); display: grid; place-items: center; font-family: var(--f-display); font-style: italic; font-weight: 900; font-size: 0.95rem; flex: none; }
+  .co__opt { font-size: 0.85rem; font-weight: 500; }
+  .co__fields { display: grid; gap: 14px; }
+  @media (min-width: 640px) { .co__fields { grid-template-columns: 1fr 1fr; } .co__full { grid-column: 1 / -1; } }
+  .co__envio[hidden], .co__retiro[hidden], .co__banco[hidden] { display: none; }
+  .co__emp { border: 0; padding: 0; margin: 0; }
+  .seg--3 { grid-template-columns: repeat(3, 1fr); }
+  .seg--3 label { padding: 12px 10px; text-align: center; }
+  .seg--3 strong { font-size: 0.85rem; }
+  .co__retiro { display: grid; gap: 8px; padding: 16px; border-radius: var(--r-sm); background: var(--ink-2); border: 1px solid var(--line); }
+  .co__retiro p { display: flex; gap: 10px; align-items: center; }
+  .co__retiro :global(svg) { color: var(--lime); flex: none; }
+  .seg label:global(.is-off) { opacity: 0.4; pointer-events: none; }
+  .co__note { font-size: 0.85rem; }
+  .co__note[hidden] { display: none; }
+  .co__banco { display: grid; gap: 10px; padding: 16px; border-radius: var(--r-sm); border: 1px dashed var(--line-2); }
+  .co__banco dl { margin: 0; display: grid; gap: 6px; }
+  .co__banco dl div { display: flex; justify-content: space-between; gap: 12px; }
+  .co__banco dt { color: var(--mute); }
+  .co__banco dd { margin: 0; font-weight: 700; user-select: all; }
+  .co__code { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+  .co__code .input { text-transform: uppercase; letter-spacing: 0.06em; }
+  .co__codemsg { font-size: 0.85rem; font-weight: 650; min-height: 1.2em; }
+  :global(.co__codemsg.is-ok) { color: var(--lime); }
+  :global(.co__codemsg.is-err) { color: #ff7a7a; }
+  :global(.co__codemsg.is-warn) { color: #ffd166; }
+
+  .co__items { list-style: none; margin: 0; padding: 0; }
+  :global(.it) { display: grid; grid-template-columns: 56px 1fr auto auto; grid-template-areas: 'img m m rm' 'img q p p'; gap: 10px 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--line); }
+  @media (min-width: 640px) { :global(.it) { grid-template-columns: 64px 1fr auto 110px auto; grid-template-areas: 'img m q p rm'; } }
+  :global(.it__img) { grid-area: img; width: 100%; aspect-ratio: 1; height: auto; border-radius: 10px; background: var(--paper); object-fit: contain; padding: 4px; align-self: start; }
+  :global(.it__img--ph) { display: block; background: var(--ink-3); border: 1px solid var(--line); }
+  :global(.it__m) { grid-area: m; display: grid; gap: 2px; min-width: 0; }
+  :global(.it__b) { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); }
+  :global(.it__n) { font-weight: 750; }
+  :global(.it__n:hover) { color: var(--lime); }
+  :global(.it__v) { font-size: 0.82rem; color: var(--soft); }
+  :global(.it .qty) { grid-area: q; justify-self: start; }
+  :global(.it__p) { grid-area: p; justify-self: end; font-size: 1.1rem; }
+  :global(.it__rm) { grid-area: rm; justify-self: end; width: 36px; height: 36px; display: grid; place-items: center; border-radius: 999px; color: var(--mute); }
+  :global(.it__rm:hover) { color: var(--paper); background: var(--ink-3); }
+
+  .co__sum { position: relative; }
+  @media (min-width: 1024px) { .co__sum { position: sticky; top: calc(var(--header-h) + 20px); } }
+  .sum { display: grid; gap: 14px; padding: 24px; border: 1px solid var(--lime); border-radius: var(--r-lg); background: var(--ink-2); }
+  .sum__t { font-size: 1.4rem; }
+  .sum__rows { margin: 0; display: grid; gap: 8px; font-size: 0.92rem; }
+  .sum__rows :global(div) { display: flex; justify-content: space-between; gap: 12px; }
+  .sum__rows :global(dt) { color: var(--soft); }
+  .sum__rows :global(dd) { margin: 0; font-weight: 700; }
+  .sum__rows :global(.off) { color: var(--lime); }
+  .sum__rows :global(.off dt) { color: var(--lime); }
+  .sum__rows :global(.ship dt) { font-size: 0.8rem; color: var(--mute); }
+  .sum__rows :global(.lime) { color: var(--lime); }
+  .sum__total { display: flex; justify-content: space-between; align-items: baseline; padding-top: 14px; border-top: 1px solid var(--line); font-weight: 800; }
+  .sum__total .precio { font-size: 2rem; }
+  .sum__cash { font-size: 0.88rem; color: var(--lime); }
+  .sum__cash:empty { display: none; }
+  .sum__warn :global(.falta) { font-size: 0.75rem; }
+  .sum__send { min-height: 56px; font-size: 1rem; }
+  .sum__legal { font-size: 0.78rem; color: var(--mute); text-align: center; }
+  .co__warn :global(.falta) { font-size: 0.75rem; }
+
+  .co__ok { position: relative; overflow: hidden; display: grid; gap: 18px; justify-items: start; padding: clamp(28px, 5vw, 56px); border: 1px solid var(--lime); border-radius: var(--r-lg); background: var(--ink-2); outline: none; }
+  .co__oksl { right: 0; top: 0; width: 140px; height: 140px; }
+  .co__okbtns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .co__msg { display: grid; gap: 8px; width: 100%; }
+  .co__msgtxt { min-height: 240px; font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; font-size: 0.82rem; line-height: 1.5; color: var(--soft); }
+  .co__okbanco { display: grid; gap: 8px; width: 100%; padding-top: 18px; border-top: 1px solid var(--line); }
+  .co__okbanco[hidden] { display: none; }
+</style>

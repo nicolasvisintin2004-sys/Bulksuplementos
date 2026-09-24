@@ -1,0 +1,368 @@
+---
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import ProductCard from '../components/ProductCard.astro';
+import OrderTicket from '../components/OrderTicket.astro';
+import MapaLocal from '../components/MapaLocal.astro';
+import { getCollection } from 'astro:content';
+import negocio from '../config/negocio.js';
+import { productos, marcas, categorias, contarPorCategoria, contarPorMarca, enOferta, masVendidos, ICONO_CATEGORIA, combos } from '../lib/catalogo.js';
+import { pesos } from '../lib/formato.js';
+
+const ofertas = enOferta();
+const top = masVendidos();
+const posts = (await getCollection('blog')).sort((a, b) => a.data.orden - b.data.orden).slice(0, 3);
+const listaCombos = combos();
+const ICONO_OBJ: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart', 'principiantes': 'spark' };
+const destacadasPrimero = [...marcas].sort((a, b) => Number(b.destacada) - Number(a.destacada));
+const d = negocio.direccion;
+---
+<Base
+  title="Inicio"
+  description={`Suplementos y nutrición deportiva en Carmen de Patagones: ${productos.length} productos de ${marcas.length} marcas. Armá tu pedido online, envíos a todo el país y 10% OFF en efectivo en el local.`}
+>
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="slashes hero__sl hero__sl--a" viewBox="0 0 200 200" aria-hidden="true"><line x1="-10" y1="190" x2="150" y2="-10" stroke-width="7" /><line x1="40" y1="190" x2="190" y2="0" stroke-width="3" /></svg>
+    <svg class="slashes hero__sl hero__sl--b" viewBox="0 0 200 200" aria-hidden="true"><line x1="20" y1="210" x2="190" y2="10" stroke-width="7" /><line x1="70" y1="210" x2="210" y2="40" stroke-width="3" /></svg>
+    <div class="wrap hero__in">
+      <div class="hero__copy">
+        <p class="eyebrow eyebrow--lime hero__eb">Suplementos y nutrición deportiva · {d.localidad}</p>
+        <h1 class="hero__h d">
+          <span class="hero__l1 d-outline">Armá tu</span>
+          <span class="hero__l2 d-lime">pedido</span>
+          <span class="hero__l3 d-outline">en la web</span>
+        </h1>
+        <p class="lead hero__lead">
+          {productos.length} productos de {marcas.length} marcas. Elegí, mandanos tu carrito por Instagram o email y pagá por transferencia o en efectivo en el local.
+        </p>
+        <div class="hero__cta">
+          <a href="/tienda/" class="btn">Ver productos <Icon name="arrow" size={18} class="arrow" /></a>
+          <a href="/como-comprar/" class="btn btn--line">Cómo comprar</a>
+        </div>
+      </div>
+      <OrderTicket />
+    </div>
+  </section>
+
+  <!-- BENEFICIOS -->
+  <section class="bnf" aria-label="Beneficios">
+    <div class="wrap bnf__in">
+      <div class="bnf__it"><Icon name="truck" size={30} /><p><span>Envíos a</span><b>todo el país</b></p></div>
+      <div class="bnf__it"><Icon name="gift" size={30} /><p><span>Envío gratis desde</span><b>{pesos(negocio.envios.gratisDesde)}</b></p></div>
+      <div class="bnf__it"><Icon name="cash" size={30} /><p><span>Efectivo en el local</span><b>{negocio.descuentos.efectivoPct}% OFF</b></p></div>
+      <button type="button" class="bnf__it" data-open-welcome><Icon name="percent" size={30} /><p><span>Primera compra</span><b>{negocio.descuentos.bienvenidaPct}% OFF</b></p></button>
+    </div>
+  </section>
+
+  <!-- CATEGORÍAS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="stack" style="--stack:.75rem">
+          <p class="eyebrow">Catálogo</p>
+          <h2 class="d h2">Buscá por <span class="d-outline">categoría</span></h2>
+        </div>
+        <a class="link" href="/marcas/">o por marca <Icon name="arrow" size={16} /></a>
+      </div>
+      <ul class="cats">
+        {categorias.map((c, i) => (
+          <li class="reveal" style={`--d:${(i % 4) * 0.05}s`}>
+            <a href={`/categoria/${c.slug}/`} class="cat">
+              <Icon name={ICONO_CATEGORIA[c.slug]} size={26} class="cat__ico" />
+              <span class="cat__n">{c.corto}</span>
+              <span class="cat__c num">{contarPorCategoria(c.slug)} productos</span>
+              <span class="cat__d">{c.desc}</span>
+            </a>
+          </li>
+        ))}
+        <li class="reveal">
+          <a href="/tienda/" class="cat cat--all">
+            <span class="cat__n">Todo</span>
+            <span class="cat__c num">{productos.length} productos</span>
+            <Icon name="arrow" size={28} class="cat__arrow" />
+          </a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- MARCAS -->
+  <section class="brands" aria-label="Marcas">
+    <div class="wrap brands__head">
+      <p class="eyebrow">Marcas que trabajamos</p>
+      <a class="link" href="/marcas/">Ver las {marcas.length} <Icon name="arrow" size={16} /></a>
+    </div>
+    <div class="marquee" data-marquee>
+      <ul class="marquee__track">
+        {[0, 1].map((k) => destacadasPrimero.map((m, i) => (
+          <li aria-hidden={k === 1 ? 'true' : undefined}>
+            <a href={`/marca/${m.slug}/`} tabindex={k === 1 ? -1 : undefined} class:list={['d', i % 2 ? 'd-outline' : 'solid']}>{m.nombre}</a>
+          </li>
+        )))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- OFERTAS -->
+  {ofertas.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head">
+          <div class="stack" style="--stack:.75rem">
+            <p class="eyebrow eyebrow--lime">Ofertas</p>
+            <h2 class="d h2">En <span class="d-lime">oferta</span> ahora</h2>
+          </div>
+          <a class="link" href="/tienda/?oferta=1">Ver las {ofertas.length} <Icon name="arrow" size={16} /></a>
+        </div>
+        <div class="hscroll">
+          {ofertas.slice(0, 12).map((p) => <ProductCard p={p} />)}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- MÁS VENDIDOS -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="stack" style="--stack:.75rem">
+          <p class="eyebrow">Los que más salen</p>
+          <h2 class="d h2">Más <span class="d-outline">vendidos</span></h2>
+        </div>
+      </div>
+      {top.length ? (
+        <div class="grid-prod">{top.slice(0, 8).map((p) => <ProductCard p={p} />)}</div>
+      ) : (
+        <Falta block donde="src/config/negocio.js → masVendidos">lista de productos más vendidos para mostrar acá</Falta>
+      )}
+    </div>
+  </section>
+
+  <!-- COMBOS -->
+  <section class="section">
+    <div class="wrap">
+      <div class="combo-cta reveal">
+        <svg class="slashes combo-cta__sl" viewBox="0 0 200 200" aria-hidden="true"><line x1="60" y1="210" x2="210" y2="20" stroke-width="6" /><line x1="110" y1="210" x2="220" y2="70" stroke-width="3" /></svg>
+        <div class="combo-cta__txt">
+          <p class="eyebrow eyebrow--lime">Combos</p>
+          <h2 class="d h2">Según tu <span class="d-lime">objetivo</span></h2>
+          <p class="lead">Productos que van bien juntos, armados por el equipo de BULK. Los agregás al carrito con un clic.</p>
+          <a href="/combos/" class="btn">Ver combos <Icon name="arrow" size={18} class="arrow" /></a>
+        </div>
+        <ul class="combo-cta__list">
+          {listaCombos.map((c) => (
+            <li><a href={`/combos/#${c.id}`}><Icon name={ICONO_OBJ[c.id] ?? 'target'} size={22} /> {c.objetivo} <Icon name="arrow" size={16} class="arr" /></a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CÓMO COMPRAR (resumen) -->
+  <section class="section section--tight how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="stack" style="--stack:.75rem">
+          <p class="eyebrow">Sin vueltas</p>
+          <h2 class="d h2">Cómo <span class="d-outline">comprar</span></h2>
+        </div>
+        <a class="link" href="/como-comprar/">Paso a paso <Icon name="arrow" size={16} /></a>
+      </div>
+      <ol class="how__steps">
+        <li class="reveal"><Icon name="cart" size={30} /><b>Armá tu carrito</b><span>Elegí productos, sabores y cantidades.</span></li>
+        <li class="reveal" style="--d:.06s"><Icon name="instagram" size={30} /><b>Mandanos el pedido</b><span>Se arma solo: lo pegás en Instagram o lo mandás por email.</span></li>
+        <li class="reveal" style="--d:.12s"><Icon name="transfer" size={30} /><b>Pagá</b><span>Transferencia, o efectivo con {negocio.descuentos.efectivoPct}% OFF en el local.</span></li>
+        <li class="reveal" style="--d:.18s"><Icon name="truck" size={30} /><b>Recibilo o retiralo</b><span>Envío a todo el país o retiro en el local.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  {posts.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head">
+          <div class="stack" style="--stack:.75rem">
+            <p class="eyebrow">Blog</p>
+            <h2 class="d h2">Antes de <span class="d-outline">comprar</span></h2>
+          </div>
+          <a class="link" href="/blog/">Todos los artículos <Icon name="arrow" size={16} /></a>
+        </div>
+        <div class="posts">
+          {posts.map((p, i) => (
+            <a href={`/blog/${p.id}/`} class="post reveal" style={`--d:${i * 0.06}s`}>
+              <span class="post__tag">{p.data.etiqueta}</span>
+              <h3 class="post__t">{p.data.titulo}</h3>
+              <p class="post__d">{p.data.descripcion}</p>
+              <span class="post__m">{p.data.minutos} min de lectura <Icon name="arrow" size={16} /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- LOCAL -->
+  <section class="section local">
+    <div class="wrap local__in">
+      <div class="local__txt">
+        <p class="eyebrow eyebrow--lime">El local</p>
+        <h2 class="d h2">Vení a <span class="d-outline">buscarlo</span></h2>
+        <ul class="local__list">
+          <li><Icon name="pin" /><div><b>{d.calle}</b><span>{d.localidad}, {d.provincia}</span></div></li>
+          <li><Icon name="clock" /><div><b>Horarios</b>{negocio.horarios ? negocio.horarios.map((h) => <span>{h}</span>) : <span><Falta>horarios de atención</Falta></span>}</div></li>
+          <li><Icon name="instagram" /><div><b>Pedidos y consultas</b><a class="link" href={negocio.instagram.dm} target="_blank" rel="noopener">@{negocio.instagram.usuario} en Instagram</a></div></li>
+          <li><Icon name="mail" /><div><b>Email</b><a class="link" href={`mailto:${negocio.email}`}>{negocio.email}</a></div></li>
+        </ul>
+      </div>
+      <MapaLocal />
+    </div>
+  </section>
+</Base>
+
+<script>
+  document.querySelectorAll('[data-open-welcome]').forEach((b) => b.addEventListener('click', () => {
+    const d = document.querySelector<HTMLDialogElement>('[data-welcome]');
+    if (d && !d.open) { d.showModal(); document.documentElement.style.overflow = 'hidden'; d.addEventListener('close', () => { document.documentElement.style.overflow = ''; }, { once: true }); }
+  }));
+</script>
+
+<style>
+  /* HERO */
+  .hero { position: relative; overflow: hidden; padding: clamp(40px, 7vw, 96px) 0 clamp(56px, 8vw, 104px); isolation: isolate; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0; z-index: -1;
+    background:
+      radial-gradient(50% 60% at 100% 10%, rgb(200 255 0 / 0.10), transparent 70%),
+      radial-gradient(40% 50% at 0% 100%, rgb(200 255 0 / 0.07), transparent 70%);
+  }
+  .hero__sl { width: clamp(90px, 14vw, 180px); height: auto; aspect-ratio: 1; }
+  .hero__sl line { stroke-dasharray: 300; stroke-dashoffset: 300; animation: draw 1s var(--ease) forwards; }
+  .hero__sl line + line { animation-delay: 0.15s; }
+  .hero__sl--a { top: 0; left: 0; }
+  .hero__sl--b { bottom: 0; right: 0; }
+  .hero__sl--b line { animation-delay: 0.5s; }
+  .hero__sl--b line + line { animation-delay: 0.65s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .hero__in { display: grid; gap: 48px; align-items: center; }
+  @media (min-width: 1024px) { .hero__in { grid-template-columns: 1.35fr 1fr; gap: 40px; } }
+  .hero__copy { display: grid; gap: 22px; justify-items: start; }
+  /* la línea más larga ("EN LA WEB") mide ~8.4em: el tamaño se deriva del ancho de columna */
+  .hero__h { display: grid; font-size: min(10.2vw, 6.6rem); line-height: 0.86; --stroke: clamp(1.4px, 0.22vw, 2.6px); white-space: nowrap; }
+  @media (min-width: 1024px) { .hero__h { font-size: min(5.6vw, 5.3rem); } }
+  .hero__h span { display: block; animation: rise 0.8s var(--ease) both; }
+  .hero__l1 { animation-delay: 0.05s !important; }
+  .hero__l2 { font-size: 1.12em; animation-delay: 0.15s !important; }
+  .hero__l3 { animation-delay: 0.25s !important; }
+  @keyframes rise { from { opacity: 0; transform: translateY(0.3em) skewX(-6deg); } }
+  .hero__lead { max-width: 44ch; }
+  .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  /* BENEFICIOS: ícono | texto, como en las piezas de marca */
+  .bnf { border-block: 1px solid var(--line); background: var(--ink-2); }
+  .bnf__in { display: grid; grid-template-columns: repeat(2, 1fr); }
+  @media (min-width: 900px) { .bnf__in { grid-template-columns: repeat(4, 1fr); } }
+  .bnf__it { display: flex; align-items: center; gap: 14px; padding: 22px 8px; color: var(--lime); text-align: left; }
+  .bnf__it p { display: grid; line-height: 1.15; padding-left: 14px; border-left: 2px solid var(--lime); color: var(--paper); }
+  .bnf__it span { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--soft); }
+  .bnf__it b { font-family: var(--f-display); font-style: italic; font-weight: 900; font-stretch: 125%; text-transform: uppercase; font-size: clamp(0.95rem, 2vw, 1.2rem); color: var(--lime); }
+  button.bnf__it:hover b { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 899px) {
+    .bnf__it:nth-child(odd) { padding-right: 12px; }
+    .bnf__it:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    .bnf__it :global(svg) { width: 24px; height: 24px; flex: none; }
+  }
+
+  /* CATEGORÍAS */
+  .cats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 768px) { .cats { grid-template-columns: repeat(3, 1fr); gap: 14px; } }
+  @media (min-width: 1180px) { .cats { grid-template-columns: repeat(4, 1fr); } }
+  .cat {
+    position: relative; display: grid; gap: 4px; align-content: start; height: 100%; min-height: 150px;
+    padding: 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-2);
+    overflow: hidden; transition: border-color 0.25s, background-color 0.25s;
+  }
+  .cat::after { content: ''; position: absolute; right: -30px; bottom: -40px; width: 3px; height: 140px; background: var(--lime); transform: rotate(30deg); opacity: 0; transition: opacity 0.25s, right 0.4s var(--ease); }
+  .cat:hover { border-color: var(--lime); }
+  .cat:hover::after { opacity: 1; right: 24px; }
+  .cat :global(.cat__ico) { color: var(--lime); margin-bottom: 14px; }
+  /* en mobile se angosta la tipografía para que entren palabras largas ("Hidratación") en 2 columnas */
+  .cats > li, .cat { min-width: 0; }
+  .cat__n { font-family: var(--f-display); font-style: italic; font-weight: 900; font-stretch: 110%; font-variation-settings: 'wdth' 110; text-transform: uppercase; font-size: clamp(0.9rem, 3.8vw, 1.3rem); line-height: 1; }
+  @media (min-width: 768px) { .cat__n { font-stretch: 125%; font-variation-settings: 'wdth' 125; } }
+  .cat__c { font-size: 0.78rem; color: var(--lime); font-weight: 700; }
+  .cat__d { font-size: 0.82rem; color: var(--mute); display: none; margin-top: 6px; }
+  @media (min-width: 768px) { .cat__d { display: block; } }
+  .cat--all { background: var(--lime); color: var(--ink); border-color: var(--lime); align-content: end; }
+  .cat--all .cat__c { color: var(--ink); }
+  .cat--all .cat__n { font-size: clamp(1.6rem, 4vw, 2.4rem); }
+  .cat--all :global(.cat__arrow) { position: absolute; top: 18px; right: 18px; transition: transform 0.3s var(--ease); }
+  .cat--all:hover :global(.cat__arrow) { transform: translateX(6px); }
+  .cat--all::after { display: none; }
+
+  /* MARCAS */
+  .brands { padding-block: clamp(32px, 5vw, 56px); border-block: 1px solid var(--line); overflow: hidden; }
+  .brands__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .marquee { overflow: hidden; -webkit-mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+  .marquee__track { list-style: none; margin: 0; padding: 0; display: flex; width: max-content; animation: mq 70s linear infinite; }
+  .marquee:hover .marquee__track, .marquee:focus-within .marquee__track { animation-play-state: paused; }
+  .marquee__track li { display: flex; align-items: center; }
+  .marquee__track li::after { content: '/'; font-family: var(--f-display); font-style: italic; font-weight: 300; font-size: clamp(2rem, 5vw, 3.6rem); color: var(--line-2); padding: 0 0.4em; }
+  .marquee__track a { font-size: clamp(2rem, 5vw, 3.6rem); white-space: nowrap; transition: color 0.2s; --stroke: 1.5px; --stroke-c: var(--soft); }
+  .marquee__track a.solid { color: var(--paper); }
+  .marquee__track a:hover { color: var(--lime); -webkit-text-stroke-color: var(--lime); }
+  @keyframes mq { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .marquee { overflow-x: auto; } }
+
+  /* COMBOS CTA */
+  .combo-cta {
+    position: relative; overflow: hidden; display: grid; gap: 32px; padding: clamp(28px, 5vw, 56px);
+    border: 1px solid var(--lime); border-radius: var(--r-lg);
+    background: radial-gradient(70% 90% at 100% 100%, rgb(200 255 0 / 0.1), transparent 70%), var(--ink-2);
+  }
+  @media (min-width: 900px) { .combo-cta { grid-template-columns: 1.1fr 1fr; align-items: center; } }
+  .combo-cta__sl { right: 0; bottom: 0; width: 180px; height: 180px; opacity: 0.8; }
+  .combo-cta__txt { display: grid; gap: 16px; justify-items: start; position: relative; }
+  .combo-cta__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; position: relative; }
+  .combo-cta__list a {
+    display: flex; align-items: center; gap: 14px; padding: 16px 18px;
+    border: 1px solid var(--line-2); border-radius: 999px; background: var(--ink);
+    font-weight: 750; transition: border-color 0.2s, color 0.2s, padding 0.3s var(--ease);
+  }
+  .combo-cta__list a :global(svg) { color: var(--lime); flex: none; }
+  .combo-cta__list a :global(.arr) { margin-left: auto; opacity: 0; transition: opacity 0.2s, transform 0.3s var(--ease); }
+  .combo-cta__list a:hover { border-color: var(--lime); color: var(--lime); padding-left: 24px; }
+  .combo-cta__list a:hover :global(.arr) { opacity: 1; transform: translateX(4px); }
+
+  /* CÓMO COMPRAR */
+  .how__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: s; }
+  @media (min-width: 768px) { .how__steps { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+  .how__steps li { counter-increment: s; position: relative; display: grid; gap: 6px; padding: 22px 20px; border-radius: var(--r); background: var(--ink-2); border: 1px solid var(--line); }
+  .how__steps li::before { content: counter(s); position: absolute; top: 12px; right: 16px; font-family: var(--f-display); font-style: italic; font-weight: 900; font-stretch: 150%; font-size: 2.6rem; line-height: 1; color: transparent; -webkit-text-stroke: 1.2px var(--line-2); }
+  .how__steps :global(svg) { color: var(--lime); margin-bottom: 10px; }
+  .how__steps b { font-size: 1.05rem; }
+  .how__steps span { font-size: 0.88rem; color: var(--mute); }
+
+  /* BLOG */
+  .posts { display: grid; gap: 14px; }
+  @media (min-width: 900px) { .posts { grid-template-columns: repeat(3, 1fr); } }
+  .post { display: grid; gap: 10px; align-content: start; padding: 24px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-2); transition: border-color 0.25s, transform 0.3s var(--ease); }
+  .post:hover { border-color: var(--lime); }
+  .post__tag { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); }
+  .post__t { font-size: 1.2rem; line-height: 1.25; }
+  .post__d { font-size: 0.9rem; color: var(--mute); }
+  .post__m { display: inline-flex; gap: 6px; align-items: center; font-size: 0.8rem; font-weight: 700; color: var(--soft); margin-top: 6px; }
+
+  /* LOCAL */
+  .local { border-top: 1px solid var(--line); }
+  .local__in { display: grid; gap: 32px; }
+  @media (min-width: 900px) { .local__in { grid-template-columns: 1fr 1.3fr; align-items: center; } }
+  .local__txt { display: grid; gap: 20px; }
+  .local__list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 18px; }
+  .local__list li { display: flex; gap: 14px; }
+  .local__list li > :global(svg) { color: var(--lime); flex: none; }
+  .local__list div { display: grid; gap: 4px; }
+  .local__list div > span { color: var(--soft); }
+</style>

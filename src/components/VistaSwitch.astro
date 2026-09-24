@@ -1,0 +1,53 @@
+---
+/** Acceso rápido "por categoría / por marca": dos filas de chips con pestañas. */
+import { categorias, marcas, contarPorCategoria } from '../lib/catalogo.js';
+interface Props { activo?: string; modo?: 'cat' | 'marca' }
+const { activo, modo = 'cat' } = Astro.props;
+---
+<div class="vs" data-vs>
+  <div class="vs__tabs" role="tablist" aria-label="Ver el catálogo">
+    <button type="button" role="tab" id="vs-t-cat" aria-controls="vs-cat" aria-selected={modo === 'cat' ? 'true' : 'false'} tabindex={modo === 'cat' ? 0 : -1}>Por categoría</button>
+    <button type="button" role="tab" id="vs-t-marca" aria-controls="vs-marca" aria-selected={modo === 'marca' ? 'true' : 'false'} tabindex={modo === 'marca' ? 0 : -1}>Por marca</button>
+  </div>
+  <div class="vs__row" id="vs-cat" role="tabpanel" aria-labelledby="vs-t-cat" hidden={modo !== 'cat'}><ul>
+    <li><a class:list={['chip', { 'is-on': !activo }]} href="/tienda/">Todo</a></li>
+    {categorias.map((c) => (
+      <li><a class:list={['chip', { 'is-on': activo === c.slug }]} href={`/categoria/${c.slug}/`} aria-current={activo === c.slug ? 'page' : undefined}>{c.corto} <span class="cnt">{contarPorCategoria(c.slug)}</span></a></li>
+    ))}
+  </ul></div>
+  <div class="vs__row" id="vs-marca" role="tabpanel" aria-labelledby="vs-t-marca" hidden={modo !== 'marca'}><ul>
+    {marcas.map((m) => (
+      <li><a class:list={['chip', { 'is-on': activo === m.slug }]} href={`/marca/${m.slug}/`} aria-current={activo === m.slug ? 'page' : undefined}>{m.nombre}</a></li>
+    ))}
+  </ul></div>
+</div>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-vs]').forEach((vs) => {
+    const tabs = [...vs.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+    const sel = (t: HTMLButtonElement) => tabs.forEach((x) => {
+      const on = x === t;
+      x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1;
+      document.getElementById(x.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => sel(t));
+      t.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const n = tabs[(i + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length]; sel(n); n.focus(); }
+      });
+    });
+    // centra el chip activo en el scroll horizontal
+    vs.querySelector<HTMLElement>('.vs__row:not([hidden]) .is-on')?.scrollIntoView({ block: 'nearest', inline: 'center' });
+  });
+</script>
+<style>
+  .vs { display: grid; gap: 12px; padding: 18px 0 8px; }
+  .vs__tabs { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; justify-self: start; }
+  .vs__tabs button { padding: 8px 16px; border-radius: 999px; font-size: 0.82rem; font-weight: 750; color: var(--soft); }
+  .vs__tabs button[aria-selected='true'] { background: var(--paper); color: var(--ink); }
+  .vs__row { margin: 0 calc(var(--gutter) * -1); padding: 2px var(--gutter) 10px; overflow-x: auto; scrollbar-width: none; }
+  .vs__row ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 8px; width: max-content; }
+  .vs__row::-webkit-scrollbar { display: none; }
+  .vs__row[hidden] { display: none; }
+  .vs__row .chip { min-height: 38px; }
+  .cnt { font-size: 0.75rem; opacity: 0.6; }
+</style>

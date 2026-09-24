@@ -1,0 +1,317 @@
+---
+/**
+ * Catálogo filtrable. Todas las cards se renderizan en el build (SEO) y el filtrado/orden
+ * se hace en el navegador, sin recargar. El estado queda en la URL (?cat=&marca=&orden=...).
+ */
+import ProductCard from './ProductCard.astro';
+import Icon from './Icon.astro';
+import Falta from './Falta.astro';
+import negocio from '../config/negocio.js';
+import { categorias, marcas, objetivos } from '../lib/catalogo.js';
+
+interface Props { productos: any[]; fijo?: 'cat' | 'marca' }
+const { productos, fijo } = Astro.props;
+
+const catsPresentes = categorias.filter((c) => productos.some((p) => p.categoria === c.slug));
+const marcasPresentes = marcas.filter((m) => productos.some((p) => p.marca === m.slug));
+const cuenta = (k: string, v: string) => productos.filter((p) => p[k] === v).length;
+const hayTacc = productos.some((p) => p.etiquetas.includes('sin-tacc'));
+const hayVegano = productos.some((p) => p.etiquetas.includes('vegano'));
+const objPresentes = objetivos.filter((o) => productos.some((p) => p.objetivos.includes(o.slug)));
+const masVendidos = negocio.masVendidos ?? [];
+---
+<div class="cat" data-catalogo data-mas-vendidos={JSON.stringify(masVendidos)}>
+  <div class="cat__bar">
+    <button type="button" class="btn btn--line btn--sm cat__open" data-open-filters>
+      <Icon name="filter" size={18} /> Filtros <span class="cat__nf" data-nf hidden></span>
+    </button>
+    <p class="cat__count" aria-live="polite"><strong data-count>{productos.length}</strong> productos</p>
+    <div class="cat__sort">
+      <label for="orden" class="sr-only">Ordenar por</label>
+      <select id="orden" class="select" data-orden>
+        <option value="relevancia">Destacados</option>
+        <option value="vendidos">Más vendidos</option>
+        <option value="menor">Menor precio</option>
+        <option value="mayor">Mayor precio</option>
+        <option value="az">A–Z</option>
+      </select>
+    </div>
+  </div>
+  {masVendidos.length === 0 && (
+    <div class="cat__mv" data-mv-falta hidden><Falta>productos más vendidos (el orden "Más vendidos" usa el orden por defecto)</Falta></div>
+  )}
+
+  <div class="cat__layout">
+    <dialog class="flt" data-filters aria-label="Filtros">
+      <div class="flt__head">
+        <p class="d">Filtros</p>
+        <button type="button" class="flt__x" aria-label="Cerrar filtros" data-close-filters><Icon name="close" /></button>
+      </div>
+      <form class="flt__form" data-form onsubmit="return false">
+        <div class="flt__g">
+          <label for="fq" class="flt__t">Buscar</label>
+          <input id="fq" name="q" type="search" class="input" placeholder="Nombre, marca o sabor" data-q autocomplete="off" />
+        </div>
+
+        {fijo !== 'cat' && (
+          <fieldset class="flt__g">
+            <legend class="flt__t">Categoría</legend>
+            <div class="flt__list">
+              {catsPresentes.map((c) => (
+                <label class="check"><input type="checkbox" name="cat" value={c.slug} /><span>{c.corto} <span class="cnt">{cuenta('categoria', c.slug)}</span></span></label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        {fijo !== 'marca' && (
+          <fieldset class="flt__g">
+            <legend class="flt__t">Marca</legend>
+            <div class="flt__list flt__list--scroll">
+              {marcasPresentes.map((m) => (
+                <label class="check"><input type="checkbox" name="marca" value={m.slug} /><span>{m.nombre} <span class="cnt">{cuenta('marca', m.slug)}</span></span></label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        <fieldset class="flt__g">
+          <legend class="flt__t">Precio</legend>
+          <div class="flt__price">
+            <label class="sr-only" for="pmin">Precio mínimo</label>
+            <input id="pmin" name="min" type="number" inputmode="numeric" min="0" step="1000" class="input" placeholder="Mín." data-min />
+            <span aria-hidden="true">—</span>
+            <label class="sr-only" for="pmax">Precio máximo</label>
+            <input id="pmax" name="max" type="number" inputmode="numeric" min="0" step="1000" class="input" placeholder="Máx." data-max />
+          </div>
+          <div class="flt__presets">
+            <button type="button" class="chip" data-rango="0-25000">Hasta $25.000</button>
+            <button type="button" class="chip" data-rango="25000-60000">$25.000 a $60.000</button>
+            <button type="button" class="chip" data-rango="60000-100000">$60.000 a $100.000</button>
+            <button type="button" class="chip" data-rango="100000-">Más de $100.000</button>
+          </div>
+        </fieldset>
+
+        {objPresentes.length > 1 && (
+          <fieldset class="flt__g">
+            <legend class="flt__t">Objetivo</legend>
+            <div class="flt__list">
+              {objPresentes.map((o) => (
+                <label class="check"><input type="checkbox" name="obj" value={o.slug} /><span>{o.nombre}</span></label>
+              ))}
+            </div>
+          </fieldset>
+        )}
+
+        {(hayTacc || hayVegano) && (
+          <fieldset class="flt__g">
+            <legend class="flt__t">Según la etiqueta</legend>
+            <div class="flt__list">
+              {hayTacc && <label class="check"><input type="checkbox" name="tag" value="sin-tacc" /><span>Sin TACC</span></label>}
+              {hayVegano && <label class="check"><input type="checkbox" name="tag" value="vegano" /><span>Vegano</span></label>}
+            </div>
+            <p class="flt__note">Según lo que indica el nombre del producto.</p>
+          </fieldset>
+        )}
+        <label class="check flt__of"><input type="checkbox" name="oferta" value="1" /><span>Sólo ofertas</span></label>
+      </form>
+      <div class="flt__foot">
+        <button type="button" class="btn btn--line btn--sm" data-clear>Limpiar</button>
+        <button type="button" class="btn btn--sm" data-close-filters>Ver <span data-count2>{productos.length}</span> productos</button>
+      </div>
+    </dialog>
+
+    <div class="cat__main">
+      <h2 class="sr-only">Productos</h2>
+      <div class="cat__active" data-active></div>
+      <div class="grid-prod" data-grid>
+        {productos.map((p, i) => <ProductCard p={p} filtrable orden={i} eager={i < 4} />)}
+      </div>
+      <div class="cat__empty" data-empty hidden>
+        <p class="d h3">Nada con esos filtros.</p>
+        <p class="muted">Probá sacar alguno o buscá por marca.</p>
+        <button type="button" class="btn btn--ghost btn--sm" data-clear>Limpiar filtros</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { norm, abrirDialogo, cerrarConFondo } from '../scripts/util.js';
+
+  const root = document.querySelector<HTMLElement>('[data-catalogo]');
+  if (root) {
+    const grid = root.querySelector<HTMLElement>('[data-grid]')!;
+    const cards = [...grid.querySelectorAll<HTMLElement>('.pc')];
+    const form = root.querySelector<HTMLFormElement>('[data-form]')!;
+    const dlg = root.querySelector<HTMLDialogElement>('[data-filters]')!;
+    const orden = root.querySelector<HTMLSelectElement>('[data-orden]')!;
+    const q = root.querySelector<HTMLInputElement>('[data-q]')!;
+    const min = root.querySelector<HTMLInputElement>('[data-min]')!;
+    const max = root.querySelector<HTMLInputElement>('[data-max]')!;
+    const masVendidos: string[] = JSON.parse(root.dataset.masVendidos || '[]');
+    const mvFalta = root.querySelector<HTMLElement>('[data-mv-falta]');
+    const textos = new Map(cards.map((c) => [c, norm(c.dataset.texto)]));
+
+    const checks = (name: string) => [...form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)];
+    const valores = (name: string) => checks(name).filter((i) => i.checked).map((i) => i.value);
+
+    // estado inicial desde la URL
+    const params = new URLSearchParams(location.search);
+    for (const name of ['cat', 'marca', 'obj', 'tag']) {
+      const vals = params.getAll(name);
+      checks(name).forEach((i) => { i.checked = vals.includes(i.value); });
+    }
+    q.value = params.get('q') ?? '';
+    min.value = params.get('min') ?? '';
+    max.value = params.get('max') ?? '';
+    const of = form.querySelector<HTMLInputElement>('input[name="oferta"]')!;
+    of.checked = params.get('oferta') === '1';
+    if (params.get('orden')) orden.value = params.get('orden')!;
+
+    function aplicar(pushUrl = true) {
+      const cats = valores('cat'), mks = valores('marca'), objs = valores('obj'), tags = valores('tag');
+      const tokens = norm(q.value.trim()).split(/\s+/).filter(Boolean);
+      const pmin = Number(min.value) || 0, pmax = Number(max.value) || Infinity;
+      let visibles = 0;
+      for (const c of cards) {
+        const d = c.dataset;
+        const precio = Number(d.precio);
+        const ok = (!cats.length || cats.includes(d.cat!))
+          && (!mks.length || mks.includes(d.marca!))
+          && (!objs.length || objs.some((o) => d.obj!.split(' ').includes(o)))
+          && (!tags.length || tags.every((t) => d.tags!.split(' ').includes(t)))
+          && (!of.checked || d.oferta === '1')
+          && precio >= pmin && precio <= pmax
+          && tokens.every((t) => textos.get(c)!.includes(t));
+        c.hidden = !ok;
+        if (ok) visibles++;
+      }
+
+      // orden
+      const o = orden.value;
+      const clave = (c: HTMLElement) => {
+        const d = c.dataset;
+        if (o === 'menor') return Number(d.precio);
+        if (o === 'mayor') return -Number(d.precio);
+        if (o === 'vendidos') { const i = masVendidos.indexOf(c.querySelector('a')!.getAttribute('href')!.split('/')[2]); return i === -1 ? 1000 + Number(d.orden) : i; }
+        return Number(d.orden);
+      };
+      if (o === 'az') {
+        [...cards].sort((a, b) => a.dataset.nombre!.localeCompare(b.dataset.nombre!, 'es')).forEach((c, i) => { c.style.order = String(i); });
+      } else cards.forEach((c) => { c.style.order = String(clave(c)); });
+      if (mvFalta) mvFalta.hidden = o !== 'vendidos';
+
+      // contadores
+      root.querySelectorAll('[data-count], [data-count2]').forEach((el) => { el.textContent = String(visibles); });
+      root.querySelector<HTMLElement>('[data-empty]')!.hidden = visibles > 0;
+      const nFiltros = cats.length + mks.length + objs.length + tags.length + (of.checked ? 1 : 0) + (min.value || max.value ? 1 : 0) + (tokens.length ? 1 : 0);
+      const nf = root.querySelector<HTMLElement>('[data-nf]')!;
+      nf.textContent = String(nFiltros); nf.hidden = nFiltros === 0;
+
+      // chips de filtros activos
+      const activos: [string, () => void][] = [];
+      const etiqueta = (name: string, v: string) => form.querySelector(`input[name="${name}"][value="${v}"]`)?.closest('label')?.querySelector('span')?.firstChild?.textContent?.trim() ?? v;
+      for (const name of ['cat', 'marca', 'obj', 'tag']) for (const v of valores(name)) activos.push([etiqueta(name, v), () => { checks(name).find((i) => i.value === v)!.checked = false; }]);
+      if (of.checked) activos.push(['Ofertas', () => { of.checked = false; }]);
+      if (min.value || max.value) activos.push([`$${min.value || 0} – ${max.value ? '$' + max.value : '∞'}`, () => { min.value = ''; max.value = ''; }]);
+      if (tokens.length) activos.push([`"${q.value.trim()}"`, () => { q.value = ''; }]);
+      const act = root.querySelector<HTMLElement>('[data-active]')!;
+      act.innerHTML = '';
+      activos.forEach(([txt, quitar]) => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'chip is-on'; b.textContent = `${txt} ✕`;
+        b.setAttribute('aria-label', `Quitar filtro ${txt}`);
+        b.addEventListener('click', () => { quitar(); aplicar(); });
+        act.appendChild(b);
+      });
+
+      if (pushUrl) {
+        const u = new URLSearchParams();
+        for (const name of ['cat', 'marca', 'obj', 'tag']) valores(name).forEach((v) => u.append(name, v));
+        if (q.value.trim()) u.set('q', q.value.trim());
+        if (min.value) u.set('min', min.value);
+        if (max.value) u.set('max', max.value);
+        if (of.checked) u.set('oferta', '1');
+        if (orden.value !== 'relevancia') u.set('orden', orden.value);
+        const s = u.toString();
+        history.replaceState(null, '', s ? `?${s}` : location.pathname);
+      }
+    }
+
+    let t: number | undefined;
+    form.addEventListener('input', () => { clearTimeout(t); t = window.setTimeout(aplicar, 120); });
+    orden.addEventListener('change', () => aplicar());
+    root.querySelectorAll('[data-rango]').forEach((b) => b.addEventListener('click', () => {
+      const [a, z] = (b as HTMLElement).dataset.rango!.split('-');
+      min.value = a === '0' ? '' : a; max.value = z || '';
+      aplicar();
+    }));
+    root.querySelectorAll('[data-clear]').forEach((b) => b.addEventListener('click', () => {
+      form.reset(); q.value = ''; min.value = ''; max.value = ''; aplicar();
+    }));
+
+    // panel de filtros: en mobile es un modal
+    cerrarConFondo(dlg);
+    root.querySelector('[data-open-filters]')!.addEventListener('click', () => abrirDialogo(dlg));
+    root.querySelectorAll('[data-close-filters]').forEach((b) => b.addEventListener('click', () => { if (dlg.open) dlg.close(); }));
+
+    aplicar(false);
+  }
+</script>
+
+<style>
+  .cat__bar {
+    position: sticky; top: var(--header-h); z-index: 5;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 0; margin-bottom: 16px;
+    background: rgb(10 10 10 / 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .cat__count { margin-right: auto; font-size: 0.875rem; color: var(--mute); min-width: 0; }
+  .cat__count strong { color: var(--paper); }
+  .cat__sort .select { min-height: 40px; padding-block: 6px; font-size: 0.875rem; width: auto; border-radius: 999px; }
+  .cat__nf { background: var(--lime); color: var(--ink); border-radius: 999px; min-width: 20px; height: 20px; font-size: 0.75rem; display: grid; place-items: center; padding: 0 6px; }
+  .cat__nf[hidden] { display: none; }
+  .cat__mv { margin-bottom: 16px; }
+  .cat__mv[hidden] { display: none; }
+  .cat__active { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cat__active:not(:empty) { margin-bottom: 16px; }
+  .cat__active :global(.chip) { min-height: 34px; font-size: 0.8rem; }
+  .cat__empty { display: grid; gap: 12px; justify-items: start; padding: 48px 0; }
+  :global(.pc[hidden]) { display: none; }
+
+  .flt { margin: auto 0 0; width: 100%; max-width: 100%; max-height: 88dvh; padding: 0; border: 0; border-top: 1px solid var(--line); border-radius: var(--r-lg) var(--r-lg) 0 0; background: var(--ink); color: var(--paper); flex-direction: column; }
+  .flt[open] { display: flex; animation: up 0.35s var(--ease); }
+  .flt::backdrop { background: rgb(0 0 0 / 0.65); }
+  @keyframes up { from { transform: translateY(100%); } }
+  .flt__head { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .flt__head .d { font-size: 1.3rem; }
+  .flt__x { width: 44px; height: 44px; display: grid; place-items: center; }
+  .flt__form { overflow-y: auto; padding: 8px 20px 20px; flex: 1; }
+  .flt__g { border: 0; margin: 0; padding: 18px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+  .flt__t { display: block; font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); margin-bottom: 12px; padding: 0; }
+  .flt__list { display: grid; gap: 10px; }
+  .flt__list--scroll { max-height: 260px; overflow-y: auto; padding-right: 6px; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent; }
+  .flt__list .check { color: var(--paper); }
+  .flt .cnt { color: var(--mute); font-size: 0.78rem; }
+  .flt__price { display: flex; align-items: center; gap: 8px; }
+  .flt__price .input { min-height: 44px; }
+  .flt__presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .flt__presets .chip { min-height: 32px; font-size: 0.75rem; padding: 0 0.8em; }
+  .flt__note { font-size: 0.75rem; color: var(--mute); margin-top: 10px; }
+  .flt__of { padding: 18px 0 4px; color: var(--paper) !important; }
+  .flt__foot { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
+
+  @media (min-width: 1024px) {
+    .cat__open { display: none; }
+    .cat__layout { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 32px; align-items: start; }
+    .flt, .flt:not([open]) {
+      display: block; position: sticky; top: calc(var(--header-h) + 76px);
+      max-height: calc(100dvh - var(--header-h) - 96px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-2) transparent;
+      border: 0; border-radius: 0; background: transparent; margin: 0; animation: none; inset: auto; width: auto;
+    }
+    .flt__head, .flt__foot { display: none; }
+    .flt__form { padding: 0; overflow: visible; }
+    .flt__g:first-child { padding-top: 0; }
+  }
+</style>

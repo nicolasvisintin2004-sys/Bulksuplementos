@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Icon from '../../components/Icon.astro';
+import FaqList from '../../components/FaqList.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort((a, b) => a.data.orden - b.data.orden);
+---
+<Base title="Blog y preguntas frecuentes" description="Artículos cortos y claros sobre creatina, proteínas, pre-entrenos, electrolitos y colágeno, y las preguntas frecuentes de la tienda BULK.">
+  <PageHead eyebrow="Blog y FAQ" titulo="Antes de" outline="comprar" migas={[{ href: '/blog/', label: 'Blog y FAQ' }]}
+    bajada="Información general, clara y sin promesas. Para decisiones personales, consultá con un profesional de la salud." />
+
+  <section class="section section--tight">
+    <div class="wrap">
+      <ul class="bl">
+        {posts.map((p, i) => (
+          <li class="reveal" style={`--d:${(i % 3) * 0.06}s`}>
+            <a href={`/blog/${p.id}/`} class="bl__card">
+              <span class="bl__tag">{p.data.etiqueta}</span>
+              <h2 class="bl__t">{p.data.titulo}</h2>
+              <p class="bl__d">{p.data.descripcion}</p>
+              <span class="bl__m">{p.data.minutos} min de lectura <Icon name="arrow" size={16} /></span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section faqsec" id="faq">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="stack" style="--stack:.75rem">
+          <p class="eyebrow">De la tienda</p>
+          <h2 class="d h2">Preguntas <span class="d-outline">frecuentes</span></h2>
+        </div>
+        <a class="link" href="/preguntas-frecuentes/">Abrir en su página <Icon name="arrow" size={16} /></a>
+      </div>
+      <FaqList />
+    </div>
+  </section>
+</Base>
+<style>
+  .bl { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .bl__card { display: grid; gap: 10px; align-content: start; height: 100%; padding: 26px; border: 1px solid var(--line); border-radius: var(--r); background: var(--ink-2); transition: border-color 0.25s; }
+  .bl__card:hover { border-color: var(--lime); }
+  .bl__tag { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--lime); }
+  .bl__t { font-size: 1.25rem; line-height: 1.25; }
+  .bl__d { font-size: 0.92rem; color: var(--mute); }
+  .bl__m { display: inline-flex; gap: 6px; align-items: center; font-size: 0.8rem; font-weight: 700; color: var(--soft); margin-top: 6px; }
+  .faqsec { border-top: 1px solid var(--line); }
+</style>

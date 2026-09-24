@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Falta from '../components/Falta.astro';
+import negocio from '../config/negocio.js';
+---
+<Base title="Términos y condiciones" description="Términos y condiciones de compra en BULK.">
+  <PageHead titulo="Términos y" outline="condiciones" migas={[{ href: '/terminos/', label: 'Términos y condiciones' }]} />
+  <section class="section section--tight">
+    <div class="wrap prose">
+      {negocio.politicas.terminos ? <div set:html={negocio.politicas.terminos} /> : <Falta block>texto de términos y condiciones (src/config/negocio.js → politicas.terminos)</Falta>}
+    </div>
+  </section>
+</Base>

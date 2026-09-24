@@ -1,0 +1,26 @@
+{
+  "name": "bulk-tienda",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "importar": "node scripts/importar-lista.mjs",
+    "precios": "node scripts/recalcular-precios.mjs",
+    "emails": "node scripts/generar-emails.mjs",
+    "imagenes": "node scripts/generar-imagenes.mjs",
+    "precios:entreno": "node scripts/precios-entreno.mjs"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/anybody": "^5.3.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "astro": "^5.18.2"
+  },
+  "devDependencies": {
+    "fontkit": "^2.0.4",
+    "wawoff2": "^2.0.1"
+  }
+}

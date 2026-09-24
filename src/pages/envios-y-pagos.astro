@@ -1,0 +1,76 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import negocio from '../config/negocio.js';
+import { pesos } from '../lib/formato.js';
+
+const d = negocio.descuentos;
+const b = negocio.datosBancarios;
+---
+<Base title="Envíos y pagos" description={`Envíos a todo el país por ${negocio.envios.empresas.join(', ')}. Envío gratis desde ${pesos(negocio.envios.gratisDesde)}. Pagás por transferencia, o en efectivo en el local con ${d.efectivoPct}% OFF.`}>
+  <PageHead eyebrow="Info útil" titulo="Envíos" outline="y pagos" migas={[{ href: '/envios-y-pagos/', label: 'Envíos y pagos' }]} />
+
+  <section class="section section--tight">
+    <div class="wrap ep">
+      <div class="ep__col">
+        <h2 class="d h3 ep__h"><Icon name="truck" size={28} /> Envíos</h2>
+        <div class="big card card--lime">
+          <p class="eyebrow eyebrow--lime">Envío gratis</p>
+          <p class="d big__n">desde {pesos(negocio.envios.gratisDesde)}</p>
+        </div>
+        <ul class="ep__list">
+          <li><b>A todo el país</b> por {negocio.envios.empresas.join(', ')}. Elegís la empresa al armar el pedido.</li>
+          <li><b>Costo y tiempo por debajo de {pesos(negocio.envios.gratisDesde)}:</b> {negocio.envios.costoYTiempos ?? <Falta>costos y tiempos de envío</Falta>}</li>
+          <li><b>Envío gratis:</b> se calcula sobre el {d.envioGratisCalculo === 'despues' ? 'total con descuentos' : 'subtotal antes de descuentos'}. {d.envioGratisCalculo == null && <Falta>confirmar si es antes o después de descuentos</Falta>}</li>
+          <li><b>Retiro en el local:</b> {negocio.direccion.calle}, {negocio.direccion.localidad}. {negocio.horarios ? negocio.horarios.join(' · ') : <Falta>horarios</Falta>}</li>
+        </ul>
+      </div>
+
+      <div class="ep__col">
+        <h2 class="d h3 ep__h"><Icon name="cash" size={28} /> Pagos</h2>
+        <div class="big card card--lime">
+          <p class="eyebrow eyebrow--lime">En efectivo en el local</p>
+          <p class="d big__n">{d.efectivoPct}% OFF</p>
+        </div>
+        <ul class="ep__list">
+          <li><b>Transferencia bancaria.</b> Te confirmamos el total por Instagram o email y nos mandás el comprobante.</li>
+          <li><b>Efectivo</b> con {d.efectivoPct}% de descuento. {d.efectivoSoloRetiro == null ? <Falta>si es sólo retirando en el local o también contra entrega</Falta> : d.efectivoSoloRetiro ? 'Sólo retirando en el local.' : 'Con retiro o con envío.'}</li>
+          <li><b>Primera compra:</b> {d.bienvenidaPct}% OFF con el código que te damos al dejar tu email (uno por email). {d.acumulables == null ? <Falta>si se acumula con el descuento en efectivo</Falta> : d.acumulables ? 'Se acumula con el de efectivo.' : 'No se acumula con el de efectivo.'}</li>
+          <li><b>No hay pago online:</b> nunca te vamos a pedir datos de tarjeta.</li>
+        </ul>
+        <div class="bank">
+          <p class="label">Datos para transferir</p>
+          {b ? (
+            <dl>
+              <div><dt>Titular</dt><dd>{b.titular}</dd></div>
+              <div><dt>Banco</dt><dd>{b.banco}</dd></div>
+              <div><dt>CBU/CVU</dt><dd class="num">{b.cbu}</dd></div>
+              <div><dt>Alias</dt><dd>{b.alias}</dd></div>
+              <div><dt>CUIT</dt><dd class="num">{b.cuit}</dd></div>
+            </dl>
+          ) : <Falta block>datos bancarios (titular, CBU/CVU, alias, banco, CUIT)</Falta>}
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .ep { display: grid; gap: 48px; }
+  @media (min-width: 960px) { .ep { grid-template-columns: 1fr 1fr; gap: 56px; } }
+  .ep__col { display: grid; gap: 20px; align-content: start; }
+  .ep__h { display: flex; align-items: center; gap: 12px; }
+  .ep__h :global(svg) { color: var(--lime); }
+  .big { padding: 24px; display: grid; gap: 6px; }
+  .big__n { font-size: clamp(2rem, 6vw, 3.2rem); color: var(--lime); }
+  .ep__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .ep__list li { padding: 16px 0; border-bottom: 1px solid var(--line); color: var(--soft); display: block; }
+  .ep__list li :global(.falta) { margin-top: 8px; }
+  .ep__list b { color: var(--paper); }
+  .bank { display: grid; gap: 10px; padding: 18px; border: 1px dashed var(--line-2); border-radius: var(--r); }
+  .bank dl { margin: 0; display: grid; gap: 6px; }
+  .bank dl div { display: flex; justify-content: space-between; gap: 12px; }
+  .bank dt { color: var(--mute); }
+  .bank dd { margin: 0; font-weight: 700; }
+</style>

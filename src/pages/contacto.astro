@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import Falta from '../components/Falta.astro';
+import MapaLocal from '../components/MapaLocal.astro';
+import negocio from '../config/negocio.js';
+const d = negocio.direccion;
+---
+<Base title="El local y contacto" description={`Visitá BULK en ${d.calle}, ${d.localidad}, ${d.provincia}. Pedidos y consultas por Instagram @${negocio.instagram.usuario} o por email.`}>
+  <PageHead eyebrow="Contacto" titulo="El" outline="local" migas={[{ href: '/contacto/', label: 'El local' }]}
+    bajada="Pasá a buscar tu pedido o vení a consultar. Los pedidos y las consultas los respondemos por Instagram o por email." />
+
+  <section class="section section--tight">
+    <div class="wrap ct">
+      <ul class="ct__list">
+        <li class="card card--lime">
+          <Icon name="instagram" size={26} />
+          <div><p class="eyebrow">Pedidos y consultas</p><a class="ct__v link" href={negocio.instagram.dm} target="_blank" rel="noopener">@{negocio.instagram.usuario}</a><p class="muted">Mandanos un mensaje directo por Instagram.</p></div>
+        </li>
+        <li class="card">
+          <Icon name="mail" size={26} />
+          <div><p class="eyebrow">Email</p><a class="ct__v link ct__mail" href={`mailto:${negocio.email}`}>{negocio.email}</a></div>
+        </li>
+        <li class="card">
+          <Icon name="pin" size={26} />
+          <div><p class="eyebrow">Dirección</p><p class="ct__v">{d.calle}</p><p class="muted">{d.localidad}, {d.provincia}</p></div>
+        </li>
+        <li class="card">
+          <Icon name="clock" size={26} />
+          <div><p class="eyebrow">Horarios</p>{negocio.horarios ? negocio.horarios.map((h) => <p class="ct__v ct__v--sm">{h}</p>) : <Falta>horarios de atención</Falta>}</div>
+        </li>
+      </ul>
+      <MapaLocal />
+    </div>
+  </section>
+</Base>
+<style>
+  .ct { display: grid; gap: 24px; }
+  @media (min-width: 960px) { .ct { grid-template-columns: 1fr 1.3fr; align-items: stretch; } }
+  .ct__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ct__list li { display: flex; gap: 16px; padding: 18px 20px; align-items: flex-start; }
+  .ct__list li > :global(svg) { color: var(--lime); flex: none; }
+  .ct__list div { display: grid; gap: 4px; justify-items: start; min-width: 0; }
+  .ct__v { font-weight: 800; font-size: 1.15rem; }
+  .ct__v--sm { font-size: 1rem; }
+  .ct__mail { overflow-wrap: anywhere; font-size: 1rem; }
+  .ct :global(.map) { min-height: 420px; height: 100%; }
+</style>

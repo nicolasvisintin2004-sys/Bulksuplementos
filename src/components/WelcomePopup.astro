@@ -1,0 +1,194 @@
+---
+import Icon from './Icon.astro';
+import negocio from '../config/negocio.js';
+const pct = negocio.descuentos.bienvenidaPct;
+---
+<dialog class="wp" data-welcome aria-labelledby="wp-title" data-falta={negocio.mostrarFaltantes ? '1' : ''}>
+  <svg class="wp__slash" viewBox="0 0 120 120" aria-hidden="true"><line x1="30" y1="118" x2="118" y2="10" /><line x1="62" y1="118" x2="118" y2="48" /></svg>
+  <button class="wp__x" type="button" aria-label="Cerrar" data-dismiss><Icon name="close" /></button>
+
+  <div class="wp__step" data-step="form">
+    <p class="eyebrow eyebrow--lime">Primera compra</p>
+    <h2 id="wp-title" class="wp__big d">
+      <span class="d-outline">{pct}%</span>
+      <span class="d-lime">OFF</span>
+    </h2>
+    <p class="wp__txt">Dejanos tu email y te damos un código de <b>{pct}% OFF en tu primera compra</b>. Lo usás al armar tu pedido.</p>
+    <form class="wp__form" data-form novalidate>
+      <div class="field">
+        <label for="wp-nombre">Nombre <span class="muted">(opcional)</span></label>
+        <input id="wp-nombre" name="nombre" class="input" autocomplete="given-name" maxlength="60" placeholder="Nico" />
+      </div>
+      <div class="field">
+        <label for="wp-email">Email</label>
+        <input id="wp-email" name="email" type="email" class="input" autocomplete="email" required inputmode="email" placeholder="nico@gmail.com" />
+        <p class="error-msg" data-err hidden></p>
+      </div>
+      <label class="check">
+        <input type="checkbox" name="consentimiento" value="1" />
+        <span>Quiero recibir ofertas y novedades de BULK por email. Me puedo dar de baja cuando quiera.</span>
+      </label>
+      <button class="btn btn--block" type="submit" data-submit>Quiero mi descuento</button>
+    </form>
+    <button class="wp__no" type="button" data-dismiss>No, gracias</button>
+  </div>
+
+  <div class="wp__step" data-step="ok" hidden>
+    <p class="eyebrow eyebrow--lime">Listo</p>
+    <h2 class="d wp__h">Tu código</h2>
+    <div class="wp__code">
+      <span class="num" data-code>BULK10-XXXXXX</span>
+      <button type="button" class="btn btn--sm" data-copy><Icon name="copy" size={16} /> Copiar</button>
+    </div>
+    <p class="wp__txt" data-ok-txt>También te lo mandamos por email. Usalo en el carrito: {pct}% OFF, una sola vez por email.</p>
+    <div data-ok-falta></div>
+    <a href="/tienda/" class="btn btn--ghost btn--block" data-go>Armar mi pedido <Icon name="arrow" size={18} class="arrow" /></a>
+  </div>
+
+  <div class="wp__step" data-step="ya" hidden>
+    <p class="eyebrow eyebrow--lime">Ya estás adentro</p>
+    <h2 class="d wp__h">Ese email ya tiene su código</h2>
+    <p class="wp__txt">Te lo mandamos cuando te registraste: buscalo en tu casilla (fijate en promociones o spam). El descuento es uno por email.</p>
+    <button class="btn btn--ghost btn--block" type="button" data-dismiss>Entendido</button>
+  </div>
+</dialog>
+
+<script>
+  import { abrirDialogo, cerrarConFondo, toast } from '../scripts/util.js';
+  import { guardarCodigo } from '../scripts/carrito.js';
+
+  const KEY = 'bulk:bienvenida:v1';
+  const DIAS = 14;
+  const dlg = document.querySelector<HTMLDialogElement>('[data-welcome]')!;
+  const form = dlg.querySelector<HTMLFormElement>('[data-form]')!;
+  const err = dlg.querySelector<HTMLElement>('[data-err]')!;
+  const step = (s: string) => dlg.querySelectorAll<HTMLElement>('[data-step]').forEach((el) => { el.hidden = el.dataset.step !== s; });
+
+  const leer = () => { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch { return null; } };
+  const escribir = (v: unknown) => { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch { /* sin storage */ } };
+
+  function debeMostrar() {
+    if (/^\/(pendientes|baja|carrito)/.test(location.pathname)) return false;
+    const s = leer();
+    if (!s) return true;
+    if (s.estado === 'registrado') return false;
+    return Date.now() > (s.hasta ?? 0);
+  }
+
+  function mostrar() {
+    if (!debeMostrar() || document.querySelector('dialog[open]')) return;
+    abrirDialogo(dlg);
+  }
+
+  if (debeMostrar()) {
+    let hecho = false;
+    const go = () => { if (hecho) return; hecho = true; window.removeEventListener('scroll', onScroll); clearTimeout(t); mostrar(); };
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      if (max > 0 && scrollY / max >= 0.3) go();
+    };
+    const t = window.setTimeout(go, 4000);
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  const cerrar = () => {
+    if (leer()?.estado !== 'registrado') escribir({ estado: 'cerrado', hasta: Date.now() + DIAS * 864e5 });
+    dlg.close();
+  };
+  dlg.querySelectorAll('[data-dismiss]').forEach((b) => b.addEventListener('click', cerrar));
+  dlg.addEventListener('cancel', () => { if (leer()?.estado !== 'registrado') escribir({ estado: 'cerrado', hasta: Date.now() + DIAS * 864e5 }); });
+  cerrarConFondo(dlg);
+  dlg.querySelector('[data-go]')?.addEventListener('click', () => dlg.close());
+
+  function codigoLocal() {
+    const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const r = crypto.getRandomValues(new Uint8Array(6));
+    return 'BULK10-' + [...r].map((n) => abc[n % abc.length]).join('');
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const email = String(fd.get('email') || '').trim().toLowerCase();
+    const emailInput = form.querySelector<HTMLInputElement>('[name=email]')!;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      err.textContent = 'Revisá el email: parece que le falta algo.';
+      err.hidden = false; emailInput.setAttribute('aria-invalid', 'true'); emailInput.focus();
+      return;
+    }
+    err.hidden = true; emailInput.removeAttribute('aria-invalid');
+    const btn = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    btn.disabled = true; btn.textContent = 'Generando tu código…';
+
+    let data: { ok?: boolean; codigo?: string; yaRegistrado?: boolean; emailEnviado?: boolean } | null = null;
+    try {
+      const r = await fetch('/api/suscribir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, nombre: String(fd.get('nombre') || '').trim(), consentimiento: fd.get('consentimiento') === '1' }),
+      });
+      if (r.ok || r.status === 409) data = await r.json();
+    } catch { /* sin conexión o función no desplegada */ }
+
+    btn.disabled = false; btn.textContent = 'Quiero mi descuento';
+
+    if (data?.yaRegistrado) { escribir({ estado: 'registrado' }); step('ya'); return; }
+
+    // Si Brevo todavía no está configurado, el código se genera acá y el local lo verifica a mano en el pedido.
+    const pendiente = !data?.ok;
+    const codigo = data?.codigo ?? codigoLocal();
+    guardarCodigo({ email, codigo, pendiente });
+    escribir({ estado: 'registrado' });
+    dlg.querySelector('[data-code]')!.textContent = codigo;
+    if (pendiente || !data?.emailEnviado) {
+      dlg.querySelector('[data-ok-txt]')!.textContent = 'Guardalo (o copialo): lo vas a usar en el carrito. Vale una sola vez por email.';
+      if (dlg.dataset.falta) {
+        dlg.querySelector('[data-ok-falta]')!.innerHTML = '<span class="falta falta--block">⚠ FALTA: configurar Brevo (cuenta, claves y remitente) para enviar el código por email y validarlo.</span>';
+      }
+    }
+    step('ok');
+  });
+
+  dlg.querySelector('[data-copy]')?.addEventListener('click', async () => {
+    const c = dlg.querySelector('[data-code]')!.textContent || '';
+    try { await navigator.clipboard.writeText(c); toast('Código copiado'); } catch { toast(c); }
+  });
+</script>
+
+<style>
+  .wp {
+    width: min(460px, calc(100vw - 24px)); max-height: calc(100dvh - 24px);
+    padding: 36px 28px 28px; border: 1px solid var(--lime); border-radius: var(--r-lg);
+    background: radial-gradient(120% 70% at 100% 0%, rgb(200 255 0 / 0.09), transparent 60%), var(--ink);
+    color: var(--paper); overflow: hidden auto;
+  }
+  .wp[open] { animation: wpin 0.55s var(--ease); }
+  .wp::backdrop { background: rgb(0 0 0 / 0.72); backdrop-filter: blur(4px); }
+  @keyframes wpin { from { opacity: 0; transform: translateY(40px) scale(0.96) rotate(-1.5deg); } }
+  @media (max-width: 560px) {
+    .wp { margin: auto auto 0; width: 100%; max-width: 100%; border-radius: var(--r-lg) var(--r-lg) 0 0; border-bottom: 0; padding-bottom: calc(24px + env(safe-area-inset-bottom)); }
+    @keyframes wpin { from { transform: translateY(100%); } }
+  }
+  .wp__slash { position: absolute; right: -14px; top: -14px; width: 92px; height: 92px; stroke: var(--lime); stroke-width: 3; pointer-events: none; }
+  .wp__slash line { stroke-dasharray: 160; stroke-dashoffset: 160; animation: draw 0.8s 0.25s var(--ease) forwards; }
+  .wp__slash line + line { animation-delay: 0.4s; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .wp__x { position: absolute; top: 12px; right: 12px; width: 44px; height: 44px; display: grid; place-items: center; border-radius: 999px; background: var(--ink); z-index: 1; }
+  .wp__x:hover { color: var(--lime); }
+  .wp__step { display: grid; gap: 16px; position: relative; }
+  .wp__step[hidden] { display: none; }
+  /* "10% OFF" mide ~6.4em: el tamaño sale del ancho útil del panel */
+  .wp__big { display: flex; align-items: baseline; gap: 0.15em; font-size: min(12.5vw, 3.9rem); margin: -4px 0 -6px; --stroke: 2px; white-space: nowrap; }
+  .wp__step > * { min-width: 0; }
+  .wp__h { font-size: 1.8rem; }
+  .wp__txt { color: var(--soft); }
+  .wp__txt b { color: var(--paper); }
+  .wp__form { display: grid; gap: 14px; }
+  .wp__no { justify-self: center; font-size: 0.85rem; color: var(--mute); text-decoration: underline; text-underline-offset: 3px; padding: 6px; }
+  .wp__no:hover { color: var(--paper); }
+  .wp__code {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    border: 2px dashed var(--lime); border-radius: var(--r); padding: 14px 14px 14px 18px; background: var(--lime-a10);
+  }
+  .wp__code span { font-family: var(--f-display); font-style: italic; font-weight: 800; font-stretch: 115%; font-size: 1.35rem; letter-spacing: 0.04em; color: var(--lime); }
+</style>
