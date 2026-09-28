@@ -7,11 +7,15 @@ import { combos, marca } from '../lib/catalogo.js';
 import { pesos, etiquetaVariante } from '../lib/formato.js';
 
 const lista = combos();
-const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart', 'principiantes': 'spark' };
+const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart' };
+const nombre = (o: any) => `${marca(o.producto.marca)?.nombre} ${o.producto.nombre}`;
+const label = (o: any) => `${nombre(o)} (${etiquetaVariante(o.variante)})`;
+// opciones de un item agrupadas por producto (para el <select> con varios productos)
+const grupos = (it: any) => [...new Set(it.opciones.map((o: any) => o.producto.id))].map((pid) => it.opciones.filter((o: any) => o.producto.id === pid));
 ---
-<Base title="Combos según tu objetivo" description="Combos de suplementos armados por BULK según tu objetivo: masa muscular, definición, rendimiento y endurance, salud y bienestar, y principiantes.">
+<Base title="Combos según tu objetivo" description="Combos de suplementos armados por BULK según tu objetivo: ganancia muscular, definición, rendimiento y endurance, y salud y bienestar.">
   <PageHead eyebrow="Combos" titulo="Según tu" outline="objetivo" migas={[{ href: '/combos/', label: 'Combos' }]}
-    bajada="Productos que van bien juntos, elegidos por el equipo de BULK. Agregás el combo completo al carrito con un clic." />
+    bajada="Productos que van bien juntos, elegidos por el equipo de BULK. Elegís los sabores y agregás el combo completo al carrito." />
 
   <section class="section section--tight">
     <div class="wrap">
@@ -27,20 +31,33 @@ const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion
             {c.listo ? (
               <>
                 <ul class="cb__items">
-                  {c.itemsResueltos.map((it: any) => (
-                    <li><a href={`/producto/${it.producto.id}/?v=${it.variante.id}`}><b>{it.cantidad}×</b> {marca(it.producto.marca)?.nombre} {it.producto.nombre}<small>{etiquetaVariante(it.variante)}</small></a></li>
+                  {c.itemsResueltos.map((it: any) => it.opciones.length === 1 ? (
+                    <li data-it data-label={label(it.opciones[0])} data-precio={it.variante.precio}>
+                      <a href={`/producto/${it.producto.id}/?v=${it.variante.id}`}><b>{it.cantidad}×</b> {nombre(it)}<small>{etiquetaVariante(it.variante)}</small></a>
+                    </li>
+                  ) : (
+                    <li data-it class="cb__elige">
+                      <label>
+                        <span><b>{it.cantidad}×</b> {it.etiqueta ?? nombre(it)}</span>
+                        <select class="select cb__sel" data-sel>
+                          {grupos(it).length > 1
+                            ? grupos(it).map((g: any) => (
+                                <optgroup label={nombre(g[0])}>
+                                  {g.map((o: any) => <option value={`${o.producto.id}:${o.variante.id}`} data-label={label(o)} data-precio={o.variante.precio}>{nombre(o)} · {etiquetaVariante(o.variante)}</option>)}
+                                </optgroup>
+                              ))
+                            : it.opciones.map((o: any) => <option value={`${o.producto.id}:${o.variante.id}`} data-label={label(o)} data-precio={o.variante.precio}>{etiquetaVariante(o.variante)}</option>)}
+                        </select>
+                      </label>
+                    </li>
                   ))}
                 </ul>
                 <div class="cb__price">
-                  {c.precio != null && c.suma > c.precioFinal && <s class="num">{pesos(c.suma)}</s>}
+                  <s class="num" data-suma hidden={!(c.precio != null && c.suma > c.precioFinal)}>{pesos(c.suma)}</s>
                   <strong class="precio num">{pesos(c.precioFinal)}</strong>
                 </div>
                 {c.precio == null && <Falta>precio final del combo (se muestra la suma de los productos)</Falta>}
-                <button type="button" class="btn btn--block" data-add={JSON.stringify({
-                  key: `combo::${c.id}`, tipo: 'combo', productoId: c.id, varianteId: c.id,
-                  nombre: `Combo ${c.objetivo}`, marca: 'BULK', variante: '', precio: c.precioFinal, url: `/combos/#${c.id}`,
-                  contenido: c.itemsResueltos.map((it: any) => `${it.cantidad}× ${marca(it.producto.marca)?.nombre} ${it.producto.nombre} (${etiquetaVariante(it.variante)})`),
-                })}>Agregar combo <Icon name="cart" size={18} /></button>
+                <button type="button" class="btn btn--block" data-combo={JSON.stringify({ id: c.id, nombre: `Combo ${c.objetivo}`, precio: c.precioFinal })}>Agregar combo <Icon name="cart" size={18} /></button>
               </>
             ) : (
               <>
@@ -61,13 +78,44 @@ const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion
 <script>
   import { agregar } from '../scripts/carrito.js';
   import { toast } from '../scripts/util.js';
-  document.querySelectorAll<HTMLElement>('.cb [data-add]').forEach((b) => b.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const item = JSON.parse(b.dataset.add!);
-    agregar(item, 1);
-    toast(`Agregaste el ${item.nombre}`);
-    window.dispatchEvent(new CustomEvent('carrito:abrir'));
-  }));
+  import { pesos } from '../lib/formato.js';
+
+  document.querySelectorAll<HTMLElement>('.cb__card').forEach((card) => {
+    const btn = card.querySelector<HTMLElement>('[data-combo]');
+    if (!btn) return;
+    const combo = JSON.parse(btn.dataset.combo!);
+    const suma = card.querySelector<HTMLElement>('[data-suma]');
+
+    // lo elegido en cada item: los fijos traen sus datos en el <li>, los elegibles en la opción seleccionada
+    const elegidos = () => [...card.querySelectorAll<HTMLElement>('[data-it]')].map((li) => {
+      const sel = li.querySelector<HTMLSelectElement>('[data-sel]');
+      const src = sel ? sel.selectedOptions[0] : li;
+      return { id: sel?.value ?? '', label: src.dataset.label!, precio: Number(src.dataset.precio) };
+    });
+
+    // el precio tachado (valor por separado) cambia según lo elegido
+    const actualizar = () => {
+      if (!suma) return;
+      const total = elegidos().reduce((s, e) => s + e.precio, 0);
+      suma.textContent = pesos(total);
+      suma.hidden = total <= combo.precio;
+    };
+    card.querySelectorAll('[data-sel]').forEach((s) => s.addEventListener('change', actualizar));
+    actualizar();
+
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sel = elegidos();
+      const clave = sel.map((x) => x.id).filter(Boolean).join('|');
+      agregar({
+        key: `combo::${combo.id}${clave ? '::' + clave : ''}`, tipo: 'combo', productoId: combo.id, varianteId: clave || combo.id,
+        nombre: combo.nombre, marca: 'BULK', variante: '', precio: combo.precio, url: `/combos/#${combo.id}`,
+        contenido: sel.map((x) => `1× ${x.label}`),
+      }, 1);
+      toast(`Agregaste el ${combo.nombre}`);
+      window.dispatchEvent(new CustomEvent('carrito:abrir'));
+    });
+  });
 </script>
 
 <style>
@@ -78,12 +126,15 @@ const ICONO: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion
   .cb__ico { width: 54px; height: 54px; border-radius: 999px; display: grid; place-items: center; background: var(--lime); color: var(--ink); }
   .cb__t { font-size: clamp(1.1rem, 5.8vw, 1.8rem); line-height: 0.95; overflow-wrap: anywhere; }
   .cb__b { color: var(--soft); font-size: 0.95rem; }
-  .cb__items { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 14px; }
+  .cb__items { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; border-top: 1px solid var(--line); padding-top: 14px; }
   .cb__items a { display: block; font-size: 0.9rem; }
   .cb__items a:hover { color: var(--lime); }
   .cb__items small { display: block; color: var(--mute); }
+  .cb__elige label { display: grid; gap: 6px; font-size: 0.9rem; }
+  .cb__sel { min-height: 42px; padding-block: 6px; font-size: 0.875rem; width: 100%; }
   .cb__price { display: flex; gap: 12px; align-items: baseline; margin-top: auto; }
   .cb__price s { color: var(--mute); }
+  .cb__price s[hidden] { display: none; }
   .cb__price .precio { font-size: 1.8rem; }
   .cb__empty { margin-top: auto; }
   .cb__legal { margin-top: 28px; font-size: 0.85rem; }

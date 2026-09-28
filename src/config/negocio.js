@@ -52,20 +52,21 @@ export default {
   envios: {
     empresas: ['Correo Argentino', 'Andreani', 'OCA'],
     gratisDesde: 100000,
-    // ⚠ FALTA — Costos y tiempos de envío para compras por debajo de $100.000.
-    // Ej: 'Se cotiza según destino. Llega en 3 a 7 días hábiles.'
-    costoYTiempos: null,
+    // Costo de envío en compras por debajo de gratisDesde
+    costo: 'En compras menores a ese monto, el costo depende de la zona del comprador.',
+    // Tiempo de entrega
+    tiempos: 'Depende de la disponibilidad del producto. Si no está en stock, la entrega se estima entre 10 y 30 días, según el momento del mes.',
+    // Texto combinado para el carrito, Cómo comprar y Envíos y pagos
+    costoYTiempos: 'El costo depende de la zona del comprador. El tiempo de entrega depende de la disponibilidad del producto: si no está en stock, se estima entre 10 y 30 días, según el momento del mes.',
   },
 
   descuentos: {
     efectivoPct: 10,     // 10% OFF pagando en efectivo
     bienvenidaPct: 10,   // 10% OFF primera compra con el código del popup
 
-    // ⚠ FALTA — ¿Se acumulan el 10% efectivo y el 10% de bienvenida?
-    //   true  → se suman (10% + 10% = 20% sobre el subtotal)
-    //   false → se aplica uno solo (el código queda guardado para otra compra)
-    //   null  → todavía no definido: el sitio se comporta como `false` y muestra el cartel rojo
-    acumulables: null,
+    // El 10% efectivo y el 10% de bienvenida se acumulan: el segundo se calcula sobre el precio
+    // ya rebajado, así que juntos son un 19% (no 20%).
+    acumulables: true,
 
     // ⚠ FALTA — ¿El envío gratis se calcula sobre el subtotal antes o después de descuentos?
     //   'antes' | 'despues' | null (null = se comporta como 'antes' y muestra el cartel rojo)
@@ -82,8 +83,8 @@ export default {
   masVendidos: [],
 
   politicas: {
-    // ⚠ FALTA — Texto de la política de cambios y devoluciones
-    cambios: null,
+    // Política de cambios y devoluciones
+    cambios: 'Mandanos tu problema por mensaje directo de Instagram (@Bulk_Ar) o escribinos a bulk.5upl3ntos@gmail.com y lo solucionamos.',
     // ⚠ FALTA — Términos y condiciones
     terminos: null,
   },

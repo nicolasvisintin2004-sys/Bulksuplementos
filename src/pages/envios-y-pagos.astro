@@ -37,7 +37,7 @@ const b = negocio.datosBancarios;
         <ul class="ep__list">
           <li><b>Transferencia bancaria.</b> Te confirmamos el total por Instagram o email y nos mandás el comprobante.</li>
           <li><b>Efectivo</b> con {d.efectivoPct}% de descuento. {d.efectivoSoloRetiro == null ? <Falta>si es sólo retirando en el local o también contra entrega</Falta> : d.efectivoSoloRetiro ? 'Sólo retirando en el local.' : 'Con retiro o con envío.'}</li>
-          <li><b>Primera compra:</b> {d.bienvenidaPct}% OFF con el código que te damos al dejar tu email (uno por email). {d.acumulables == null ? <Falta>si se acumula con el descuento en efectivo</Falta> : d.acumulables ? 'Se acumula con el de efectivo.' : 'No se acumula con el de efectivo.'}</li>
+          <li><b>Primera compra:</b> {d.bienvenidaPct}% OFF con el código que te damos al dejar tu email (uno por email). {d.acumulables == null ? <Falta>si se acumula con el descuento en efectivo</Falta> : d.acumulables ? 'Se acumula con el de efectivo: juntos dan 19% OFF (el segundo se calcula sobre el precio ya rebajado).' : 'No se acumula con el de efectivo.'}</li>
           <li><b>No hay pago online:</b> nunca te vamos a pedir datos de tarjeta.</li>
         </ul>
         <div class="bank">

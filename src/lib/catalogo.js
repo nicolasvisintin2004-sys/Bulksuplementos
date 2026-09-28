@@ -57,11 +57,18 @@ export function relacionados(p, n = 4) {
 /** Combos con sus productos resueltos. listo = tiene items cargados. */
 export function combos() {
   return combosData.combos.map((c) => {
+    // cada item es una lista de opciones { producto, variante }: con una sola es fijo, con varias elige el cliente
     const items = (c.items ?? []).map((it) => {
-      const p = producto(it.producto);
-      const v = p?.variantes.find((x) => x.id === it.variante) ?? p?.variantes[0];
-      return p && v ? { producto: p, variante: v, cantidad: it.cantidad ?? 1 } : null;
+      const opciones = (it.opciones ?? [{ producto: it.producto, variantes: it.variante ? [it.variante] : undefined }])
+        .flatMap((o) => {
+          const p = producto(o.producto);
+          if (!p) return [];
+          const vs = o.variantes ? o.variantes.map((id) => p.variantes.find((x) => x.id === id)).filter(Boolean) : p.variantes;
+          return vs.map((v) => ({ producto: p, variante: v }));
+        });
+      return opciones.length ? { etiqueta: it.etiqueta ?? null, cantidad: it.cantidad ?? 1, opciones, ...opciones[0] } : null;
     }).filter(Boolean);
+    // valor por separado con la opción elegida por defecto (la primera de cada item)
     const suma = items.reduce((s, i) => s + i.variante.precio * i.cantidad, 0);
     return { ...c, itemsResueltos: items, listo: items.length > 0, precioFinal: c.precio ?? suma, suma };
   });

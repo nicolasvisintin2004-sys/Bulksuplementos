@@ -9,8 +9,8 @@ import Falta from './Falta.astro';
 import negocio from '../config/negocio.js';
 import { categorias, marcas, objetivos } from '../lib/catalogo.js';
 
-interface Props { productos: any[]; fijo?: 'cat' | 'marca' }
-const { productos, fijo } = Astro.props;
+interface Props { productos: any[]; fijo?: 'cat' | 'marca'; titular?: boolean }
+const { productos, fijo, titular = false } = Astro.props;
 
 const catsPresentes = categorias.filter((c) => productos.some((p) => p.categoria === c.slug));
 const marcasPresentes = marcas.filter((m) => productos.some((p) => p.marca === m.slug));
@@ -20,7 +20,7 @@ const hayVegano = productos.some((p) => p.etiquetas.includes('vegano'));
 const objPresentes = objetivos.filter((o) => productos.some((p) => p.objetivos.includes(o.slug)));
 const masVendidos = negocio.masVendidos ?? [];
 ---
-<div class="cat" data-catalogo data-mas-vendidos={JSON.stringify(masVendidos)}>
+<div class="cat" data-catalogo data-mas-vendidos={JSON.stringify(masVendidos)} data-titular={titular ? '1' : undefined}>
   <div class="cat__bar">
     <button type="button" class="btn btn--line btn--sm cat__open" data-open-filters>
       <Icon name="filter" size={18} /> Filtros <span class="cat__nf" data-nf hidden></span>
@@ -152,6 +152,10 @@ const masVendidos = negocio.masVendidos ?? [];
     const masVendidos: string[] = JSON.parse(root.dataset.masVendidos || '[]');
     const mvFalta = root.querySelector<HTMLElement>('[data-mv-falta]');
     const textos = new Map(cards.map((c) => [c, norm(c.dataset.texto)]));
+    const nombres = new Map(cards.map((c) => [c, norm(`${c.dataset.nombre} ${c.querySelector('.pc__brand')?.textContent ?? ''} ${(c.dataset.cat ?? '').replace(/-/g, ' ')}`)]));
+    // en /tienda el título dice qué se está buscando
+    const titulo = root.dataset.titular ? document.querySelector<HTMLElement>('.ph__t') : null;
+    const tituloOriginal = titulo?.innerHTML ?? '';
 
     const checks = (name: string) => [...form.querySelectorAll<HTMLInputElement>(`input[name="${name}"]`)];
     const valores = (name: string) => checks(name).filter((i) => i.checked).map((i) => i.value);
@@ -194,6 +198,8 @@ const masVendidos = negocio.masVendidos ?? [];
         const d = c.dataset;
         if (o === 'menor') return Number(d.precio);
         if (o === 'mayor') return -Number(d.precio);
+        // con una búsqueda, primero los productos cuyo nombre coincide con lo buscado
+        if (o === 'relevancia' && tokens.length) return (tokens.every((t) => nombres.get(c)!.includes(t)) ? 0 : 1000) + Number(d.orden);
         if (o === 'vendidos') { const i = masVendidos.indexOf(c.querySelector('a')!.getAttribute('href')!.split('/')[2]); return i === -1 ? 1000 + Number(d.orden) : i; }
         return Number(d.orden);
       };
@@ -201,6 +207,12 @@ const masVendidos = negocio.masVendidos ?? [];
         [...cards].sort((a, b) => a.dataset.nombre!.localeCompare(b.dataset.nombre!, 'es')).forEach((c, i) => { c.style.order = String(i); });
       } else cards.forEach((c) => { c.style.order = String(clave(c)); });
       if (mvFalta) mvFalta.hidden = o !== 'vendidos';
+
+      if (titulo) {
+        const txt = q.value.trim();
+        if (tokens.length) { titulo.textContent = 'Resultados para '; const s = document.createElement('span'); s.className = 'd-outline'; s.textContent = `“${txt}”`; titulo.appendChild(s); }
+        else titulo.innerHTML = tituloOriginal;
+      }
 
       // contadores
       root.querySelectorAll('[data-count], [data-count2]').forEach((el) => { el.textContent = String(visibles); });
@@ -257,6 +269,8 @@ const masVendidos = negocio.masVendidos ?? [];
     root.querySelectorAll('[data-close-filters]').forEach((b) => b.addEventListener('click', () => { if (dlg.open) dlg.close(); }));
 
     aplicar(false);
+    // si se llega desde el buscador (Enter), mostrar directamente los resultados
+    if (q.value.trim()) root.scrollIntoView({ block: 'start' });
   }
 </script>
 

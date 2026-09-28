@@ -42,7 +42,9 @@ export function calcularTotales({ items, medioPago = null, entrega = null, codig
     descuentos.push({ tipo: 'efectivo', etiqueta: `Pago en efectivo (${reglas.efectivoPct}% OFF)`, monto: Math.round(subtotal * reglas.efectivoPct / 100) });
   }
   if (aplicaBienvenida) {
-    descuentos.push({ tipo: 'bienvenida', etiqueta: `Primera compra (${reglas.bienvenidaPct}% OFF)`, monto: Math.round(subtotal * reglas.bienvenidaPct / 100) });
+    // acumulado: el 10% de bienvenida se calcula sobre el precio ya rebajado por efectivo (10% + 10% = 19%)
+    const base = subtotal - descuentos.reduce((s, x) => s + x.monto, 0);
+    descuentos.push({ tipo: 'bienvenida', etiqueta: `Primera compra (${reglas.bienvenidaPct}% OFF)`, monto: Math.round(base * reglas.bienvenidaPct / 100) });
   }
   const totalDescuentos = descuentos.reduce((s, d) => s + d.monto, 0);
   const total = subtotal - totalDescuentos;

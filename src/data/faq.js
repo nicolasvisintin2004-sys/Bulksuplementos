@@ -47,7 +47,7 @@ export const faq = [
     grupo: 'Pagos y descuentos',
     q: '¿Se suman el descuento de efectivo y el de primera compra?',
     a: d.acumulables == null ? '' : d.acumulables
-      ? `Sí: si pagás en efectivo y usás tu código, se aplican los dos (${d.efectivoPct}% + ${d.bienvenidaPct}%).`
+      ? `Sí: si pagás en efectivo y usás tu código, se aplican los dos. El descuento combinado es del <b>19%</b>, no del 20%, porque el segundo ${d.bienvenidaPct}% se calcula sobre el precio ya rebajado.`
       : 'No se acumulan: se aplica uno solo y tu código queda guardado para otra compra.',
     falta: d.acumulables == null ? 'si los descuentos de efectivo y bienvenida se acumulan' : null,
   },
@@ -59,14 +59,14 @@ export const faq = [
   {
     grupo: 'Envíos',
     q: '¿Cuánto cuesta el envío?',
-    a: `Es <b>gratis en compras desde ${pesos(negocio.envios.gratisDesde)}</b>.${negocio.envios.costoYTiempos ? ' ' + negocio.envios.costoYTiempos : ''}`,
-    falta: negocio.envios.costoYTiempos ? null : `costo de envío para compras menores a ${pesos(negocio.envios.gratisDesde)}`,
+    a: `Es <b>gratis en compras desde ${pesos(negocio.envios.gratisDesde)}</b>.${negocio.envios.costo ? ' ' + negocio.envios.costo : ''}`,
+    falta: negocio.envios.costo ? null : `costo de envío para compras menores a ${pesos(negocio.envios.gratisDesde)}`,
   },
   {
     grupo: 'Envíos',
     q: '¿Cuánto tarda en llegar?',
-    a: negocio.envios.costoYTiempos ?? '',
-    falta: negocio.envios.costoYTiempos ? null : 'tiempos de entrega de los envíos',
+    a: negocio.envios.tiempos ?? '',
+    falta: negocio.envios.tiempos ? null : 'tiempos de entrega de los envíos',
   },
   {
     grupo: 'Envíos',

@@ -1,40 +1,69 @@
 {
-  "_leeme": "Combos según objetivo. Para cargar un combo: completá 'items' con productos del catálogo (id del producto + id de la variante, ver src/data/productos.json) y poné el 'precio' final del combo en pesos. Mientras 'items' esté vacío, la card muestra un cartel rojo y el botón de agregar queda desactivado. Ejemplo de item: { \"producto\": \"ena-whey-protein-true-made\", \"variante\": \"chocolate-2-05-lb-930-g\", \"cantidad\": 1 }",
+  "_leeme": "Combos según objetivo. Cada item del combo es un producto fijo { \"producto\": id, \"variantes\": [id] } o una elección del cliente: con varias 'variantes' elige el sabor, y con varias 'opciones' elige entre productos. Los ids están en src/data/productos.json. 'precio' es el precio final del combo en pesos.",
   "combos": [
     {
       "id": "masa-muscular",
-      "objetivo": "Ganar masa muscular",
+      "objetivo": "Ganancia muscular",
       "bajada": "Proteína y creatina para acompañar tu entrenamiento de fuerza y tu alimentación.",
-      "items": [],
-      "precio": null
+      "items": [
+        {
+          "etiqueta": "Proteína ENA · sabor a elección",
+          "opciones": [{ "producto": "ena-whey-protein-true-made", "variantes": ["chocolate-2-05-lb-930-g", "vainilla-2-05-lb-930-g", "cookies-and-cream-2-05-lb-930-g", "banana-2-05-lb-930-g"] }]
+        },
+        {
+          "etiqueta": "Creatina ENA 300 g",
+          "opciones": [{ "producto": "ena-creatina-micronizada", "variantes": ["neutro-300-g", "fruit-punch-300-g", "naranja-300-g"] }]
+        }
+      ],
+      "precio": 125000
     },
     {
       "id": "definicion",
       "objetivo": "Definición",
-      "bajada": "Para sostener la proteína del día mientras ajustás calorías, sin resignar sabor.",
-      "items": [],
-      "precio": null
+      "bajada": "Proteína y creatina para cuidar el músculo, más un quemador para acompañar la etapa de definición.",
+      "items": [
+        {
+          "etiqueta": "Proteína ENA · sabor a elección",
+          "opciones": [{ "producto": "ena-whey-protein-true-made", "variantes": ["chocolate-2-05-lb-930-g", "vainilla-2-05-lb-930-g", "cookies-and-cream-2-05-lb-930-g", "banana-2-05-lb-930-g"] }]
+        },
+        {
+          "etiqueta": "Creatina ENA 300 g",
+          "opciones": [{ "producto": "ena-creatina-micronizada", "variantes": ["neutro-300-g", "fruit-punch-300-g", "naranja-300-g"] }]
+        },
+        { "opciones": [{ "producto": "ena-hydroxy-max-black", "variantes": ["120-tabletas"] }] }
+      ],
+      "precio": 139000
     },
     {
       "id": "rendimiento",
       "objetivo": "Rendimiento / endurance",
-      "bajada": "Hidratación, geles y energía para fondos largos, running, ciclismo y trail.",
-      "items": [],
-      "precio": null
+      "bajada": "Geles de energía, bebida isotónica y sales para fondos largos, running, ciclismo y trail.",
+      "items": [
+        {
+          "etiqueta": "Gel de energía · a elección",
+          "opciones": [
+            { "producto": "gu-roctane-energy-gel" },
+            { "producto": "nutremax-energy-gel" }
+          ]
+        },
+        {
+          "etiqueta": "Hydromax Sport Drink 660 g",
+          "opciones": [{ "producto": "nutremax-hydromax-sport-drink", "variantes": ["pomelo-660-g", "naranja-660-g", "manzana-660-g"] }]
+        },
+        { "opciones": [{ "producto": "nutremax-prosalts", "variantes": ["60-capsulas"] }] }
+      ],
+      "precio": 47500
     },
     {
       "id": "bienestar",
       "objetivo": "Salud y bienestar",
-      "bajada": "Vitaminas, minerales, omega 3 y colágeno para completar tu rutina diaria.",
-      "items": [],
-      "precio": null
-    },
-    {
-      "id": "principiantes",
-      "objetivo": "Principiantes",
-      "bajada": "Lo básico para arrancar: pocos productos, fáciles de usar y bien explicados.",
-      "items": [],
-      "precio": null
+      "bajada": "Multivitamínico, omega 3 y magnesio para completar tu rutina diaria.",
+      "items": [
+        { "opciones": [{ "producto": "ena-multivitamin", "variantes": ["60-capsulas"] }] },
+        { "opciones": [{ "producto": "gentech-omega-3-epa-fish-oil", "variantes": ["60-capsulas-blandas"] }] },
+        { "opciones": [{ "producto": "ena-citrato-de-magnesio", "variantes": ["60-capsulas"] }] }
+      ],
+      "precio": 69000
     }
   ]
 }

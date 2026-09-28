@@ -14,7 +14,7 @@ const ofertas = enOferta();
 const top = masVendidos();
 const posts = (await getCollection('blog')).sort((a, b) => a.data.orden - b.data.orden).slice(0, 3);
 const listaCombos = combos();
-const ICONO_OBJ: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart', 'principiantes': 'spark' };
+const ICONO_OBJ: Record<string, string> = { 'masa-muscular': 'dumbbell', 'definicion': 'target', 'rendimiento': 'run', 'bienestar': 'heart' };
 const destacadasPrimero = [...marcas].sort((a, b) => Number(b.destacada) - Number(a.destacada));
 const d = negocio.direccion;
 ---
