@@ -78,9 +78,8 @@ export default {
     efectivoSoloRetiro: true,
   },
 
-  // ⚠ FALTA — Productos más vendidos: lista de ids de src/data/productos.json, en orden.
-  // Ej: ['ena-whey-protein-true-made', 'star-nutrition-creatina-monohidrato']
-  masVendidos: [],
+  // Productos más vendidos: ids de src/data/productos.json, en orden.
+  masVendidos: ['ena-creatina-micronizada', 'gentech-omega-3-epa-fish-oil', 'ena-citrato-de-magnesio', 'integralmedica-whey-100-pure'],
 
   politicas: {
     // Política de cambios y devoluciones
