@@ -40,11 +40,8 @@
       "bajada": "Geles de energía, bebida isotónica y sales para fondos largos, running, ciclismo y trail.",
       "items": [
         {
-          "etiqueta": "Gel de energía · a elección",
-          "opciones": [
-            { "producto": "gu-roctane-energy-gel" },
-            { "producto": "nutremax-energy-gel" }
-          ]
+          "etiqueta": "Nutremax Energy Gel caja x12 · sabor a elección",
+          "opciones": [{ "producto": "nutremax-energy-gel" }]
         },
         {
           "etiqueta": "Hydromax Sport Drink 660 g",
