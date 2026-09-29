@@ -149,19 +149,17 @@ const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.s
         <summary class="d">Descripción</summary>
         <div class="acc__b">{p.descripcion ? <p>{p.descripcion}</p> : <Falta block>descripción del producto</Falta>}</div>
       </details>
-      <details>
-        <summary class="d">Información nutricional</summary>
-        <div class="acc__b">
-          {p.infoNutricional ? (
-            <>
-              {Array.isArray(p.infoNutricional)
-                ? <ul class="nutri">{p.infoNutricional.map((n: string) => <li>{n}</li>)}</ul>
-                : <div set:html={p.infoNutricional} />}
-              <p class="acc__nota">Datos informados por el fabricante. La tabla nutricional completa está en el envase.</p>
-            </>
-          ) : <Falta block>tabla nutricional (tal cual figura en el envase)</Falta>}
-        </div>
-      </details>
+      {p.infoNutricional && (
+        <details>
+          <summary class="d">Información nutricional</summary>
+          <div class="acc__b">
+            {Array.isArray(p.infoNutricional)
+              ? <ul class="nutri">{p.infoNutricional.map((n: string) => <li>{n}</li>)}</ul>
+              : <div set:html={p.infoNutricional} />}
+            <p class="acc__nota">Datos informados por el fabricante. La tabla nutricional completa está en el envase.</p>
+          </div>
+        </details>
+      )}
       <details>
         <summary class="d">Modo de uso</summary>
         <div class="acc__b">{p.modoDeUso ? <><p>{p.modoDeUso}</p><p class="acc__nota">Respetá siempre la porción y las advertencias del envase.</p></> : <Falta block>modo de uso indicado por el fabricante</Falta>}</div>

@@ -37,12 +37,8 @@ export default {
   // Los mismos horarios en formato de Google (datos estructurados)
   horariosSchema: ['Mo-Sa 10:00-13:30', 'Mo-Sa 17:30-20:30'],
 
-  // ⚠ FALTA — Datos para transferencia. Se muestran cuando el cliente elige "Transferencia".
-  // Ej: { titular: 'Nombre Apellido', banco: 'Banco X', cbu: '0000...', alias: 'BULK.SUPLEMENTOS', cuit: '20-00000000-0' }
-  datosBancarios: null,
-
-  // ⚠ FALTA — Ruta al logo en alta calidad (SVG o PNG transparente) dentro de /public. Ej: '/logo-bulk.svg'
-  // Mientras sea null se usa el wordmark tipográfico.
+  // Logo: por decisión del cliente se usa el wordmark tipográfico (null).
+  // Para usar un archivo, poné su ruta dentro de /public. Ej: '/logo-bulk.svg'
   logo: null,
 
   // Dominio del sitio, con https.
@@ -68,9 +64,8 @@ export default {
     // ya rebajado, así que juntos son un 19% (no 20%).
     acumulables: true,
 
-    // ⚠ FALTA — ¿El envío gratis se calcula sobre el subtotal antes o después de descuentos?
-    //   'antes' | 'despues' | null (null = se comporta como 'antes' y muestra el cartel rojo)
-    envioGratisCalculo: null,
+    // El envío gratis se calcula sobre el subtotal ANTES de los descuentos ('antes' | 'despues')
+    envioGratisCalculo: 'antes',
 
     // ¿El pago en efectivo es sólo en el local?
     //   true  → efectivo sólo retirando/pagando en el local (con envío, sólo transferencia)
@@ -84,11 +79,11 @@ export default {
   politicas: {
     // Política de cambios y devoluciones
     cambios: 'Mandanos tu problema por mensaje directo de Instagram (@Bulk_Ar) o escribinos a bulk.5upl3ntos@gmail.com y lo solucionamos.',
-    // ⚠ FALTA — Términos y condiciones
-    terminos: null,
+    // Términos y condiciones: el texto está en src/data/terminos.js
+    terminos: true,
   },
 
   // Poné false cuando termines de completar todo para ocultar los carteles rojos
   // (los que sigan en null quedan ocultos, así que revisá /pendientes antes).
-  mostrarFaltantes: true,
+  mostrarFaltantes: false,
 };

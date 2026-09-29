@@ -10,7 +10,7 @@ const d = negocio.descuentos;
 const pasos = [
   { t: 'Armá tu carrito', i: 'cart', txt: 'Elegí productos, sabor, presentación y cantidad. El carrito queda guardado aunque cierres la página.', extra: `Si es tu primera compra, pedí tu código de ${d.bienvenidaPct}% OFF en la ventana de bienvenida.` },
   { t: 'Mandanos el pedido', i: 'instagram', txt: `En el carrito completás tus datos, la forma de entrega y el medio de pago. Tocás "Enviar pedido por Instagram": copiamos el pedido y se abre el chat con @${negocio.instagram.usuario}, sólo lo pegás y lo mandás. También lo podés enviar por email.`, extra: 'Te respondemos para confirmar stock y el total.' },
-  { t: 'Pagá por transferencia o efectivo', i: 'transfer', txt: `Transferencia bancaria, o efectivo en el local con ${d.efectivoPct}% OFF.`, extra: 'Si transferís, mandanos el comprobante por el mismo chat o por email.' },
+  { t: 'Pagá por transferencia o efectivo', i: 'transfer', txt: `Transferencia bancaria, o efectivo en el local con ${d.efectivoPct}% OFF.`, extra: 'Si transferís, te pasamos los datos al confirmar el pedido y nos mandás el comprobante por el mismo chat o por email.' },
   { t: 'Te lo enviamos o lo retirás', i: 'truck', txt: `Enviamos a todo el país por ${negocio.envios.empresas.join(', ')}, gratis desde ${pesos(negocio.envios.gratisDesde)}. O lo retirás en ${negocio.direccion.calle}, ${negocio.direccion.localidad}.`, extra: '' },
 ];
 const howToLd = {
@@ -33,7 +33,6 @@ const howToLd = {
               <h2 class="d step__t">{p.t}</h2>
               <p>{p.txt}</p>
               {p.extra && <p class="muted">{p.extra}</p>}
-              {i === 2 && !negocio.datosBancarios && <Falta>datos bancarios para transferencia</Falta>}
               {i === 2 && d.efectivoSoloRetiro == null && <Falta>si el efectivo es sólo retirando en el local o también contra entrega</Falta>}
               {i === 3 && !negocio.envios.costoYTiempos && <Falta>costos y tiempos de envío por debajo de {pesos(negocio.envios.gratisDesde)}</Falta>}
               {i === 3 && !negocio.horarios && <Falta>horarios para retirar en el local</Falta>}

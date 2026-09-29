@@ -8,7 +8,6 @@ import { pesos } from '../lib/formato.js';
 
 const PROVINCIAS = ['Buenos Aires', 'CABA', 'Catamarca', 'Chaco', 'Chubut', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'Jujuy', 'La Pampa', 'La Rioja', 'Mendoza', 'Misiones', 'Neuquén', 'Río Negro', 'Salta', 'San Juan', 'San Luis', 'Santa Cruz', 'Santa Fe', 'Santiago del Estero', 'Tierra del Fuego', 'Tucumán'];
 const d = negocio.descuentos;
-const banco = negocio.datosBancarios;
 ---
 <Base title="Tu pedido" description="Revisá tu carrito, completá tus datos y mandanos el pedido por Instagram o por email." noindex>
   <PageHead eyebrow="Último paso" titulo="Tu" outline="pedido" bajada="Revisá los productos, completá tus datos y mandanos el pedido por Instagram o por email. Nada se cobra online." />
@@ -100,19 +99,7 @@ const banco = negocio.datosBancarios;
             </div>
             {d.efectivoSoloRetiro == null && <p class="co__warn"><Falta>si el efectivo es sólo con retiro en el local o también contra entrega</Falta></p>}
             <p class="co__note muted" data-efectivo-nota hidden>El pago en efectivo es sólo en el local: elegí "Retiro en el local" para usarlo.</p>
-            <div class="co__banco" data-banco>
-              <p class="label">Datos para transferir</p>
-              {banco ? (
-                <dl>
-                  <div><dt>Titular</dt><dd>{banco.titular}</dd></div>
-                  <div><dt>Banco</dt><dd>{banco.banco}</dd></div>
-                  <div><dt>CBU/CVU</dt><dd class="num">{banco.cbu}</dd></div>
-                  <div><dt>Alias</dt><dd>{banco.alias}</dd></div>
-                  <div><dt>CUIT</dt><dd class="num">{banco.cuit}</dd></div>
-                </dl>
-              ) : <Falta block>datos bancarios para transferencia (titular, CBU/CVU, alias, banco, CUIT)</Falta>}
-              <p class="muted co__note">Transferí el total y mandanos el comprobante por Instagram o por email.</p>
-            </div>
+            <p class="co__note muted" data-banco>Te pasamos los datos para transferir por Instagram o email cuando confirmamos tu pedido. Después nos mandás el comprobante por el mismo medio.</p>
           </section>
 
           <!-- 5. Código -->
@@ -168,12 +155,7 @@ const banco = negocio.datosBancarios;
         <a class="btn btn--ghost" href="#" data-ok-mail><Icon name="mail" size={18} /> Enviar por email</a>
       </div>
       <button type="button" class="btn btn--line" data-ok-vaciar>Ya lo envié · vaciar carrito</button>
-      <div class="co__okbanco" data-ok-banco hidden>
-        <p class="label">Datos para transferir <b data-ok-total></b></p>
-        {banco ? (
-          <p class="num">{banco.titular} · {banco.banco} · CBU/CVU {banco.cbu} · Alias {banco.alias} · CUIT {banco.cuit}</p>
-        ) : <Falta block>datos bancarios para transferencia</Falta>}
-      </div>
+      <p class="co__okbanco muted" data-ok-banco hidden>Pagás por transferencia: te pasamos los datos cuando confirmemos tu pedido.</p>
     </div>
   </section>
   <div style="height:72px"></div>
@@ -369,7 +351,6 @@ const banco = negocio.datosBancarios;
     $<HTMLTextAreaElement>('[data-ok-msg]').value = texto;
     $('[data-ok-mail]').setAttribute('href', linkEmail(numero, texto));
     $('[data-ok-num]').textContent = numero;
-    $('[data-ok-total]').textContent = pesos(t.total);
     $('[data-ok-banco]').hidden = datos.medioPago !== 'transferencia';
 
     if (canal === 'ig') {
@@ -415,7 +396,7 @@ const banco = negocio.datosBancarios;
   .co__opt { font-size: 0.85rem; font-weight: 500; }
   .co__fields { display: grid; gap: 14px; }
   @media (min-width: 640px) { .co__fields { grid-template-columns: 1fr 1fr; } .co__full { grid-column: 1 / -1; } }
-  .co__envio[hidden], .co__retiro[hidden], .co__banco[hidden] { display: none; }
+  .co__envio[hidden], .co__retiro[hidden] { display: none; }
   .co__emp { border: 0; padding: 0; margin: 0; }
   .seg--3 { grid-template-columns: repeat(3, 1fr); }
   .seg--3 label { padding: 12px 10px; text-align: center; }
@@ -426,11 +407,6 @@ const banco = negocio.datosBancarios;
   .seg label:global(.is-off) { opacity: 0.4; pointer-events: none; }
   .co__note { font-size: 0.85rem; }
   .co__note[hidden] { display: none; }
-  .co__banco { display: grid; gap: 10px; padding: 16px; border-radius: var(--r-sm); border: 1px dashed var(--line-2); }
-  .co__banco dl { margin: 0; display: grid; gap: 6px; }
-  .co__banco dl div { display: flex; justify-content: space-between; gap: 12px; }
-  .co__banco dt { color: var(--mute); }
-  .co__banco dd { margin: 0; font-weight: 700; user-select: all; }
   .co__code { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
   .co__code .input { text-transform: uppercase; letter-spacing: 0.06em; }
   .co__codemsg { font-size: 0.85rem; font-weight: 650; min-height: 1.2em; }

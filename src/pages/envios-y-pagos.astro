@@ -7,7 +7,6 @@ import negocio from '../config/negocio.js';
 import { pesos } from '../lib/formato.js';
 
 const d = negocio.descuentos;
-const b = negocio.datosBancarios;
 ---
 <Base title="Envíos y pagos" description={`Envíos a todo el país por ${negocio.envios.empresas.join(', ')}. Envío gratis desde ${pesos(negocio.envios.gratisDesde)}. Pagás por transferencia, o en efectivo en el local con ${d.efectivoPct}% OFF.`}>
   <PageHead eyebrow="Info útil" titulo="Envíos" outline="y pagos" migas={[{ href: '/envios-y-pagos/', label: 'Envíos y pagos' }]} />
@@ -35,23 +34,11 @@ const b = negocio.datosBancarios;
           <p class="d big__n">{d.efectivoPct}% OFF</p>
         </div>
         <ul class="ep__list">
-          <li><b>Transferencia bancaria.</b> Te confirmamos el total por Instagram o email y nos mandás el comprobante.</li>
+          <li><b>Transferencia bancaria.</b> Cuando confirmamos tu pedido por Instagram o email te pasamos el total y los datos para transferir, y nos mandás el comprobante.</li>
           <li><b>Efectivo</b> con {d.efectivoPct}% de descuento. {d.efectivoSoloRetiro == null ? <Falta>si es sólo retirando en el local o también contra entrega</Falta> : d.efectivoSoloRetiro ? 'Sólo retirando en el local.' : 'Con retiro o con envío.'}</li>
           <li><b>Primera compra:</b> {d.bienvenidaPct}% OFF con el código que te damos al dejar tu email (uno por email). {d.acumulables == null ? <Falta>si se acumula con el descuento en efectivo</Falta> : d.acumulables ? 'Se acumula con el de efectivo: juntos dan 19% OFF (el segundo se calcula sobre el precio ya rebajado).' : 'No se acumula con el de efectivo.'}</li>
           <li><b>No hay pago online:</b> nunca te vamos a pedir datos de tarjeta.</li>
         </ul>
-        <div class="bank">
-          <p class="label">Datos para transferir</p>
-          {b ? (
-            <dl>
-              <div><dt>Titular</dt><dd>{b.titular}</dd></div>
-              <div><dt>Banco</dt><dd>{b.banco}</dd></div>
-              <div><dt>CBU/CVU</dt><dd class="num">{b.cbu}</dd></div>
-              <div><dt>Alias</dt><dd>{b.alias}</dd></div>
-              <div><dt>CUIT</dt><dd class="num">{b.cuit}</dd></div>
-            </dl>
-          ) : <Falta block>datos bancarios (titular, CBU/CVU, alias, banco, CUIT)</Falta>}
-        </div>
       </div>
     </div>
   </section>
@@ -68,9 +55,4 @@ const b = negocio.datosBancarios;
   .ep__list li { padding: 16px 0; border-bottom: 1px solid var(--line); color: var(--soft); display: block; }
   .ep__list li :global(.falta) { margin-top: 8px; }
   .ep__list b { color: var(--paper); }
-  .bank { display: grid; gap: 10px; padding: 18px; border: 1px dashed var(--line-2); border-radius: var(--r); }
-  .bank dl { margin: 0; display: grid; gap: 6px; }
-  .bank dl div { display: flex; justify-content: space-between; gap: 12px; }
-  .bank dt { color: var(--mute); }
-  .bank dd { margin: 0; font-weight: 700; }
 </style>

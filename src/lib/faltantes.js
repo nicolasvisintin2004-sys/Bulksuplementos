@@ -17,13 +17,11 @@ export function listaFaltantes() {
   const combosVacios = combos.combos.filter((c) => !c.items?.length || c.precio == null).length;
   const items = [
     [!negocio.horarios, 'Horarios de atención del local', 'src/config/negocio.js → horarios'],
-    [!negocio.datosBancarios, 'Datos bancarios para transferencia (titular, CBU/CVU, alias, banco, CUIT)', 'src/config/negocio.js → datosBancarios'],
     [!negocio.email, 'Email de contacto', 'src/config/negocio.js → email'],
     [true, 'Remitente de los emails, cuenta y claves de Brevo (email marketing)', 'Variables de entorno en Netlify (ver README → Email marketing)'],
-    [!negocio.logo, 'Logo en alta calidad (SVG o PNG transparente)', 'public/ + src/config/negocio.js → logo'],
     [sinFoto > 0, `Fotos de producto (faltan ${sinFoto} de ${catalogo.productos.length})`, 'public/productos/ + campo "imagen" en src/data/productos.json'],
     [sinDesc > 0, `Descripción de producto (faltan ${sinDesc})`, 'src/data/productos.json → descripcion'],
-    [sinNutri > 0, `Información nutricional (faltan ${sinNutri} productos; cargar desde la etiqueta)`, 'src/data/productos.json → infoNutricional'],
+    [sinNutri > 0, `Información nutricional (faltan ${sinNutri} productos; mientras tanto la sección no se muestra en esos productos)`, 'src/data/productos.json → infoNutricional'],
     [sinUso > 0, `Modo de uso (faltan ${sinUso} productos)`, 'src/data/productos.json → modoDeUso'],
     [d.acumulables == null, 'Si el 10% efectivo y el 10% de bienvenida se acumulan o no', 'src/config/negocio.js → descuentos.acumulables'],
     [d.efectivoSoloRetiro == null, 'Si el efectivo es sólo para retiro en local o también contra entrega', 'src/config/negocio.js → descuentos.efectivoSoloRetiro'],
