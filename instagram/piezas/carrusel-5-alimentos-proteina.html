@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · 5 alimentos con mucha proteína</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  /* portada: título arriba, cinco tiras de foto abajo */
+  .p__txt { position: absolute; left: var(--m); right: var(--m); top: 150px; }
+  .p__txt .t1 { font-size: 92px; }
+  .p__txt .lead { margin-top: 26px; }
+  .tiras { position: absolute; left: 0; right: 0; bottom: 130px; height: 560px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 0 var(--m); }
+  .tiras figure { margin: 0; position: relative; overflow: hidden; border-radius: 14px; }
+  .tiras img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.92) contrast(1.04); }
+  .tiras figcaption { position: absolute; left: 14px; bottom: 12px; font-size: 22px; font-weight: 800; color: var(--paper); text-shadow: 0 2px 12px rgb(0 0 0 / 0.7); }
+
+  /* alimento: foto arriba, datos abajo */
+  .al .foto { bottom: 560px; }
+  .al .velo { bottom: 560px; background: linear-gradient(to top, var(--ink) 0%, rgb(10 10 10 / 0) 30%), linear-gradient(to bottom, rgb(10 10 10 / 0.7) 0%, rgb(10 10 10 / 0) 22%); }
+  .al__datos { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 140px; }
+  .al__num { font-size: 22px; font-weight: 800; letter-spacing: 0.2em; color: var(--mute); }
+  .al__datos .t2 { margin-top: 12px; }
+  .al__dato { display: flex; align-items: baseline; gap: 22px; margin-top: 26px; padding-top: 26px; border-top: 2px solid var(--line-2); }
+  .al__dato .n { font-size: 120px; color: var(--lime); white-space: nowrap; }
+  .al__dato span { font-size: 30px; font-weight: 600; line-height: 1.25; color: var(--soft); }
+  .al__datos .lead { margin-top: 24px; font-size: 30px; }
+
+  /* whey */
+  .w .foto { bottom: 640px; }
+  .w .foto img { object-position: 50% 60%; }
+  .w .velo { bottom: 640px; background: linear-gradient(to top, var(--ink) 0%, rgb(10 10 10 / 0) 40%); }
+  .w__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 600px; }
+  .w__txt .lead { margin-top: 20px; font-size: 30px; }
+  .w__prods { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 130px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .w__prods .prod { height: 240px; }
+  .w__prods .prod img { inset: 2%; width: 96%; height: 96%; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Nutrición</span><span class="pag">01 / 07</span></header>
+  <div class="p__txt">
+    <h1 class="t1"><span class="res">5 alimentos</span> con mucha proteína</h1>
+    <p class="lead">Los que no pueden faltar en tus comidas si entrenás.</p>
+  </div>
+  <div class="tiras">
+    <figure><img src="../fotos/huevos.jpg" alt="" style="object-position:55% 50%"><figcaption>01</figcaption></figure>
+    <figure><img src="../fotos/carne.jpg" alt="" style="object-position:62% 50%"><figcaption>02</figcaption></figure>
+    <figure><img src="../fotos/pollo.jpg" alt="" style="object-position:72% 50%"><figcaption>03</figcaption></figure>
+    <figure><img src="../fotos/atun.jpg" alt="" style="object-position:60% 40%"><figcaption>04</figcaption></figure>
+    <figure><img src="../fotos/yogur.jpg" alt="" style="object-position:50% 50%"><figcaption>05</figcaption></figure>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02–06 · Alimentos (se arman desde la lista de abajo) -->
+<template id="alimento">
+  <section class="slide ed al">
+    <div class="foto"><img alt=""></div>
+    <div class="velo"></div>
+    <header class="ed-top"><span class="cat">Nutrición</span><span class="pag"></span></header>
+    <div class="al__datos">
+      <p class="al__num"></p>
+      <h2 class="t2"></h2>
+      <div class="al__dato"><b class="n"></b><span></span></div>
+      <p class="lead"></p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+  </section>
+</template>
+
+<!-- 07 · Whey -->
+<section class="slide ed w" id="whey">
+  <div class="foto"><img src="../fotos/scoop.jpg" alt=""></div>
+  <div class="velo"></div>
+  <header class="ed-top"><span class="cat">Nutrición</span><span class="pag">07 / 07</span></header>
+  <div class="w__txt">
+    <h2 class="t2">¿No llegás a tu proteína <span class="res">sólo con comida?</span></h2>
+    <p class="lead">Un scoop de whey suma <b>unos 20 a 25 g de proteína</b> en 30 segundos. No reemplaza la comida: completa lo que te falta.</p>
+  </div>
+  <div class="w__prods">
+    <div class="prod"><img src="../../public/productos/integralmedica-whey-100-pure-82cffc.webp" alt=""></div>
+    <div class="prod"><img src="../../public/productos/ena-whey-protein-true-made-0c6879.webp" alt=""></div>
+    <div class="prod"><img src="../../public/productos/star-nutrition-platinum-whey-protein-2f0802.webp" alt=""></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+5 alimentos con mucha proteína que no pueden faltar en tus comidas 🍳🥩
+
+Llegar a tu proteína del día es más fácil si cada comida tiene una buena fuente:
+
+1️⃣ Huevo: unos 6 g por unidad, con todos los aminoácidos esenciales.
+2️⃣ Carne vacuna magra: cerca de 28 g cada 100 g ya cocida, más hierro, zinc y B12.
+3️⃣ Pechuga de pollo: unos 31 g cada 100 g cocida y casi sin grasa.
+4️⃣ Atún al natural: unos 25 g cada 100 g, práctico y de alacena.
+5️⃣ Yogur griego: alrededor de 9 g cada 100 g, ideal para desayunos y meriendas.
+
+¿Y si igual no llegás? Ahí un scoop de whey te ayuda a completar lo que falta.
+
+Valores aproximados: cambian según el corte, la cocción y la marca.
+
+Guardá este posteo para armar tus comidas 📌
+
+📲 Proteínas en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#proteina #alimentacionsaludable #nutriciondeportiva #comidafit #gym #masamuscular #wheyprotein #carmendepatagones #viedma #bulk
+</script>
+
+<script>
+  // g = dato principal · u = a qué se refiere el dato · pos = encuadre de la foto
+  const ALIMENTOS = [
+    { foto: 'huevos', pos: '50% 50%', nombre: 'Huevo', g: '6 g', u: 'de proteína por unidad (huevo grande)',
+      txt: 'Proteína completa, con todos los aminoácidos esenciales. Barato y fácil de sumar a cualquier comida.' },
+    { foto: 'carne', pos: '50% 50%', nombre: 'Carne vacuna magra', g: '28 g', u: 'cada 100 g, ya cocida (aprox.)',
+      txt: 'Además aporta hierro, zinc y vitamina B12. Elegí cortes magros: nalga, cuadril, peceto o lomo.' },
+    { foto: 'pollo', pos: '62% 50%', nombre: 'Pechuga de pollo', g: '31 g', u: 'cada 100 g, ya cocida (aprox.)',
+      txt: 'Casi sin grasa y muy versátil. Sirve tanto para definir como para ganar músculo.' },
+    { foto: 'atun', pos: '50% 38%', nombre: 'Atún', g: '25 g', u: 'cada 100 g al natural (aprox.)',
+      txt: 'Fresco o en lata. Dura meses en la alacena y se suma en segundos a una ensalada, un arroz o una tarta.' },
+    { foto: 'yogur', pos: '50% 50%', nombre: 'Yogur griego', g: '9 g', u: 'cada 100 g, según la marca',
+      txt: 'Más proteína que un yogur común. Elegilo natural y sin azúcar agregada para desayunos y meriendas.' },
+  ];
+  const tpl = document.getElementById('alimento');
+  const whey = document.getElementById('whey');
+  ALIMENTOS.forEach((a, i) => {
+    const el = tpl.content.cloneNode(true);
+    const img = el.querySelector('.foto img');
+    img.src = `../fotos/${a.foto}.jpg`;
+    img.style.objectPosition = a.pos;
+    el.querySelector('.pag').textContent = `0${i + 2} / 07`;
+    el.querySelector('.al__num').textContent = `0${i + 1} · de 05`;
+    el.querySelector('.t2').textContent = a.nombre;
+    el.querySelector('.al__dato .n').textContent = a.g;
+    el.querySelector('.al__dato span').textContent = a.u;
+    el.querySelector('.lead').textContent = a.txt;
+    whey.before(el);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* ═════════════════════════════════════════════════════════════
+   BULK — línea EDITORIAL (posteos informativos, tono serio)
+   Se carga DESPUÉS de marca.css. Mismos colores y tipografías,
+   pero con otro registro: fotos reales a sangre, titulares en
+   Manrope 800 en minúsculas, el lima sólo como acento y el
+   wordmark chico al pie. Nada de ilustraciones ni mayúsculas gritadas.
+   ═════════════════════════════════════════════════════════════ */
+
+.ed { font-family: var(--f-body); }
+.ed::before { display: none; }            /* sin brillos lima de fondo */
+.ed--papel { background: var(--paper); color: var(--ink); }
+.ed--papel::after { opacity: 0.035; mix-blend-mode: multiply; }
+
+/* ─── Foto a sangre ─────────────────────────────────────── */
+.foto { position: absolute; inset: 0; z-index: 0; }
+.foto img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.92) contrast(1.04); }
+/* velo para que el texto se lea sobre la foto */
+.velo { position: absolute; inset: 0; z-index: 1; }
+.velo--abajo { background: linear-gradient(to top, rgb(10 10 10 / 0.96) 0%, rgb(10 10 10 / 0.82) 34%, rgb(10 10 10 / 0) 64%); }
+.velo--arriba { background: linear-gradient(to bottom, rgb(10 10 10 / 0.92) 0%, rgb(10 10 10 / 0.7) 30%, rgb(10 10 10 / 0) 58%); }
+.velo--todo { background: rgb(10 10 10 / 0.55); }
+
+/* ─── Cabecera y pie ────────────────────────────────────── */
+.ed-top, .ed-pie {
+  position: absolute; z-index: 5; left: var(--m); right: var(--m);
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 22px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase;
+}
+.ed-top { top: 64px; }
+.ed-pie { bottom: 54px; }
+.ed-top .cat { display: inline-flex; align-items: center; gap: 14px; }
+.ed-top .cat::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--lime); }
+.ed--papel .ed-top .cat::before { background: var(--ink); }
+.ed-top .pag { font-variant-numeric: tabular-nums; letter-spacing: 0.12em; opacity: 0.6; }
+.ed-pie .wm { font-size: 30px; -webkit-text-stroke-width: 1.6px; }
+.ed--papel .ed-pie .wm { color: var(--paper); -webkit-text-stroke-color: var(--ink); }
+.ed-pie .h { letter-spacing: 0.04em; text-transform: none; font-size: 24px; opacity: 0.7; }
+.ed-pie .sig { text-transform: none; letter-spacing: 0.02em; font-size: 24px; display: inline-flex; gap: 10px; align-items: center; }
+.ed-pie .sig::after { content: '→'; font-size: 30px; line-height: 1; }
+
+/* ─── Tipografía ────────────────────────────────────────── */
+.t1, .t2, .t3 { font-family: var(--f-body); font-weight: 800; letter-spacing: -0.035em; line-height: 1.1; }
+.t1 { font-size: 100px; }
+.t2 { font-size: 72px; }
+.t3 { font-size: 46px; letter-spacing: -0.025em; line-height: 1.08; }
+.lead { font-size: 34px; line-height: 1.38; font-weight: 500; }
+.chico { font-size: 22px; line-height: 1.45; font-weight: 500; opacity: 0.62; }
+.ed--papel .lead { color: #3d3d3a; }
+.ed:not(.ed--papel) .lead { color: var(--soft); }
+.lead b { font-weight: 800; }
+.ed:not(.ed--papel) .lead b { color: var(--paper); }
+
+/* resaltado tipo marcador: lima sobre negro / negro sobre papel */
+/* acento: texto lima sobre negro; .res--caja = marcador lima (usar en una o dos palabras) */
+.res { color: var(--lime); }
+.res--caja { background: var(--lime); color: var(--ink); padding: 0 0.12em; margin: 0 -0.02em; -webkit-box-decoration-break: clone; box-decoration-break: clone; border-radius: 0.08em; }
+.ed--papel .res--linea { background: linear-gradient(transparent 62%, var(--lime) 62%, var(--lime) 92%, transparent 92%); padding: 0; margin: 0; color: inherit; }
+
+/* números de marca: Anybody itálica */
+.n { font-family: var(--f-display); font-style: italic; font-weight: 900; font-stretch: 125%; font-variation-settings: 'wdth' 125; letter-spacing: -0.01em; line-height: 0.9; font-variant-numeric: tabular-nums; }
+
+.etiqueta {
+  display: inline-flex; align-items: center; gap: 12px; align-self: flex-start;
+  font-size: 22px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 12px 20px; border-radius: 8px; background: var(--ink); color: var(--lime);
+}
+.etiqueta--lima { background: var(--lime); color: var(--ink); }
+
+.regla { height: 2px; background: currentColor; opacity: 0.16; border: 0; margin: 0; }
+
+/* tarjeta blanca para fotos de producto (vienen con fondo blanco) */
+.prod { position: relative; background: #fff; border-radius: 22px; overflow: hidden; }
+.prod img { position: absolute; inset: 6%; width: 88%; height: 88%; object-fit: contain; }
+.ed:not(.ed--papel) .prod { box-shadow: 0 30px 60px rgb(0 0 0 / 0.45); }
+
+/* nota de fuente o aclaración */
+.fuente { font-size: 19px; line-height: 1.4; font-weight: 600; opacity: 0.5; }

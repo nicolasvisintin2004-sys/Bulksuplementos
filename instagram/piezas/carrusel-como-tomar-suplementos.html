@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Cómo tomar tus suplementos</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  .portada .foto img { object-position: 50% 100%; }
+  .portada__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 150px; }
+  .portada__txt .lead { margin-top: 28px; max-width: 860px; }
+
+  .guia__cab { position: absolute; left: var(--m); right: var(--m); top: 128px; }
+  .guia__cab .chico { margin-top: 10px; opacity: 0.55; }
+  .guia__grid { position: absolute; left: var(--m); right: var(--m); top: 268px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px 36px; }
+  .item .prod { height: 232px; border: 1.5px solid #e2e2dc; }
+  .item h3 { font-size: 36px; font-weight: 800; letter-spacing: -0.025em; margin-top: 20px; line-height: 1.05; }
+  .item .etiqueta { margin-top: 12px; font-size: 17px; letter-spacing: 0.12em; padding: 9px 14px; }
+  .item p { font-size: 22px; line-height: 1.4; font-weight: 500; color: #4a4a46; margin-top: 12px; }
+  .item p b { color: var(--ink); font-weight: 800; }
+
+  .cierre { display: flex; flex-direction: column; justify-content: center; gap: 90px; padding: 120px var(--m) 110px; }
+  .cierre__txt .lead { margin-top: 36px; max-width: 880px; }
+  .cierre__box { border: 2px solid var(--line-2); border-radius: 26px; padding: 44px 48px; display: grid; gap: 18px; background: var(--ink-2); }
+  .cierre__box .t3 { color: var(--paper); }
+  .cierre__box .lead { font-size: 30px; }
+  .cierre__box .etiqueta { margin-top: 10px; justify-self: start; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed portada">
+  <div class="foto"><img src="../fotos/capsulas.jpg" alt=""></div>
+  <div class="velo velo--abajo"></div>
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">01 / 04</span></header>
+  <div class="portada__txt">
+    <h1 class="t1">¿Cómo tomar tus <span class="res">suplementos?</span></h1>
+    <p class="lead">No todos se toman igual. Cuándo conviene cada uno y por qué, con los que más se usan para entrenar.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02 · Todos los días -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">02 / 04</span></header>
+  <div class="guia__cab">
+    <h2 class="t3">Los de <span class="res--linea">todos los días</span></h2>
+  </div>
+  <div class="guia__grid">
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-creatina-micronizada-338443.webp" alt=""></div>
+      <h3>Creatina</h3>
+      <span class="etiqueta">Cualquier momento</span>
+      <p>El horario es lo de menos. Lo que importa es <b>tomarla todos los días</b>, también los de descanso.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/integralmedica-whey-100-pure-82cffc.webp" alt=""></div>
+      <h3>Proteína whey</h3>
+      <span class="etiqueta">Donde no llegás con comida</span>
+      <p>Después de entrenar o en el desayuno. Lo que cuenta es <b>el total de proteína del día</b>.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/gentech-omega-3-epa-fish-oil-e448da.webp" alt=""></div>
+      <h3>Omega 3</h3>
+      <span class="etiqueta">Con una comida principal</span>
+      <p>Con comida se absorbe mejor y cae mejor. Una vez abierto, <b>guardalo en la heladera</b>.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-vitamina-d3-k2-bace94.webp" alt=""></div>
+      <h3>Vitamina D3 + K2</h3>
+      <span class="etiqueta">Con la comida más grasa</span>
+      <p>Son vitaminas liposolubles: <b>necesitan grasa</b> para absorberse bien.</p>
+    </article>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 03 · Entrenamiento y noche -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">03 / 04</span></header>
+  <div class="guia__cab">
+    <h2 class="t3">Los del <span class="res--linea">entreno y la noche</span></h2>
+  </div>
+  <div class="guia__grid">
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-pre-war-730e2d.webp" alt=""></div>
+      <h3>Pre-entreno</h3>
+      <span class="etiqueta">20 a 30 min antes</span>
+      <p>Tiene cafeína: <b>evitalo de noche</b> y empezá con media dosis para ver cómo te cae.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-electrolitos-208dce.webp" alt=""></div>
+      <h3>Electrolitos</h3>
+      <span class="etiqueta">Antes, durante o después</span>
+      <p>Sobre todo con calor o en entrenamientos largos en los que <b>transpirás mucho</b>.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-citrato-de-magnesio-de1d45.webp" alt=""></div>
+      <h3>Citrato de magnesio</h3>
+      <span class="etiqueta">Con comida o a la noche</span>
+      <p>Si te cae pesado, <b>dividí la dosis en dos tomas</b> a lo largo del día.</p>
+    </article>
+    <article class="item">
+      <div class="prod"><img src="../../public/productos/ena-zma-d8da0a.webp" alt=""></div>
+      <h3>ZMA</h3>
+      <span class="etiqueta">Antes de dormir</span>
+      <p>Con el estómago vacío y <b>lejos de los lácteos</b>: el calcio compite con el zinc.</p>
+    </article>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 04 · Cierre -->
+<section class="slide ed cierre">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">04 / 04</span></header>
+  <div class="cierre__txt">
+    <h2 class="t2">Más suplementos no es <span class="res">más resultado.</span></h2>
+    <p class="lead">Lo importante es saber <b>cuáles necesitás</b>, en qué dosis y cómo combinarlos. Y respetar siempre lo que indica el envase.</p>
+  </div>
+  <div class="cierre__box">
+    <p class="t3">¿No sabés por cuál empezar?</p>
+    <p class="lead">Escribinos por mensaje directo a <b>@Bulk_Ar</b> y te ayudamos a elegir según tu objetivo.</p>
+    <span class="etiqueta etiqueta--lima">Guardá este posteo</span>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+¿Estás tomando bien tus suplementos? 💊
+
+No todos se toman igual. Algunos se absorben mejor con comida, otros conviene tomarlos lejos de ciertos alimentos y otros dependen de cuándo entrenás.
+
+Algunos ejemplos:
+▪️ Creatina: el horario es lo de menos, lo importante es no cortarla.
+▪️ Omega 3 y vitamina D3: con una comida que tenga algo de grasa.
+▪️ Pre-entreno: 20 a 30 minutos antes y nunca de noche, por la cafeína.
+▪️ ZMA: antes de dormir y lejos de los lácteos.
+
+Pero ojo: más suplementos no significa mejores resultados. Lo que importa es saber cuáles necesitás, en qué dosis y cómo combinarlos.
+
+Guardá este posteo para tenerlo a mano y mandáselo a alguien que entrene con vos 📌
+
+📲 Todos estos productos están en bulksuplementos.com.ar o escribinos por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+Información general: seguí siempre la indicación del envase y, si tenés una condición de salud, consultá con tu médico.
+
+#suplementos #suplementosdeportivos #creatina #omega3 #vitaminad #magnesio #preentreno #nutriciondeportiva #carmendepatagones #viedma #bulk
+</script>
+</body>
+</html>

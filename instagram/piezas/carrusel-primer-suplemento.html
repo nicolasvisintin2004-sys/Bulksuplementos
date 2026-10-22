@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Antes de comprar tu primer suplemento</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  /* Panorama: las slides van una al lado de la otra y el hilo lima las cruza a todas,
+     así al deslizar la línea continúa de una imagen a la siguiente. */
+  .pano { position: relative; display: flex; width: max-content; }
+  .hilo { position: absolute; z-index: 20; left: 0; top: 0; pointer-events: none; }
+
+  .portada .foto img { object-position: 40% 30%; }
+  .portada .velo { background: linear-gradient(to top, rgb(10 10 10 / 0.97) 0%, rgb(10 10 10 / 0.85) 42%, rgb(10 10 10 / 0.15) 75%); }
+  .portada__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 270px; }
+  .portada__txt .t1 { margin-top: 30px; }
+  .portada__txt .lead { margin-top: 24px; }
+
+  .paso__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 250px; }
+  .paso__n { font-size: 210px; color: var(--lime); }
+  .paso__txt .t2 { margin-top: 40px; }
+  .paso__txt .lead { margin-top: 32px; max-width: 900px; }
+  .paso__fondo { position: absolute; z-index: 0; right: -40px; bottom: 120px; font-size: 620px; color: transparent; -webkit-text-stroke: 2px var(--line); }
+
+  .fin__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 190px; }
+  .fin__txt .lead { margin-top: 30px; }
+  .fin__box { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 640px; padding: 50px; border-radius: 26px; background: var(--lime); color: var(--ink); }
+  .fin__box p:first-child { font-size: 26px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+  .fin__box .n { font-size: 116px; margin: 18px 0 14px; white-space: nowrap; }
+  .fin__box p:last-child { font-size: 32px; font-weight: 600; line-height: 1.35; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<div class="pano">
+  <!-- 01 · Portada -->
+  <section class="slide ed portada">
+    <div class="foto"><img src="../fotos/gym-barra.jpg" alt=""></div>
+    <div class="velo"></div>
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">01 / 06</span></header>
+    <div class="portada__txt">
+      <span class="etiqueta etiqueta--lima">Leé esto</span>
+      <h1 class="t1">Antes de comprar tu <span class="res">primer suplemento</span></h1>
+      <p class="lead">Cuatro cosas para no gastar de más.</p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+  </section>
+
+  <!-- 02–05 · Pasos -->
+  <section class="slide ed">
+    <span class="paso__fondo n">1</span>
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">02 / 06</span></header>
+    <div class="paso__txt">
+      <p class="paso__n n">01</p>
+      <h2 class="t2">Definí tu <span class="res">objetivo.</span></h2>
+      <p class="lead">¿Ganar músculo? ¿Rendir más? ¿Bajar grasa? Cada objetivo pide algo distinto: <b>no todos necesitamos lo mismo.</b></p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Seguí</span></footer>
+  </section>
+
+  <section class="slide ed">
+    <span class="paso__fondo n">2</span>
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">03 / 06</span></header>
+    <div class="paso__txt">
+      <p class="paso__n n">02</p>
+      <h2 class="t2">Los suplementos <span class="res">no reemplazan</span> comidas.</h2>
+      <p class="lead">Suman cuando ya comés, entrenás y descansás bien. <b>Si la base no está, ningún pote la compensa.</b></p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Seguí</span></footer>
+  </section>
+
+  <section class="slide ed">
+    <span class="paso__fondo n">3</span>
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">04 / 06</span></header>
+    <div class="paso__txt">
+      <p class="paso__n n">03</p>
+      <h2 class="t2">No compres <span class="res">por moda.</span></h2>
+      <p class="lead">Que algo sea viral no significa que lo necesites. <b>Elegí por tu objetivo</b>, no por lo que toma otro.</p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Seguí</span></footer>
+  </section>
+
+  <section class="slide ed">
+    <span class="paso__fondo n">4</span>
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">05 / 06</span></header>
+    <div class="paso__txt">
+      <p class="paso__n n">04</p>
+      <h2 class="t2">Empezá por lo que <span class="res">tiene respaldo.</span></h2>
+      <p class="lead"><b>Proteína</b>, si no llegás con la comida. <b>Creatina</b>, si entrenás fuerza. Son los más estudiados; lo demás puede esperar.</p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Seguí</span></footer>
+  </section>
+
+  <!-- 06 · Cierre -->
+  <section class="slide ed">
+    <header class="ed-top"><span class="cat">Primeros pasos</span><span class="pag">06 / 06</span></header>
+    <div class="fin__txt">
+      <h2 class="t2">¿Querés ayuda <span class="res">para elegir?</span></h2>
+      <p class="lead">Contanos qué buscás y te recomendamos por dónde empezar, según tu objetivo.</p>
+    </div>
+    <div class="fin__box">
+      <p>Comentá</p>
+      <p class="n">EMPEZAR</p>
+      <p>y te escribimos por mensaje directo.</p>
+    </div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="h">@Bulk_Ar</span></footer>
+  </section>
+
+  <svg class="hilo" id="hilo"></svg>
+</div>
+
+<script type="text/plain" id="descripcion">
+Leé esto antes de comprar tu primer suplemento 👇
+
+No todos tenemos los mismos objetivos ni necesitamos los mismos productos. Antes de gastar, tené en cuenta esto:
+
+1️⃣ Definí tu objetivo: ganar músculo, rendir más o bajar grasa piden cosas distintas.
+2️⃣ Los suplementos no reemplazan comidas: suman cuando la base (comida, entrenamiento y descanso) ya está.
+3️⃣ No compres por moda: que algo sea viral no significa que lo necesites.
+4️⃣ Empezá por lo que tiene respaldo: proteína si no llegás con la comida, creatina si entrenás fuerza.
+
+¿Querés que te ayudemos a elegir? Comentá EMPEZAR y te escribimos 💬
+
+📲 bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#suplementos #suplementosdeportivos #primerosuplemento #creatina #proteina #gym #nutriciondeportiva #carmendepatagones #viedma #bulk
+</script>
+
+<script>
+  // Hilo lima continuo: corre a la altura del pie, con un nodo en cada slide y flecha al final
+  const W = 1080, H = 1350, N = document.querySelectorAll('.pano .slide').length, Y = 1188;
+  const svg = document.getElementById('hilo');
+  svg.setAttribute('width', W * N); svg.setAttribute('height', H);
+  let d = `<path d="M 72 ${Y} H ${W * (N - 1) + 860}" stroke="#c8ff00" stroke-width="4" fill="none"/>`;
+  for (let i = 0; i < N; i++) d += `<circle cx="${W * i + 72}" cy="${Y}" r="11" fill="#0a0a0a" stroke="#c8ff00" stroke-width="4"/>`;
+  d += `<path d="M ${W * (N - 1) + 838} ${Y - 18} L ${W * (N - 1) + 864} ${Y} L ${W * (N - 1) + 838} ${Y + 18}" stroke="#c8ff00" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+  svg.innerHTML = d;
+</script>
+</body>
+</html>

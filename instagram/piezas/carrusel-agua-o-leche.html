@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Proteína con agua o con leche</title>
+<link rel="stylesheet" href="../marca.css">
+<style>
+  /* mitad lima cortada a 12° (lado "leche") */
+  .lima { position: absolute; z-index: 2; background: var(--lime); color: var(--ink); }
+  .vs {
+    position: absolute; z-index: 4; left: 50%; transform: translate(-50%, -50%) rotate(-6deg);
+    width: 190px; height: 190px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--ink); border: 5px solid var(--lime); color: var(--lime); font-size: 76px;
+  }
+
+  /* portada */
+  .p__t { position: absolute; left: var(--m); right: var(--m); top: 180px; }
+  .p__t .d { font-size: 82px; margin-top: 30px; white-space: nowrap; }
+  .p .lima { inset: 470px 0 0 500px; clip-path: polygon(120px 0, 100% 0, 100% 100%, 0 100%); }
+  .p__lado { position: absolute; z-index: 3; top: 560px; width: 460px; display: flex; flex-direction: column; align-items: center; gap: 30px; }
+  .p__lado--agua { left: 30px; }
+  .p__lado--leche { right: 20px; color: var(--ink); }
+  .p__lado .d { font-size: 54px; white-space: nowrap; }
+  .p .vs { top: 800px; }
+  .p .pie { z-index: 6; }
+  .p .desliza { color: var(--ink); }
+
+  /* comparación */
+  .c .lima { inset: 0 0 0 480px; clip-path: polygon(120px 0, 100% 0, 100% 100%, 0 100%); }
+  .c__lado { position: absolute; z-index: 3; top: 170px; width: 440px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .c__lado--agua { left: 36px; }
+  .c__lado--leche { right: 30px; color: var(--ink); }
+  .c__lado h2 { font-size: 48px; white-space: nowrap; margin-top: 18px; }
+  .c__lado--agua h2 { color: var(--lime); }
+  .c__lado ul { margin-top: 52px; display: grid; gap: 46px; }
+  .c__lado li { font-size: 37px; line-height: 1.02; }
+  .c__lado li::before { content: ''; display: block; width: 44px; height: 6px; margin: 0 auto 16px; background: var(--lime); transform: skewX(-30deg); }
+  .c__lado--leche li::before { background: var(--ink); }
+  .c .vs { top: 290px; width: 130px; height: 130px; font-size: 50px; }
+  .c .pie { z-index: 6; }
+  .c .pie .num { color: var(--ink); }
+
+  /* cierre */
+  .f { padding: 200px var(--m) 0; }
+  .f h2 { font-size: 80px; }
+  .f__guia { margin-top: 60px; display: grid; gap: 22px; }
+  .f__guia li { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 30px 36px; border: 2.5px solid var(--line-2); border-radius: 24px; background: var(--ink-2); }
+  .f__guia span { font-size: 36px; font-weight: 600; color: var(--soft); }
+  .f__guia b { font-size: 42px; color: var(--lime); white-space: nowrap; }
+  .f__cta { position: absolute; left: var(--m); right: var(--m); bottom: 160px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+  .f__cta .col { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+  .f__cta .d { font-size: 40px; }
+  .f__cta .producto { width: 280px; height: 280px; flex: none; transform: rotate(4deg); }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide p">
+  <i class="slashes slashes--tl"></i>
+  <header class="top"><span class="wm">BULK</span><span class="num">01 / 03</span></header>
+  <div class="p__t">
+    <p class="eyebrow">Proteína</p>
+    <h1 class="d">¿Con agua<br><span class="lime">o con leche?</span></h1>
+  </div>
+  <div class="lima"></div>
+  <div class="p__lado p__lado--agua">
+    <svg class="il" viewBox="0 0 200 200" width="430" height="430" style="--liq:#8fdcff"><use href="#il-shaker"/></svg>
+    <p class="d">Con agua</p>
+  </div>
+  <span class="vs d">VS</span>
+  <div class="p__lado p__lado--leche">
+    <svg class="il" viewBox="0 0 200 200" width="430" height="430" style="--liq:#fbf7ea"><use href="#il-shaker"/></svg>
+    <p class="d">Con leche</p>
+  </div>
+  <footer class="pie"><span><b>@Bulk_Ar</b></span><span class="desliza">Deslizá</span></footer>
+</section>
+
+<!-- 02 · Comparación -->
+<section class="slide c">
+  <header class="top"><span class="wm">BULK</span></header>
+  <div class="lima"></div>
+  <div class="c__lado c__lado--agua">
+    <svg class="il" viewBox="0 0 200 200" width="230" height="230" style="--liq:#8fdcff"><use href="#il-shaker"/></svg>
+    <h2 class="d">Con agua</h2>
+    <ul class="d d--110">
+      <li>Menos calorías</li>
+      <li>Se digiere más rápido</li>
+      <li>Más liviana</li>
+      <li>Sabor más suave</li>
+      <li>Ideal en definición</li>
+    </ul>
+  </div>
+  <span class="vs d">VS</span>
+  <div class="c__lado c__lado--leche">
+    <svg class="il" viewBox="0 0 200 200" width="230" height="230" style="--liq:#fbf7ea"><use href="#il-shaker"/></svg>
+    <h2 class="d">Con leche</h2>
+    <ul class="d d--110">
+      <li>Más proteína</li>
+      <li>Suma calcio y vitaminas</li>
+      <li>Más saciedad</li>
+      <li>Más cremosa</li>
+      <li>Ideal en volumen</li>
+    </ul>
+  </div>
+  <footer class="pie"><span><b>@Bulk_Ar</b></span><span class="num">02 / 03</span></footer>
+</section>
+
+<!-- 03 · Cierre -->
+<section class="slide f">
+  <i class="slashes slashes--br"></i>
+  <header class="top"><span class="wm">BULK</span><span class="num">03 / 03</span></header>
+  <h2 class="d">No hay una sola forma <span class="lime">correcta.</span></h2>
+  <ul class="f__guia">
+    <li><span>¿Estás bajando grasa?</span><b class="d d--125">Con agua</b></li>
+    <li><span>¿Te cuesta sumar calorías?</span><b class="d d--125">Con leche</b></li>
+    <li><span>¿Te cae pesada la leche?</span><b class="d d--125">Con agua</b></li>
+  </ul>
+  <div class="f__cta">
+    <div class="col">
+      <p class="d">Encontrá tu proteína en</p>
+      <span class="pill">bulksuplementos.com.ar</span>
+    </div>
+    <div class="producto"><img src="../../public/productos/integralmedica-whey-100-pure-1b509e.webp" alt=""></div>
+  </div>
+  <footer class="pie"><span><b>@Bulk_Ar</b> · Dr. Baraja 253, Carmen de Patagones</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+¿Agua o leche? 🥛💧 La mejor opción depende de lo que estés buscando.
+
+Con agua: más liviana, menos calorías y se digiere más rápido. Va bien si estás en definición o si la tomás justo después de entrenar.
+
+Con leche: sumás proteína, calcio y calorías, queda más cremosa y llena más. Va bien si estás en volumen o te cuesta llegar a lo que tenés que comer.
+
+No hay una sola forma correcta: elegí según tu objetivo y lo que comés en el día.
+
+¿Vos cómo la tomás? Te leemos 👇
+
+📲 Encontrá tu proteína en bulksuplementos.com.ar o escribinos por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#proteina #wheyprotein #suplementosdeportivos #nutriciondeportiva #gym #entrenamiento #definicion #volumen #carmendepatagones #viedma #bulk
+</script>
+
+<script src="../marca.js"></script>
+</body>
+</html>

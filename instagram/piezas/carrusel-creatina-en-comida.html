@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · 5 g de creatina en comida real</title>
+<link rel="stylesheet" href="../marca.css">
+<style>
+  /* portada */
+  .portada__t { position: absolute; left: var(--m); right: var(--m); top: 210px; }
+  .portada__t .d { font-size: 96px; white-space: nowrap; }
+  .portada__t .d span { display: block; }
+  .portada__il { position: absolute; right: 60px; bottom: 130px; transform: rotate(-8deg); filter: drop-shadow(0 30px 60px rgb(200 255 0 / 0.25)); }
+  .portada__sub { position: absolute; left: var(--m); bottom: 190px; width: 470px; }
+
+  /* equivalencia: columna negra + panel papel cortado a 12° */
+  .eq__izq { position: absolute; left: var(--m); top: 200px; bottom: 150px; width: 330px; display: flex; flex-direction: column; }
+  .eq__izq .g { font-size: 150px; color: var(--lime); }
+  .eq__izq .c { font-size: 37px; margin-top: 10px; }
+  .eq__izq .il { margin: auto 0; transform: rotate(-8deg); }
+  .eq__izq .s { font-size: 44px; }
+  .eq__izq .s small { display: block; font: 600 24px/1.3 var(--f-body); text-transform: none; color: var(--mute); margin-top: 10px; letter-spacing: 0; }
+  .eq__der {
+    position: absolute; inset: 0 0 0 370px; z-index: 2; background: var(--paper); color: var(--ink);
+    clip-path: polygon(150px 0, 100% 0, 100% 100%, 0 100%);
+    padding: 150px 56px 120px 170px; display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  .eq__der .eyebrow { color: var(--ink); align-self: center; }
+  .eq__grid { flex: 1; display: grid; place-content: center; justify-items: center; gap: 10px 14px; }
+  .eq__cant { font-size: 150px; line-height: 0.9; white-space: nowrap; }
+  .eq__que { font-size: 42px; margin-top: 16px; }
+  .eq__nota { font-size: 22px; font-weight: 600; color: #6b6b66; margin-top: 18px; }
+  .eq__der .num { position: absolute; right: 64px; bottom: 60px; color: #6b6b66; }
+
+  /* cierre */
+  .cierre { padding: 200px var(--m) 0; }
+  .cierre .d { font-size: 62px; }
+  .cierre .txt { margin-top: 36px; }
+  .cierre__cta { position: absolute; left: var(--m); right: var(--m); bottom: 170px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; }
+  .cierre__cta .producto { width: 300px; height: 300px; flex: none; transform: rotate(4deg); }
+  .cierre__cta .col { display: flex; flex-direction: column; align-items: flex-start; gap: 22px; }
+  .cierre__cta .d { font-size: 38px; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide">
+  <i class="slashes slashes--tl"></i>
+  <header class="top"><span class="wm">BULK</span><span class="num">01 / 07</span></header>
+  <div class="portada__t">
+    <p class="eyebrow">Creatina</p>
+    <h1 class="d" style="margin-top:34px"><span>Así se ven</span><span class="lime">5 g de</span><span class="lime">creatina</span><span>en comida</span><span class="outline">real</span></h1>
+  </div>
+  <svg class="il portada__il" viewBox="0 0 200 200" width="440" height="440"><use href="#il-scoop"/></svg>
+  <footer class="pie"><span><b>@Bulk_Ar</b></span><span class="desliza">Deslizá</span></footer>
+</section>
+
+<!-- 02–06 · Equivalencias (se arman desde la lista de abajo) -->
+<template id="eq">
+  <section class="slide">
+    <header class="top"><span class="wm">BULK</span></header>
+    <div class="eq__izq">
+      <p class="d g">5 g</p>
+      <p class="d d--125 c">de creatina</p>
+      <svg class="il" viewBox="0 0 200 200" width="290" height="290"><use href="#il-scoop"/></svg>
+      <p class="d s">1 scoop<small>Una cucharada por día</small></p>
+    </div>
+    <div class="eq__der">
+      <p class="eyebrow">Equivalen a</p>
+      <div class="eq__grid"></div>
+      <p class="d eq__cant"></p>
+      <p class="d d--125 eq__que"></p>
+      <p class="eq__nota">Por día · valor aproximado, en crudo</p>
+      <span class="num"></span>
+    </div>
+    <footer class="pie"><span><b>@Bulk_Ar</b></span></footer>
+  </section>
+</template>
+
+<!-- 07 · Cierre -->
+<section class="slide cierre" id="cierre">
+  <i class="slashes slashes--br"></i>
+  <header class="top"><span class="wm">BULK</span><span class="num">07 / 07</span></header>
+  <h2 class="d">La creatina está en la comida. <span class="lime">Llegar a 5 g por día sólo con el plato es casi imposible.</span></h2>
+  <p class="txt">Por eso se suplementa: <b>una cucharada por día, todos los días.</b></p>
+  <div class="cierre__cta">
+    <div class="col">
+      <p class="d">Seguinos para saber más de suplementos</p>
+      <span class="pill">bulksuplementos.com.ar</span>
+    </div>
+    <div class="producto"><img src="../../public/productos/ena-creatina-micronizada-338443.webp" alt=""></div>
+  </div>
+  <footer class="pie"><span><b>@Bulk_Ar</b> · Dr. Baraja 253, Carmen de Patagones</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+5 g de creatina por día es la dosis que se usa en los estudios. ¿Y si la quisieras sacar sólo de la comida? 🥩
+
+Tendrías que comer, todos los días, más o menos:
+▪️ 1,1 kg de carne vacuna
+▪️ 1,4 kg de pollo
+▪️ 1 kg de cerdo
+▪️ 1,1 kg de salmón
+▪️ o tomarte 50 litros de leche
+
+La comida suma, pero llegar a 5 g sólo con el plato es casi imposible (y carísimo). Por eso existe la creatina en polvo: una cucharada por día, todos los días, y listo.
+
+Valores aproximados, en alimentos crudos.
+
+📲 Pedí la tuya en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#creatina #creatinamonohidrato #suplementosdeportivos #nutriciondeportiva #gym #entrenamiento #masamuscular #carmendepatagones #viedma #bulk
+</script>
+
+<script src="../marca.js"></script>
+<script>
+  // cant = lo que hay que comer por día para llegar a 5 g · n = cuántos dibujos · cols = columnas
+  const EQUIVALENCIAS = [
+    { il: 'carne',  cant: '1,1', que: 'kg de carne vacuna', n: 5,  cols: 2, w: 215 },
+    { il: 'leche',  cant: '50',  que: 'litros de leche',    n: 12, cols: 4, w: 118 },
+    { il: 'pollo',  cant: '1,4', que: 'kg de pollo',        n: 7,  cols: 3, w: 155 },
+    { il: 'cerdo',  cant: '1',   que: 'kg de cerdo',        n: 5,  cols: 2, w: 215 },
+    { il: 'salmon', cant: '1,1', que: 'kg de salmón',       n: 5,  cols: 2, w: 215 },
+  ];
+  const tpl = document.getElementById('eq');
+  const cierre = document.getElementById('cierre');
+  EQUIVALENCIAS.forEach((e, i) => {
+    const el = tpl.content.cloneNode(true);
+    const grid = el.querySelector('.eq__grid');
+    grid.style.gridTemplateColumns = `repeat(${e.cols}, auto)`;
+    grid.innerHTML = Array.from({ length: e.n }, () =>
+      `<svg class="il" viewBox="0 0 200 200" width="${e.w}" height="${e.w}"><use href="#il-${e.il}"/></svg>`).join('');
+    // el último de una fila incompleta queda centrado
+    if (e.n % e.cols === 1) grid.lastElementChild.style.gridColumn = '1 / -1';
+    el.querySelector('.eq__cant').textContent = e.cant;
+    el.querySelector('.eq__que').textContent = e.que;
+    el.querySelector('.eq__der .num').textContent = `0${i + 2} / 07`;
+    cierre.before(el);
+  });
+</script>
+</body>
+</html>

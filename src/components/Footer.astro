@@ -65,6 +65,7 @@ const anio = new Date().getFullYear();
       <span>© {anio} BULK · {dir.localidad}, {dir.provincia}</span>
       <a href="/baja/">Darme de baja de los emails</a>
     </div>
+    <p class="ftr__dev">Diseñado y desarrollado por <a href="https://www.visintinstudio.com.ar" target="_blank" rel="noopener">Visintin Studio</a></p>
   </div>
 </footer>
 
@@ -90,5 +91,8 @@ const anio = new Date().getFullYear();
   .pill--lime { border-color: var(--lime); color: var(--lime); }
   .ftr__legal { font-size: 0.8rem; color: var(--mute); max-width: 80ch; }
   .ftr__bottom { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; margin-top: 20px; font-size: 0.8rem; color: var(--mute); }
+  .ftr__dev { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); text-align: center; font-size: 0.8rem; color: var(--mute); }
+  .ftr__dev a { color: var(--soft); font-weight: 700; }
+  .ftr__dev a:hover { color: var(--lime); }
   .ftr__bottom a { text-decoration: underline; text-underline-offset: 3px; }
 </style>

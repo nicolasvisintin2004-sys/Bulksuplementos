@@ -1,0 +1,145 @@
+/* ═════════════════════════════════════════════════════════════
+   BULK — sistema visual para Instagram
+   Mismos tokens que src/styles/global.css: negro con grano + lima neón,
+   Anybody itálica extendida para títulos, Manrope para texto, slashes a 12°.
+   Cada pieza es un HTML con <section class="slide"> (1080×1350) o
+   <section class="reel"> (1080×1920). Se exportan con: npm run instagram
+   ═════════════════════════════════════════════════════════════ */
+
+@font-face {
+  font-family: 'Anybody';
+  font-style: italic;
+  font-weight: 100 900;
+  font-stretch: 50% 150%;
+  src: url('../public/fonts/anybody-italic.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Manrope';
+  font-style: normal;
+  font-weight: 200 800;
+  src: url('../public/fonts/manrope.woff2') format('woff2');
+}
+
+:root {
+  --ink: #0a0a0a;
+  --ink-2: #111111;
+  --ink-3: #181818;
+  --line: #2a2a2a;
+  --line-2: #3a3a3a;
+  --mute: #8a8a8a;
+  --soft: #b9b9b4;
+  --paper: #f3f3ef;
+  --lime: #c8ff00;
+  --f-display: 'Anybody', 'Arial Black', sans-serif;
+  --f-body: 'Manrope', system-ui, sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.1, 1);
+  --m: 72px; /* margen de seguridad */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; background: #000; }
+body { font-family: var(--f-body); color: var(--paper); -webkit-font-smoothing: antialiased; }
+p, h1, h2, h3, ul { margin: 0; padding: 0; }
+ul { list-style: none; }
+img, svg { display: block; }
+
+/* ─── Lienzos ───────────────────────────────────────────── */
+.slide, .reel {
+  position: relative; overflow: hidden; isolation: isolate;
+  width: 1080px; background: var(--ink); color: var(--paper);
+}
+.slide { height: 1350px; }
+.slide--cuadrada { height: 1080px; }
+.reel { height: 1920px; }
+
+/* grano + brillos lima, igual que el sitio */
+.slide::before, .reel::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background:
+    radial-gradient(70% 45% at 100% 0%, rgb(200 255 0 / 0.14), transparent 70%),
+    radial-gradient(60% 40% at 0% 100%, rgb(200 255 0 / 0.09), transparent 70%);
+}
+.slide::after, .reel::after {
+  content: ''; position: absolute; inset: 0; z-index: 50; pointer-events: none; opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ─── Tipografía ────────────────────────────────────────── */
+.d {
+  font-family: var(--f-display); font-style: italic; font-weight: 900;
+  font-stretch: 150%; font-variation-settings: 'wdth' 150;
+  text-transform: uppercase; line-height: 0.92; letter-spacing: -0.005em;
+}
+.d--125 { font-stretch: 125%; font-variation-settings: 'wdth' 125; }
+.d--110 { font-stretch: 110%; font-variation-settings: 'wdth' 110; }
+.lime { color: var(--lime); }
+.outline { color: transparent; -webkit-text-stroke: 3px var(--lime); paint-order: stroke fill; }
+.txt { font-size: 40px; line-height: 1.35; font-weight: 500; color: var(--soft); }
+.txt b { color: var(--paper); font-weight: 800; }
+.eyebrow {
+  display: inline-flex; align-items: center; gap: 0.6em;
+  font-size: 24px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--lime);
+}
+.eyebrow::before { content: ''; width: 34px; height: 4px; background: currentColor; transform: skewX(-30deg); }
+
+/* ─── Marca ─────────────────────────────────────────────── */
+.wm {
+  font-family: var(--f-display); font-style: italic; font-weight: 900;
+  font-stretch: 150%; font-variation-settings: 'wdth' 150;
+  font-size: 54px; line-height: 1; letter-spacing: 0.01em;
+  color: var(--ink); -webkit-text-stroke: 2.5px var(--lime); paint-order: stroke fill;
+}
+.wm--solid { color: var(--lime); -webkit-text-stroke: 0; }
+.wm--xl { font-size: 190px; -webkit-text-stroke-width: 5px; }
+
+.top, .pie {
+  position: absolute; left: var(--m); right: var(--m); z-index: 5;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.top { top: 60px; }
+.pie { bottom: 56px; font-size: 26px; font-weight: 700; letter-spacing: 0.04em; color: var(--mute); }
+.pie b { color: var(--paper); font-weight: 800; }
+.num { font-family: var(--f-display); font-style: italic; font-weight: 800; font-size: 26px; color: var(--mute); letter-spacing: 0.06em; }
+.desliza { display: inline-flex; align-items: center; gap: 12px; color: var(--lime); text-transform: uppercase; letter-spacing: 0.2em; font-size: 22px; font-weight: 800; }
+.desliza::after { content: '→'; font-size: 34px; letter-spacing: 0; line-height: 1; }
+
+/* slashes de esquina (recurso de marca) */
+.slashes { position: absolute; z-index: 1; width: 240px; height: 240px; pointer-events: none; }
+.slashes::before, .slashes::after { content: ''; position: absolute; top: -40px; height: 340px; background: var(--lime); border-radius: 99px; transform: rotate(38deg); }
+.slashes::before { left: 70px; width: 12px; }
+.slashes::after { left: 122px; width: 5px; }
+.slashes--tl { left: -70px; top: -90px; }
+.slashes--br { right: -70px; bottom: -90px; }
+
+.pill {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 18px 34px; border-radius: 999px; background: var(--lime); color: var(--ink);
+  font-family: var(--f-display); font-style: italic; font-weight: 800;
+  font-stretch: 110%; font-variation-settings: 'wdth' 110;
+  font-size: 30px; text-transform: uppercase; letter-spacing: 0.01em; line-height: 1;
+}
+.pill--linea { background: transparent; color: var(--lime); border: 2.5px solid var(--lime); }
+
+.il { overflow: visible; }
+
+/* foto real de producto (viene con fondo blanco) */
+.producto { background: #fff; border-radius: 28px; overflow: hidden; border: 3px solid var(--lime); }
+.producto img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ─── Reels: animación por línea de tiempo ───────────────
+   Cada .escena lleva --t (cuándo entra) y --d (cuánto dura).
+   Los hijos con .in/.pop/.tacha arrancan en --t + --o.
+   El exportador pausa todo y avanza cuadro por cuadro. */
+.escena { position: absolute; inset: 0; opacity: 0; animation: escena var(--d) linear var(--t) both; }
+.escena--final { animation: escena-final 0.3s linear var(--t) both; }
+@keyframes escena { 0% { opacity: 0; } 4% { opacity: 1; } 95% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes escena-final { from { opacity: 0; } to { opacity: 1; } }
+
+.in { animation: in 0.55s var(--ease) calc(var(--t) + var(--o, 0s)) both; }
+@keyframes in { from { opacity: 0; transform: translateY(70px) skewY(2deg); } to { opacity: 1; transform: none; } }
+.pop { animation: pop 0.4s var(--ease) calc(var(--t) + var(--o, 0s)) both; }
+@keyframes pop { 0% { opacity: 0; transform: rotate(var(--r, -7deg)) scale(2.6); } 60% { opacity: 1; transform: rotate(var(--r, -7deg)) scale(0.94); } 100% { opacity: 1; transform: rotate(var(--r, -7deg)) scale(1); } }
+.tacha { animation: tacha 0.3s var(--ease) calc(var(--t) + var(--o, 0s)) both; transform-origin: left center; }
+@keyframes tacha { from { transform: rotate(-5deg) scaleX(0); } to { transform: rotate(-5deg) scaleX(1); } }
+.apaga { animation: apaga 0.3s linear calc(var(--t) + var(--o, 0s)) both; }
+@keyframes apaga { from { opacity: 1; } to { opacity: 0.35; } }

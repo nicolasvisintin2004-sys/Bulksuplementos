@@ -16,6 +16,12 @@ export const reglas = {
   gratisDesde: negocio.envios.gratisDesde,
 };
 
+/** Redondea a la centena más cercana (27.351 → 27.400, 27.349 → 27.300) */
+export const redondear100 = (n) => Math.round(n / 100) * 100;
+
+/** Precio con el descuento en efectivo, redondeado a la centena */
+export const precioEfectivo = (precio) => redondear100(precio * (1 - reglas.efectivoPct / 100));
+
 /**
  * @param {object} p
  * @param {{precio:number,cantidad:number}[]} p.items
@@ -39,12 +45,14 @@ export function calcularTotales({ items, medioPago = null, entrega = null, codig
 
   const descuentos = [];
   if (aplicaEfectivo) {
-    descuentos.push({ tipo: 'efectivo', etiqueta: `Pago en efectivo (${reglas.efectivoPct}% OFF)`, monto: Math.round(subtotal * reglas.efectivoPct / 100) });
+    descuentos.push({ tipo: 'efectivo', etiqueta: `Pago en efectivo (${reglas.efectivoPct}% OFF)`, monto: subtotal - precioEfectivo(subtotal) });
   }
   if (aplicaBienvenida) {
     // acumulado: el 10% de bienvenida se calcula sobre el precio ya rebajado por efectivo (10% + 10% = 19%)
     const base = subtotal - descuentos.reduce((s, x) => s + x.monto, 0);
-    descuentos.push({ tipo: 'bienvenida', etiqueta: `Primera compra (${reglas.bienvenidaPct}% OFF)`, monto: Math.round(base * reglas.bienvenidaPct / 100) });
+    // con efectivo el total final también queda redondeado a la centena
+    const conDesc = base * (1 - reglas.bienvenidaPct / 100);
+    descuentos.push({ tipo: 'bienvenida', etiqueta: `Primera compra (${reglas.bienvenidaPct}% OFF)`, monto: base - (aplicaEfectivo ? redondear100(conDesc) : Math.round(conDesc)) });
   }
   const totalDescuentos = descuentos.reduce((s, d) => s + d.monto, 0);
   const total = subtotal - totalDescuentos;
@@ -54,7 +62,7 @@ export function calcularTotales({ items, medioPago = null, entrega = null, codig
   const faltaParaGratis = Math.max(0, reglas.gratisDesde - baseEnvio);
 
   // Lo que ahorraría pagando en efectivo (para mostrarlo como beneficio)
-  const ahorroEfectivo = efectivoPermitido ? Math.round(subtotal * reglas.efectivoPct / 100) : 0;
+  const ahorroEfectivo = efectivoPermitido ? subtotal - precioEfectivo(subtotal) : 0;
 
   return {
     subtotal, descuentos, totalDescuentos, total,
@@ -62,6 +70,3 @@ export function calcularTotales({ items, medioPago = null, entrega = null, codig
     ahorroEfectivo, efectivoPermitido, aplicaEfectivo, aplicaBienvenida, codigoGuardado,
   };
 }
-
-/** Precio con el 10% efectivo aplicado (para fichas y cards) */
-export const precioEfectivo = (precio) => Math.round(precio * (1 - reglas.efectivoPct / 100));

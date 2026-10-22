@@ -5,3 +5,7 @@ dist/
 .env
 .DS_Store
 .claude/
+
+# Piezas de Instagram exportadas (se regeneran con: npm run instagram)
+instagram/salida/
+instagram/*.zip
