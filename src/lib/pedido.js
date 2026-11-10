@@ -4,6 +4,7 @@
  */
 import negocio from '../config/negocio.js';
 import { pesos } from './formato.js';
+import { buscarReferido } from './descuentos.js';
 
 export function numeroPedido() {
   const d = new Date();
@@ -30,7 +31,12 @@ export function mensajePedido({ numero, items, totales, datos, codigo }) {
     L.push(`${d.etiqueta}${d.tipo === 'bienvenida' && codigo ? ` [${codigo}]` : ''}: -${pesos(d.monto)}`);
   }
   if (totales.codigoGuardado && codigo) L.push(`(Código ${codigo} no aplicado: los descuentos no se acumulan. Queda para otra compra.)`);
+  if (totales.referidoNoAcumulado && codigo) L.push(`(Código ${codigo}: no se suma al descuento en efectivo, se aplicó uno solo.)`);
+  if (totales.topeAplicado) L.push('(Algunos productos con descuento menor por precio mínimo.)');
   L.push(`TOTAL: ${pesos(totales.total)}`);
+  // para contar las ventas de cada influencer, aunque el descuento no se haya aplicado
+  const ref = buscarReferido(codigo);
+  if (ref) L.push(`REFERIDO: ${ref.codigo} (${ref.de})`);
   L.push('');
   L.push('ENTREGA');
   if (datos.entrega === 'retiro') {

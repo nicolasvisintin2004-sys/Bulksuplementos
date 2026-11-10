@@ -51,6 +51,11 @@ export const faq = [
       : 'No se acumulan: se aplica uno solo y tu código queda guardado para otra compra.',
     falta: d.acumulables == null ? 'si los descuentos de efectivo y bienvenida se acumulan' : null,
   },
+  ...(negocio.referidos?.length ? [{
+    grupo: 'Pagos y descuentos',
+    q: 'Tengo un código de un influencer, ¿cómo lo uso?',
+    a: `Cargalo en el carrito, en "Código de descuento", y tocá Aplicar. No hace falta registrarse. No se suma al descuento por pago en efectivo: si pagás en efectivo se aplica uno solo.`,
+  }] : []),
   {
     grupo: 'Envíos',
     q: '¿Hacen envíos?',

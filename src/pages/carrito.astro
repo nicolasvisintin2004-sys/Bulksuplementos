@@ -107,7 +107,7 @@ const d = negocio.descuentos;
             <h2 id="h-cod" class="co__h"><span class="co__n">5</span> Código de descuento <span class="muted co__opt">(opcional)</span></h2>
             <div class="co__code">
               <label for="f-cod" class="sr-only">Código de descuento</label>
-              <input id="f-cod" name="codigo" class="input" placeholder="BULK10-XXXXXX" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              <input id="f-cod" name="codigo" class="input" placeholder="Tu código" autocomplete="off" autocapitalize="characters" spellcheck="false" />
               <button type="button" class="btn btn--ghost" data-aplicar>Aplicar</button>
             </div>
             <p class="co__codemsg" data-codemsg role="status" aria-live="polite"></p>
@@ -163,7 +163,7 @@ const d = negocio.descuentos;
 
 <script>
   import { leer, setCantidad, quitar, vaciar, sincronizar, leerCodigo } from '../scripts/carrito.js';
-  import { calcularTotales, reglas } from '../lib/descuentos.js';
+  import { calcularTotales, reglas, buscarReferido } from '../lib/descuentos.js';
   import { mensajePedido, linkInstagram, linkEmail, numeroPedido } from '../lib/pedido.js';
   import negocio from '../config/negocio.js';
   import { pesos } from '../lib/formato.js';
@@ -173,8 +173,8 @@ const d = negocio.descuentos;
   const form = root.querySelector<HTMLFormElement>('[data-form]')!;
   const $ = <T extends HTMLElement = HTMLElement>(s: string) => root.querySelector<T>(s)!;
 
-  // estado del código: validado por el servidor o provisorio (a verificar por el local)
-  let codigo: { valor: string; email: string; verificado: boolean } | null = null;
+  // estado del código: de bienvenida (validado por el servidor o provisorio, a verificar por el local) o de referido
+  let codigo: { valor: string; email: string; verificado: boolean; tipo: 'bienvenida' | 'referido' } | null = null;
 
   const val = (n: string) => (form.elements.namedItem(n) as HTMLInputElement | RadioNodeList | null)?.value?.trim() ?? '';
 
@@ -183,7 +183,8 @@ const d = negocio.descuentos;
       items: leer(),
       medioPago: val('pago') as 'efectivo' | 'transferencia',
       entrega: val('entrega') as 'envio' | 'retiro',
-      codigoValido: !!codigo,
+      codigoValido: codigo?.tipo === 'bienvenida',
+      referido: codigo?.tipo === 'referido' ? buscarReferido(codigo.valor) : null,
     });
   }
 
@@ -238,14 +239,26 @@ const d = negocio.descuentos;
       ? `Pagando en efectivo ahorrás <b>${pesos(t.ahorroEfectivo)}</b>`
       : t.aplicaEfectivo ? `Estás ahorrando <b>${pesos(t.totalDescuentos)}</b>` : '';
     const msg = $('[data-codemsg]');
-    if (codigo && t.codigoGuardado) {
+    const tope = t.topeAplicado ? ' Algunos productos tienen un descuento menor porque ya están a su precio mínimo.' : '';
+    const ref = codigo?.tipo === 'referido' ? buscarReferido(codigo.valor) : null;
+    if (ref) {
+      msg.className = t.referidoNoAcumulado ? 'co__codemsg is-warn' : 'co__codemsg is-ok';
+      msg.textContent = (t.referidoNoAcumulado
+        ? `El código ${ref.codigo} no se suma al ${reglas.efectivoPct}% de efectivo: se aplica un solo descuento.`
+        : `Código ${ref.codigo} aplicado: ${ref.pct}% OFF.`) + tope;
+    } else if (codigo && t.codigoGuardado) {
       msg.className = 'co__codemsg is-warn';
       msg.textContent = `El código ${codigo.valor} no se acumula con el ${reglas.efectivoPct}% de efectivo: se aplica el de efectivo y el código queda para otra compra.`;
     } else if (codigo) {
       msg.className = 'co__codemsg is-ok';
       msg.textContent = codigo.verificado
-        ? `Código ${codigo.valor} aplicado: ${reglas.bienvenidaPct}% OFF.`
-        : `Código ${codigo.valor} aplicado. El local lo verifica al confirmar tu pedido.`;
+        ? `Código ${codigo.valor} aplicado: ${reglas.bienvenidaPct}% OFF.${tope}`
+        : `Código ${codigo.valor} aplicado. El local lo verifica al confirmar tu pedido.${tope}`;
+    } else if (t.topeAplicado) {
+      msg.className = 'co__codemsg is-warn';
+      msg.textContent = tope.trim();
+    } else if (!codigo && msg.classList.contains('is-warn')) {
+      msg.className = 'co__codemsg'; msg.textContent = '';
     }
   }
 
@@ -276,8 +289,10 @@ const d = negocio.descuentos;
     const msg = $('[data-codemsg]');
     input.value = valor;
     if (!valor) { codigo = null; msg.textContent = ''; renderResumen(); return; }
+    // código de referido (influencer): no necesita email ni validación del servidor
+    if (buscarReferido(valor)) { codigo = { valor, email: '', verificado: true, tipo: 'referido' }; renderResumen(); return; }
     if (!/^BULK10-[A-Z0-9]{6}$/.test(valor)) {
-      codigo = null; msg.className = 'co__codemsg is-err'; msg.textContent = 'Ese código no existe. Revisá que sea como BULK10-XXXXXX.'; renderResumen(); return;
+      codigo = null; msg.className = 'co__codemsg is-err'; msg.textContent = 'Ese código no existe. Revisá que esté bien escrito.'; renderResumen(); return;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
       msg.className = 'co__codemsg is-err'; msg.textContent = 'Completá tu email arriba: el código va asociado al email con el que te registraste.';
@@ -289,10 +304,10 @@ const d = negocio.descuentos;
       if (r.status === 404 || r.status >= 500) throw new Error('sin servicio');
       const j = await r.json();
       if (!j.valido) { codigo = null; msg.className = 'co__codemsg is-err'; msg.textContent = j.motivo ?? 'El código no es válido para este email.'; renderResumen(); return; }
-      codigo = { valor, email, verificado: true };
+      codigo = { valor, email, verificado: true, tipo: 'bienvenida' };
     } catch {
       // sin backend configurado: se aplica y el local lo verifica a mano
-      codigo = { valor, email, verificado: false };
+      codigo = { valor, email, verificado: false, tipo: 'bienvenida' };
     }
     renderResumen();
   });

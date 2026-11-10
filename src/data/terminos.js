@@ -46,6 +46,8 @@ export const terminos = [
       d.acumulables
         ? `El descuento de primera compra se suma al de pago en efectivo. El segundo se calcula sobre el precio ya rebajado, así que juntos dan un 19% de descuento.`
         : 'El descuento de primera compra no se acumula con el de pago en efectivo.',
+      ...(negocio.referidos ?? []).map((r) => `Código de referido ${r.codigo}: ${r.pct}% de descuento${r.acumulaEfectivo ? '' : ', que no se suma al descuento por pago en efectivo (se aplica uno solo)'}. Se usa un código por compra.`),
+      'En algunos productos de margen reducido el descuento puede ser menor al indicado. El carrito muestra el descuento final antes de enviar el pedido.',
       'Los descuentos no son canjeables por dinero.',
     ],
   },

@@ -6,6 +6,7 @@ export function GET() {
     id: c.id,
     listo: c.listo,
     precio: c.precioFinal,
+    min: c.minimo,
   }));
   return new Response(JSON.stringify({ p: indiceCliente(), k }), {
     headers: { 'Content-Type': 'application/json; charset=utf-8' },

@@ -2,6 +2,7 @@
 import data from '../data/productos.json';
 import combosData from '../data/combos.json';
 import negocio from '../config/negocio.js';
+import { minimoDe } from './descuentos.js';
 
 export const productos = data.productos;
 export const marcas = data.marcas;
@@ -70,7 +71,9 @@ export function combos() {
     }).filter(Boolean);
     // valor por separado con la opción elegida por defecto (la primera de cada item)
     const suma = items.reduce((s, i) => s + i.variante.precio * i.cantidad, 0);
-    return { ...c, itemsResueltos: items, listo: items.length > 0, precioFinal: c.precio ?? suma, suma };
+    // mínimo con descuentos: el peor caso de cada item (la opción más cara al costo)
+    const minimo = items.reduce((s, i) => s + Math.max(...i.opciones.map((o) => minimoDe(o.variante.mayorista))) * i.cantidad, 0);
+    return { ...c, itemsResueltos: items, listo: items.length > 0, precioFinal: c.precio ?? suma, suma, minimo };
   });
 }
 
@@ -83,6 +86,7 @@ export function indiceCliente() {
     c: categoria(p.categoria)?.corto ?? p.categoria,
     d: p.desde,
     o: p.oferta ? 1 : 0,
-    v: p.variantes.map((v) => [v.id, v.sabor ?? '', v.presentacion ?? '', v.precio]),
+    // [id, sabor, presentación, precio, precio mínimo con descuentos]
+    v: p.variantes.map((v) => [v.id, v.sabor ?? '', v.presentacion ?? '', v.precio, minimoDe(v.mayorista)]),
   }));
 }

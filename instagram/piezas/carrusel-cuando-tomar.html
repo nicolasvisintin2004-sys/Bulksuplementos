@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Cuándo tomar cada suplemento</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  .abajo { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 150px; }
+  .abajo .lead { margin-top: 26px; }
+  .portada .foto img { object-position: 50% 45%; }
+  .portada .velo { background: linear-gradient(to top, rgb(10 10 10 / 0.97) 0%, rgb(10 10 10 / 0.85) 38%, rgb(10 10 10 / 0) 66%), linear-gradient(to bottom, rgb(10 10 10 / 0.55) 0%, rgb(10 10 10 / 0) 16%); }
+
+  /* split: producto arriba (papel) · momento abajo (foto) */
+  .split__prod { position: absolute; z-index: 2; left: 0; right: 0; top: 0; height: 640px; background: var(--paper); color: var(--ink); }
+  .split__prod img { position: absolute; right: 40px; top: 120px; width: 470px; height: 470px; object-fit: contain; mix-blend-mode: multiply; }
+  .split__txt { position: absolute; left: var(--m); top: 220px; width: 520px; }
+  .split__txt .chico { font-size: 24px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.55; }
+  .split__txt .t2 { margin-top: 14px; font-size: 76px; }
+  .split__txt .marca { font-size: 24px; font-weight: 700; color: #6b6b66; margin-top: 18px; }
+  .split .foto { top: 640px; }
+  .split .velo { top: 640px; background: linear-gradient(to top, rgb(10 10 10 / 0.97) 0%, rgb(10 10 10 / 0.88) 46%, rgb(10 10 10 / 0.2) 80%); }
+  .split .ed-top { color: var(--ink); }
+  .split .ed-top .cat::before { background: var(--ink); }
+  .cuando { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 140px; }
+  .cuando .chico { font-size: 24px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lime); opacity: 1; }
+  .cuando .t2 { margin-top: 10px; font-size: 80px; }
+  .cuando .lead { margin-top: 16px; font-size: 29px; }
+
+  /* cierre */
+  .cierre__txt { position: absolute; left: var(--m); right: var(--m); top: 170px; }
+  .cierre__txt .lead { margin-top: 28px; }
+  .fila { position: absolute; left: var(--m); right: var(--m); top: 640px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+  .fila .prod { height: 170px; }
+  .fila p { font-size: 18px; font-weight: 700; color: var(--soft); margin-top: 10px; line-height: 1.3; }
+  .fila p b { display: block; color: var(--lime); font-size: 17px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cierre__cta { position: absolute; left: var(--m); right: var(--m); bottom: 150px; display: grid; gap: 16px; padding: 36px 40px; border-radius: 24px; background: var(--ink-3); border: 1.5px solid var(--line); }
+  .cierre__cta .t3 { color: var(--paper); }
+  .cierre__cta .lead { font-size: 28px; }
+  .cierre__cta .etiqueta { justify-self: start; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed portada">
+  <div class="foto"><img src="../fotos/capsulas-mano.jpg" alt=""></div>
+  <div class="velo"></div>
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">01 / 07</span></header>
+  <div class="abajo">
+    <h1 class="t1">¿Cuándo tomar cada <span class="res">suplemento?</span></h1>
+    <p class="lead">El momento y la forma cambian cómo se absorben y cómo te caen.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02–06 · Producto + momento (se arman desde la lista de abajo) -->
+<template id="item">
+  <section class="slide ed split">
+    <div class="split__prod">
+      <div class="split__txt"><p class="chico">Tomá</p><h2 class="t2"></h2><p class="marca"></p></div>
+      <img alt="">
+    </div>
+    <div class="foto"><img alt=""></div>
+    <div class="velo"></div>
+    <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag"></span></header>
+    <div class="cuando"><p class="chico">Cuándo</p><h3 class="t2"></h3><p class="lead"></p></div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+  </section>
+</template>
+
+<!-- 07 · Cierre -->
+<section class="slide ed" id="cierre">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">07 / 07</span></header>
+  <div class="cierre__txt">
+    <h2 class="t2">Cada suplemento tiene <span class="res">su momento.</span></h2>
+    <p class="lead">Lo importante es saber para qué sirve, cómo usarlo y si realmente lo necesitás.</p>
+  </div>
+  <div class="fila"></div>
+  <div class="cierre__cta">
+    <p class="t3">¿Tenés dudas con el tuyo?</p>
+    <p class="lead">Escribinos por mensaje directo a <b>@Bulk_Ar</b> y te ayudamos.</p>
+    <span class="etiqueta etiqueta--lima">Guardá este posteo</span>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+¿Cuándo tenés que tomar cada suplemento? 💊
+
+No todos se toman igual. El momento y la forma pueden cambiar cómo se absorben y cómo te caen.
+
+🥑 Omega 3: con una comida que tenga grasa, se absorbe mejor.
+☀️ Vitamina D3 + K2: con una comida principal, porque es liposoluble.
+🌙 Magnesio: muchos lo prefieren a la noche, aunque no es obligatorio.
+🥛 Zinc (ZMA): antes de dormir y lejos de los lácteos.
+💪 Creatina: el horario es lo de menos, lo importante es no cortarla.
+
+Cada suplemento tiene sus particularidades. Lo importante es saber para qué sirve, cómo usarlo y si realmente lo necesitás.
+
+Guardá este carrusel para consultarlo cuando prepares tus suplementos 🔖
+
+📲 Todos en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+Información general: seguí la indicación del envase y, si tenés una condición de salud, consultá con tu médico.
+
+#suplementos #omega3 #vitaminad #magnesio #zma #creatina #nutriciondeportiva #carmendepatagones #viedma #bulk
+</script>
+
+<script>
+  const ITEMS = [
+    { nombre: 'Omega 3', marca: 'Gentech Omega 3 EPA', img: 'gentech-omega-3-epa-fish-oil-e448da', foto: 'palta-ensalada', pos: '50% 50%',
+      cuando: 'Con una comida con grasa', txt: 'Se absorbe mejor y evitás el regusto a pescado.' },
+    { nombre: 'Vitamina D3 + K2', marca: 'ENA Vitamina D3 + K2', img: 'ena-vitamina-d3-k2-bace94', foto: 'desayuno', pos: '50% 60%',
+      cuando: 'Con el desayuno', txt: 'O con cualquier comida principal: es liposoluble y necesita algo de grasa.' },
+    { nombre: 'Magnesio', marca: 'ENA Citrato de Magnesio', img: 'ena-citrato-de-magnesio-de1d45', foto: 'noche', pos: '50% 60%',
+      cuando: 'A la noche', txt: 'Muchos lo prefieren antes de dormir. No es obligatorio: lo importante es tomarlo.' },
+    { nombre: 'Zinc (ZMA)', marca: 'ENA ZMA', img: 'ena-zma-d8da0a', foto: 'leche', pos: '50% 62%',
+      cuando: 'Sin lácteos', txt: 'Antes de dormir y lejos de la leche y el queso: el calcio compite con el zinc.' },
+    { nombre: 'Creatina', marca: 'ENA Creatina Micronizada', img: 'ena-creatina-micronizada-338443', foto: 'gym-barra', pos: '50% 38%',
+      cuando: 'Todos los días', txt: 'El horario es lo de menos. Lo que importa es no cortarla, también cuando no entrenás.' },
+  ];
+  const tpl = document.getElementById('item');
+  const cierre = document.getElementById('cierre');
+  ITEMS.forEach((it, i) => {
+    const el = tpl.content.cloneNode(true);
+    el.querySelector('.split__txt .t2').textContent = it.nombre;
+    el.querySelector('.split__txt .marca').textContent = it.marca;
+    el.querySelector('.split__prod > img').src = `../../public/productos/${it.img}.webp`;
+    const f = el.querySelector('.foto img');
+    f.src = `../fotos/${it.foto}.jpg`;
+    f.style.objectPosition = it.pos;
+    el.querySelector('.pag').textContent = `0${i + 2} / 07`;
+    el.querySelector('.cuando .t2').textContent = it.cuando;
+    el.querySelector('.cuando .lead').textContent = it.txt;
+    cierre.before(el);
+  });
+  document.querySelector('.fila').innerHTML = ITEMS.map((it) =>
+    `<div><div class="prod"><img src="../../public/productos/${it.img}.webp" alt=""></div><p><b>${it.cuando}</b>${it.nombre}</p></div>`).join('');
+</script>
+</body>
+</html>

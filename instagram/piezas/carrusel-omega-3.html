@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Por qué es importante el omega 3</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  .arriba { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 150px; }
+  .arriba .lead { margin-top: 28px; }
+  .abajo { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 150px; }
+  .abajo .lead { margin-top: 26px; }
+
+  /* portada */
+  .portada .foto img { object-position: 30% 50%; }
+
+  /* 02 · esenciales */
+  .ess { position: absolute; left: var(--m); right: var(--m); top: 560px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .ess div { padding: 40px 34px 44px; border-radius: 22px; background: #fff; border: 1.5px solid #e2e2dc; }
+  .ess h3 { font-size: 22px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #6b6b66; }
+  .ess p { font-size: 30px; line-height: 1.35; font-weight: 600; margin-top: 12px; }
+  .ess .n { font-size: 84px; margin-top: 30px; }
+
+  /* 03 · EPA y DHA */
+  .dos { position: absolute; left: var(--m); right: var(--m); top: 400px; display: grid; gap: 22px; }
+  .dos div { display: grid; grid-template-columns: 270px 1fr; gap: 30px; align-items: center; padding: 56px 44px; border-radius: 24px; background: var(--ink-3); border: 1.5px solid var(--line); }
+  .dos .n { font-size: 96px; color: var(--lime); }
+  .dos p { font-size: 32px; line-height: 1.38; font-weight: 500; color: var(--soft); }
+  .dos p b { color: var(--paper); font-weight: 800; }
+
+  /* 04 · fuentes */
+  .fuentes .foto { bottom: 560px; }
+  .fuentes .velo { bottom: 560px; background: linear-gradient(to top, var(--ink) 0%, rgb(10 10 10 / 0) 35%), linear-gradient(to bottom, rgb(10 10 10 / 0.7) 0%, rgb(10 10 10 / 0) 22%); }
+  .peces { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .peces span { padding: 12px 22px; border-radius: 999px; border: 2px solid var(--line-2); font-size: 26px; font-weight: 700; }
+
+  /* 05 · cómo elegir */
+  .lista { position: absolute; left: var(--m); right: var(--m); top: 470px; display: grid; gap: 18px; }
+  .lista p { display: grid; grid-template-columns: 56px 1fr; gap: 22px; font-size: 30px; line-height: 1.35; font-weight: 500; color: #3d3d3a; padding-bottom: 18px; border-bottom: 1.5px solid #dcdcd5; }
+  .lista p b { color: var(--ink); font-weight: 800; }
+  .lista .n { font-size: 40px; line-height: 1.1; }
+  .ejemplo { position: absolute; left: var(--m); right: var(--m); bottom: 140px; display: grid; grid-template-columns: 200px 1fr; gap: 30px; align-items: center; padding: 22px 34px 22px 22px; border-radius: 24px; background: var(--ink); color: var(--paper); }
+  .ejemplo .prod { height: 200px; }
+  .ejemplo h3 { font-size: 20px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mute); }
+  .ejemplo p { font-size: 28px; font-weight: 600; line-height: 1.3; margin-top: 8px; }
+  .ejemplo .n { color: var(--lime); font-size: 44px; }
+
+  /* 06 · cómo tomarlo */
+  .tomar { position: absolute; left: var(--m); right: var(--m); top: 400px; display: grid; gap: 18px; }
+  .tomar div { padding: 42px 40px; border-radius: 22px; background: var(--ink-3); border: 1.5px solid var(--line); }
+  .tomar h3 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; }
+  .tomar p { font-size: 27px; line-height: 1.4; font-weight: 500; color: var(--soft); margin-top: 10px; }
+
+  /* 07 · productos */
+  .prods { position: absolute; left: var(--m); right: var(--m); top: 470px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .prods figure { margin: 0; }
+  .prods .prod { height: 300px; }
+  .prods figcaption { margin-top: 12px; font-size: 22px; font-weight: 700; color: var(--soft); line-height: 1.3; }
+  .prods figcaption b { color: var(--paper); display: block; font-size: 24px; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed portada">
+  <div class="foto"><img src="../fotos/salmon.jpg" alt=""></div>
+  <div class="velo velo--abajo"></div>
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">01 / 07</span></header>
+  <div class="abajo">
+    <h1 class="t1">¿Por qué es importante el <span class="res">omega 3?</span></h1>
+    <p class="lead">Qué es, dónde está y cuándo conviene suplementarlo.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02 · Esencial -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">02 / 07</span></header>
+  <div class="arriba">
+    <h2 class="t2">Tu cuerpo lo necesita, pero <span class="res--linea">no lo fabrica.</span></h2>
+    <p class="lead">Los omega 3 son grasas esenciales: hay que obtenerlos de la comida o de un suplemento.</p>
+  </div>
+  <div class="ess">
+    <div><h3>De vegetales</h3><p>Chía, lino y nueces aportan ALA. El cuerpo convierte muy poco en EPA y DHA.</p><p class="n">&lt; 10 %</p></div>
+    <div><h3>De pescado</h3><p>El pescado graso y el aceite de pescado aportan EPA y DHA <b>ya listos para usar.</b></p><p class="n">Directo</p></div>
+  </div>
+  <p class="fuente" style="position:absolute;left:var(--m);right:var(--m);bottom:120px">La conversión de ALA a EPA y DHA es baja y varía según la persona.</p>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 03 · EPA y DHA -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">03 / 07</span></header>
+  <div class="arriba">
+    <h2 class="t2">Los dos que <span class="res">importan.</span></h2>
+  </div>
+  <div class="dos">
+    <div><b class="n">EPA</b><p>Participa en procesos vinculados con la <b>salud del corazón</b> y con la respuesta inflamatoria del cuerpo.</p></div>
+    <div><b class="n">DHA</b><p>Es parte de la estructura de las membranas del <b>cerebro</b> y de la <b>retina</b>.</p></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 04 · Fuentes -->
+<section class="slide ed fuentes">
+  <div class="foto"><img src="../fotos/sardinas.jpg" alt=""></div>
+  <div class="velo"></div>
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">04 / 07</span></header>
+  <div class="abajo">
+    <h2 class="t2">¿Comés pescado <span class="res">dos veces por semana?</span></h2>
+    <p class="lead">Es la recomendación general. Las mejores fuentes son los pescados grasos. <b>Si casi no los comés, un suplemento te ayuda a cubrirlo.</b></p>
+    <div class="peces"><span>Salmón</span><span>Sardina</span><span>Caballa</span><span>Atún</span><span>Anchoa</span></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 05 · Cómo elegir -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">05 / 07</span></header>
+  <div class="arriba">
+    <h2 class="t2">Cómo elegir uno <span class="res--linea">sin equivocarte.</span></h2>
+  </div>
+  <div class="lista">
+    <p><b class="n">01</b><span>Mirá <b>cuánto EPA + DHA</b> trae por porción, no los mg de “aceite de pescado”.</span></p>
+    <p><b class="n">02</b><span>Fijate cuántas cápsulas son una porción: <b>a veces son dos.</b></span></p>
+    <p><b class="n">03</b><span>Un sello de pureza, como <b>IFOS</b>, garantiza que fue analizado.</span></p>
+  </div>
+  <div class="ejemplo">
+    <div class="prod"><img src="../../public/productos/gentech-omega-3-epa-fish-oil-e448da.webp" alt=""></div>
+    <div><h3>Ejemplo · Gentech Omega 3 EPA</h3><p>Cada 2 cápsulas:</p><p><b class="n">920</b> mg EPA · <b class="n">360</b> mg DHA</p></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 06 · Cómo tomarlo -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">06 / 07</span></header>
+  <div class="arriba">
+    <h2 class="t2">Cómo <span class="res">tomarlo.</span></h2>
+  </div>
+  <div class="tomar">
+    <div><h3>Con una comida que tenga grasa</h3><p>Se absorbe mejor y evitás el regusto a pescado.</p></div>
+    <div><h3>Todos los días</h3><p>Los beneficios aparecen con el uso constante, no de un día para el otro.</p></div>
+    <div><h3>En la heladera, una vez abierto</h3><p>Así el aceite no se oxida. Y respetá la dosis que indica el envase.</p></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 07 · Productos -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Guía de suplementos</span><span class="pag">07 / 07</span></header>
+  <div class="arriba">
+    <h2 class="t2">Omega 3 en <span class="res">BULK.</span></h2>
+  </div>
+  <div class="prods">
+    <figure><div class="prod"><img src="../../public/productos/gentech-omega-3-epa-fish-oil-e448da.webp" alt=""></div><figcaption><b>Gentech Omega 3 EPA</b>EPA 920 · DHA 360 mg por porción</figcaption></figure>
+    <figure><div class="prod"><img src="../../public/productos/innovanaturals-omega-3-max-23abd7.webp" alt=""></div><figcaption><b>Innovanaturals Omega 3 Max</b>EPA 1000 · DHA 500 mg · sello IFOS</figcaption></figure>
+    <figure><div class="prod"><img src="../../public/productos/natusvita-omega-3-super-epa-acbe04.webp" alt=""></div><figcaption><b>Natusvita Omega 3 Super EPA</b>EPA 1500 · DHA 300 mg por porción</figcaption></figure>
+    <figure><div class="prod"><img src="../../public/productos/ena-fish-oil-omega-3-fa03cd.webp" alt=""></div><figcaption><b>ENA Fish Oil Omega 3</b>EPA 340 · DHA 218 mg por dosis</figcaption></figure>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+¿Por qué es tan importante el omega 3? 🐟
+
+Los omega 3 son grasas esenciales: tu cuerpo los necesita, pero no los fabrica en cantidad suficiente. Hay que obtenerlos de la comida o de un suplemento.
+
+Los dos que más importan:
+▪️ EPA: participa en procesos vinculados con la salud del corazón y la respuesta inflamatoria.
+▪️ DHA: es parte de la estructura del cerebro y la retina.
+
+Las mejores fuentes son los pescados grasos (salmón, sardina, caballa, atún). La recomendación general es comerlos unas dos veces por semana. Si casi no comés pescado, un suplemento te ayuda a cubrirlo.
+
+Al elegir uno, mirá cuánto EPA + DHA trae por porción, no los mg de “aceite de pescado”.
+
+Guardá este posteo y mandáselo a quien nunca come pescado 📌
+
+📲 Omega 3 en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+Información general: si tomás anticoagulantes o tenés una condición de salud, consultá con tu médico antes de suplementarte.
+
+#omega3 #epa #dha #suplementos #nutriciondeportiva #saludcardiovascular #carmendepatagones #viedma #bulk
+</script>
+</body>
+</html>

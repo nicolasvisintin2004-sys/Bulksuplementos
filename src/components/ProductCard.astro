@@ -3,7 +3,7 @@ import Icon from './Icon.astro';
 import negocio from '../config/negocio.js';
 import { marca, categoria, resumenVariantes, urlProducto, ICONO_CATEGORIA } from '../lib/catalogo.js';
 import { pesos, etiquetaVariante } from '../lib/formato.js';
-import { precioEfectivo } from '../lib/descuentos.js';
+import { precioEfectivo, minimoDe } from '../lib/descuentos.js';
 
 interface Props { p: any; filtrable?: boolean; orden?: number; eager?: boolean }
 const { p, filtrable = false, orden = 0, eager = false } = Astro.props;
@@ -12,6 +12,9 @@ const c = categoria(p.categoria);
 const url = urlProducto(p);
 const unica = p.variantes.length === 1 ? p.variantes[0] : null;
 const variable = new Set(p.variantes.map((v: any) => v.precio)).size > 1;
+// precio en efectivo de la variante más barata (no baja del mínimo; si no hay descuento, no se muestra)
+const vDesde = p.variantes.find((v: any) => v.precio === p.desde) ?? p.variantes[0];
+const efectivo = precioEfectivo(p.desde, minimoDe(vDesde.mayorista));
 const texto = [p.nombre, m?.nombre, c?.nombre, ...p.variantes.map((v: any) => `${v.sabor ?? ''} ${v.presentacion ?? ''}`)].join(' ');
 const data = filtrable ? {
   'data-cat': p.categoria,
@@ -46,7 +49,7 @@ const data = filtrable ? {
       <div class="pc__price">
         {variable && <span class="pc__from">desde</span>}
         <strong class="precio num">{pesos(p.desde)}</strong>
-        <span class="pc__cash num">{pesos(precioEfectivo(p.desde))} en efectivo</span>
+        {efectivo < p.desde && <span class="pc__cash num">{pesos(efectivo)} en efectivo</span>}
       </div>
       {unica ? (
         <button type="button" class="pc__add" aria-label={`Agregar ${p.nombre} al carrito`}

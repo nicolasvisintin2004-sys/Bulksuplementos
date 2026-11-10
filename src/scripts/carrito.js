@@ -1,6 +1,7 @@
 /**
  * Carrito persistente (localStorage). Emite "carrito:cambio" en window cada vez que cambia.
- * Item: { key, tipo: 'producto'|'combo', productoId, varianteId, nombre, marca, variante, precio, cantidad, url, contenido? }
+ * Item: { key, tipo: 'producto'|'combo', productoId, varianteId, nombre, marca, variante, precio, cantidad, url, contenido?, min? }
+ * min = precio mínimo por unidad con descuentos (lo completa sincronizar() desde el catálogo)
  */
 const KEY = 'bulk:carrito:v1';
 const CODIGO_KEY = 'bulk:codigo:v1';
@@ -67,12 +68,14 @@ export async function sincronizar() {
       const c = combos.get(it.productoId);
       if (!c || !c.listo) { quitados.push(it.nombre); return false; }
       if (c.precio !== it.precio) { it.precio = c.precio; cambio = true; }
+      if (c.min !== it.min) { it.min = c.min; cambio = true; }
       return true;
     }
     const p = prods.get(it.productoId);
     const v = p?.v.find((x) => x[0] === it.varianteId);
     if (!v) { quitados.push(it.nombre); return false; }
     if (v[3] !== it.precio) { it.precio = v[3]; cambio = true; }
+    if (v[4] !== it.min) { it.min = v[4]; cambio = true; }
     return true;
   });
   if (cambio || quitados.length) guardar(items);

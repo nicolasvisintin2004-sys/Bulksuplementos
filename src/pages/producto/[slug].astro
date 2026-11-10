@@ -6,7 +6,7 @@ import ProductCard from '../../components/ProductCard.astro';
 import negocio from '../../config/negocio.js';
 import { productos, marca, categoria, relacionados, ICONO_CATEGORIA } from '../../lib/catalogo.js';
 import { pesos } from '../../lib/formato.js';
-import { precioEfectivo } from '../../lib/descuentos.js';
+import { precioEfectivo, minimoDe } from '../../lib/descuentos.js';
 
 export function getStaticPaths() {
   return productos.map((p) => ({ params: { slug: p.id }, props: { p } }));
@@ -15,6 +15,8 @@ const { p } = Astro.props;
 const m = marca(p.marca);
 const c = categoria(p.categoria);
 const v0 = p.variantes[0];
+const e0 = precioEfectivo(v0.precio, minimoDe(v0.mayorista));
+const pctOff = (precio: number, e: number) => Math.round((1 - e / precio) * 100);
 const presentaciones = [...new Set(p.variantes.map((v: any) => v.presentacion).filter(Boolean))] as string[];
 const sabores = [...new Set(p.variantes.map((v: any) => v.sabor).filter(Boolean))] as string[];
 const rel = relacionados(p, 4);
@@ -56,7 +58,7 @@ const breadcrumbLd = {
     { '@type': 'ListItem', position: 3, name: p.nombre, item: url },
   ],
 };
-const variantesCliente = p.variantes.map((v: any) => ({ id: v.id, s: v.sabor, p: v.presentacion, d: v.detalle, $: v.precio, e: precioEfectivo(v.precio), i: v.imagen ?? p.imagen ?? null }));
+const variantesCliente = p.variantes.map((v: any) => ({ id: v.id, s: v.sabor, p: v.presentacion, d: v.detalle, $: v.precio, e: precioEfectivo(v.precio, minimoDe(v.mayorista)), i: v.imagen ?? p.imagen ?? null }));
 const desc = `${m?.nombre} ${p.nombre}${presentaciones.length ? ` (${presentaciones.join(', ')})` : ''}${sabores.length > 1 ? ` en ${sabores.length} sabores` : ''}. ${pesos(p.desde)}${p.variantes.length > 1 ? ' desde' : ''} · 10% OFF en efectivo en el local. Envíos a todo el país desde Carmen de Patagones.`;
 // si hay descripción cargada, se usa para buscadores y redes (recortada a ~160 caracteres)
 const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.slice(0, 147).replace(/\s+\S*$/, '') + '…' : p.descripcion} ${pesos(p.desde)} · Envíos a todo el país.` : desc;
@@ -99,9 +101,9 @@ const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.s
 
         <div class="pd__price">
           <strong class="precio num" data-precio>{pesos(v0.precio)}</strong>
-          <div class="pd__cash">
+          <div class="pd__cash" data-cash hidden={e0 >= v0.precio}>
             <Icon name="cash" size={20} />
-            <span>En efectivo en el local <b class="num" data-efectivo>{pesos(precioEfectivo(v0.precio))}</b> <small>({negocio.descuentos.efectivoPct}% OFF)</small></span>
+            <span>En efectivo en el local <b class="num" data-efectivo>{pesos(e0)}</b> <small data-efectivo-pct>({pctOff(v0.precio, e0)}% OFF)</small></span>
           </div>
         </div>
 
@@ -214,6 +216,8 @@ const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.s
     sabor = v.s; pres = v.p;
     document.querySelectorAll('[data-precio]').forEach((el) => { el.textContent = pesos(v.$); });
     document.querySelector('[data-efectivo]')!.textContent = pesos(v.e);
+    document.querySelector('[data-efectivo-pct]')!.textContent = `(${Math.round((1 - v.e / v.$) * 100)}% OFF)`;
+    document.querySelector<HTMLElement>('[data-cash]')!.hidden = v.e >= v.$;
     const img = document.querySelector<HTMLImageElement>('[data-img]');
     if (img && v.i && !img.src.endsWith(v.i)) { img.src = v.i; img.alt = `${data.marca} ${data.nombre}${v.s ? ` sabor ${v.s}` : ''}`; }
     const det = document.querySelector<HTMLElement>('[data-detalle]')!;
@@ -300,6 +304,7 @@ const metaDesc = p.descripcion ? `${p.descripcion.length > 150 ? p.descripcion.s
   .tag--lime { border-color: var(--lime); color: var(--lime); }
   .pd__price { display: grid; gap: 10px; padding: 18px 0; border-block: 1px solid var(--line); }
   .pd__price .precio { font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; }
+  .pd__cash[hidden] { display: none; }
   .pd__cash { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1px dashed var(--lime); border-radius: var(--r-sm); background: var(--lime-a10); font-size: 0.92rem; justify-self: start; }
   .pd__cash :global(svg) { color: var(--lime); flex: none; }
   .pd__cash b { color: var(--lime); font-size: 1.05rem; }

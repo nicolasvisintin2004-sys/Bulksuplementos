@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Dudas sobre la creatina</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  .abajo { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 150px; }
+  .abajo .lead { margin-top: 26px; }
+  .portada .foto img { object-position: 50% 50%; }
+
+  /* pregunta: etiqueta + pregunta + respuesta corta grande + explicación */
+  .q { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 170px; }
+  .q .t2 { margin-top: 30px; }
+  .q__r { font-size: 104px; color: var(--lime); margin-top: 60px; white-space: nowrap; }
+  .ed--papel .q__r { color: var(--ink); }
+  .q .lead { margin-top: 36px; max-width: 900px; }
+  .q--centro { top: 250px; }
+  .fondo-n { position: absolute; z-index: 0; right: -30px; bottom: 90px; font-size: 560px; color: transparent; -webkit-text-stroke: 2px var(--line); }
+  .ed--papel .fondo-n { -webkit-text-stroke-color: #dedcd4; }
+
+  /* con foto abajo */
+  .conf .foto { top: 760px; }
+  .conf .velo { top: 760px; background: linear-gradient(to bottom, var(--ink) 0%, rgb(10 10 10 / 0) 32%), linear-gradient(to top, rgb(10 10 10 / 0.85) 0%, rgb(10 10 10 / 0) 22%); }
+  .conf .q__r { font-size: 96px; margin-top: 36px; }
+  .conf .lead { font-size: 30px; }
+
+  /* dosis */
+  .dosis { position: absolute; left: var(--m); right: var(--m); top: 470px; display: grid; gap: 18px; }
+  .dosis > div { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; padding: 34px 38px; border-radius: 22px; background: #fff; border: 1.5px solid #e2e2dc; }
+  .dosis h3 { font-size: 22px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #6b6b66; }
+  .dosis p { font-size: 28px; font-weight: 600; line-height: 1.3; margin-top: 8px; }
+  .dosis .n { font-size: 70px; white-space: nowrap; }
+  .dosis .destacada { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .dosis .destacada h3 { color: var(--mute); }
+  .dosis .destacada .n { color: var(--lime); }
+
+  /* cómo elegirla */
+  .check { position: absolute; left: var(--m); right: var(--m); top: 420px; display: grid; gap: 16px; }
+  .check p { display: grid; grid-template-columns: 48px 1fr; gap: 20px; align-items: start; font-size: 28px; line-height: 1.35; font-weight: 500; color: #3d3d3a; }
+  .check p::before { content: '✓'; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: var(--ink); color: var(--lime); font-weight: 800; font-size: 24px; }
+  .check b { color: var(--ink); font-weight: 800; }
+  .prods { position: absolute; left: var(--m); right: var(--m); bottom: 140px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .prods .prod { height: 250px; border: 1.5px solid #e2e2dc; }
+  .prods figcaption { font-size: 20px; font-weight: 700; color: #55554f; margin-top: 10px; }
+  .prods figure { margin: 0; }
+
+  /* cierre */
+  .fin { position: absolute; left: var(--m); right: var(--m); top: 470px; display: grid; gap: 20px; }
+  .fin > div { display: grid; grid-template-columns: 96px 1fr; gap: 28px; align-items: center; padding: 34px 38px; border-radius: 22px; background: var(--ink-3); border: 1.5px solid var(--line); }
+  .fin .n { font-size: 64px; color: var(--lime); }
+  .fin h3 { font-size: 36px; font-weight: 800; letter-spacing: -0.02em; }
+  .fin p { font-size: 26px; color: var(--soft); margin-top: 6px; line-height: 1.35; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed portada">
+  <div class="foto"><img src="../fotos/scoop.jpg" alt=""></div>
+  <div class="velo velo--abajo"></div>
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">01 / 09</span></header>
+  <div class="abajo">
+    <h1 class="t1">¿Estás tomando bien la <span class="res">creatina?</span></h1>
+    <p class="lead">Las 6 dudas más comunes, respondidas con evidencia.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02 · ¿Hincha? -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">02 / 09</span></header>
+  <span class="fondo-n n">1</span>
+  <div class="q q--centro">
+    <span class="etiqueta etiqueta--lima">Duda 01</span>
+    <h2 class="t2">¿Te hincha?</h2>
+    <p class="q__r n">No engorda.</p>
+    <p class="lead">Podés subir 1 o 2 kg los primeros días, sobre todo si hacés carga. <b>Es agua dentro del músculo</b>, no grasa ni retención debajo de la piel.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 03 · ¿Descansos? -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">03 / 09</span></header>
+  <span class="fondo-n n">2</span>
+  <div class="q q--centro">
+    <span class="etiqueta">Duda 02</span>
+    <h2 class="t2">¿Hay que hacer descansos?</h2>
+    <p class="q__r n">No.</p>
+    <p class="lead">Se puede tomar todos los días, sin ciclos. <b>Los estudios de varios años no encontraron problemas</b> en personas sanas.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 04 · ¿Horario? -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">04 / 09</span></header>
+  <span class="fondo-n n">3</span>
+  <div class="q q--centro">
+    <span class="etiqueta etiqueta--lima">Duda 03</span>
+    <h2 class="t2">¿Importa el horario?</h2>
+    <p class="q__r n">Muy poco.</p>
+    <p class="lead">Tomarla cerca del entrenamiento puede dar una ventaja mínima. <b>Lo que de verdad cuenta es no saltearla.</b> Los días de descanso, con el desayuno.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 05 · ¿Cuánta? -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">05 / 09</span></header>
+  <div class="q">
+    <span class="etiqueta">Duda 04</span>
+    <h2 class="t2">¿Cuánta hay que tomar?</h2>
+  </div>
+  <div class="dosis">
+    <div class="destacada"><div><h3>Todos los días</h3><p>Una cucharada, en agua o en el batido</p></div><b class="n">3 a 5 g</b></div>
+    <div><div><h3>Carga · opcional</h3><p>Repartidos en 4 tomas,<br>durante 5 a 7 días</p></div><b class="n">20 g</b></div>
+    <div><div><h3>Sin carga</h3><p>Llegás al mismo punto,<br>sólo que un poco más tarde</p></div><b class="n">3–4 sem.</b></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 06 · Mujeres -->
+<section class="slide ed conf">
+  <div class="foto"><img src="../fotos/mujer-entreno.jpg" alt="" style="object-position:62% 40%"></div>
+  <div class="velo"></div>
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">06 / 09</span></header>
+  <div class="q">
+    <span class="etiqueta etiqueta--lima">Duda 05</span>
+    <h2 class="t2">¿Sirve si soy mujer?</h2>
+    <p class="q__r n">Sí.</p>
+    <p class="lead">Junto con el entrenamiento de fuerza ayuda a ganar fuerza y músculo. <b>Después de los 40 puede ayudar a sostenerlos.</b></p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 07 · Agua -->
+<section class="slide ed conf">
+  <div class="foto"><img src="../fotos/agua.jpg" alt="" style="object-position:50% 45%"></div>
+  <div class="velo"></div>
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">07 / 09</span></header>
+  <div class="q">
+    <span class="etiqueta etiqueta--lima">Duda 06</span>
+    <h2 class="t2">¿Tengo que tomar más agua?</h2>
+    <p class="q__r n">Lo normal.</p>
+    <p class="lead">Hidratate bien, sobre todo si entrenás con calor. <b>No deshidrata ni daña los riñones</b> en personas sanas. Si tenés una enfermedad renal, consultá antes.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 08 · Cómo elegirla -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">08 / 09</span></header>
+  <div class="q">
+    <span class="etiqueta">Antes de comprarla</span>
+    <h2 class="t2">Cómo elegirla <span class="res--linea">bien.</span></h2>
+  </div>
+  <div class="check">
+    <p><span><b>Monohidrato:</b> es la forma más estudiada. Las demás no demostraron ser mejores.</span></p>
+    <p><span><b>Micronizada:</b> se disuelve mejor en el agua.</span></p>
+    <p><span><b>Creapure:</b> sello alemán de pureza. Suma, pero no es obligatorio.</span></p>
+    <p><span><b>5 g por porción declarados</b>, sin mezclas que escondan la dosis.</span></p>
+  </div>
+  <div class="prods">
+    <figure><div class="prod"><img src="../../public/productos/ena-creatina-micronizada-338443.webp" alt=""></div><figcaption>ENA Micronizada</figcaption></figure>
+    <figure><div class="prod"><img src="../../public/productos/ena-creatina-creapure-0df839.webp" alt=""></div><figcaption>ENA Creapure</figcaption></figure>
+    <figure><div class="prod"><img src="../../public/productos/star-nutrition-creatina-monohidrato-a852d3.webp" alt=""></div><figcaption>Star Nutrition</figcaption></figure>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 09 · Cierre -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">09 / 09</span></header>
+  <div class="q">
+    <h2 class="t2">Si te sirvió <span class="res">esta información:</span></h2>
+  </div>
+  <div class="fin">
+    <div><b class="n">01</b><div><h3>Guardala</h3><p>Para tener las dosis siempre a mano.</p></div></div>
+    <div><b class="n">02</b><div><h3>Compartila</h3><p>Con quien vive preguntando cómo se toma la creatina.</p></div></div>
+    <div><b class="n">03</b><div><h3>Contanos</h3><p>¿Qué duda te quedó? Te leemos en los comentarios.</p></div></div>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+La creatina es uno de los suplementos más estudiados del mundo… y todavía tiene muchísimos mitos 🤔
+
+▪️ ¿Te hincha? No engorda. Podés subir 1 o 2 kg los primeros días, pero es agua dentro del músculo.
+▪️ ¿Hay que hacer descansos? No. Se puede tomar todos los días.
+▪️ ¿Importa el horario? Muy poco. Lo importante es no saltearla.
+▪️ ¿Cuánta? 3 a 5 g por día. La carga es opcional.
+▪️ ¿Sirve si soy mujer? Sí, junto con el entrenamiento de fuerza.
+▪️ ¿Más agua? Hidratate como siempre. No deshidrata ni daña los riñones en personas sanas.
+
+Y al comprarla: monohidrato, con 5 g por porción declarados y sin mezclas.
+
+📌 Guardá este posteo para tener las dosis a mano.
+📤 Compartilo con quien vive preguntando cómo se toma.
+
+¿Qué duda te quedó? Te leemos en los comentarios 💬
+
+📲 Creatinas en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+Información general: si tenés una enfermedad renal u otra condición de salud, consultá con tu médico antes de tomarla.
+
+#creatina #creatinamonohidrato #suplementos #gym #entrenamiento #nutriciondeportiva #carmendepatagones #viedma #bulk
+</script>
+</body>
+</html>

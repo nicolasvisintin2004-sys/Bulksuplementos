@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · La creatina no es sólo para el músculo</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  .arriba { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 150px; }
+  .arriba .lead { margin-top: 28px; }
+  .abajo { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 150px; }
+  .abajo .lead { margin-top: 26px; }
+
+  .portada .foto img { object-position: 40% 40%; }
+
+  /* dato grande */
+  .dato { position: absolute; left: var(--m); right: var(--m); top: 390px; }
+  .dato .n { font-size: 250px; color: var(--lime); white-space: nowrap; }
+  .dato p { font-size: 34px; font-weight: 600; line-height: 1.35; margin-top: 24px; color: var(--soft); max-width: 880px; }
+  .dato p b { color: var(--paper); font-weight: 800; }
+  .ed--papel .dato .n { color: var(--ink); }
+  .ed--papel .dato p { color: #3d3d3a; }
+  .ed--papel .dato p b { color: var(--ink); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .chips span { padding: 14px 24px; border-radius: 999px; background: var(--ink); color: var(--lime); font-size: 26px; font-weight: 800; }
+
+  .aviso { position: absolute; left: var(--m); right: var(--m); bottom: 200px; padding: 30px 36px; border-radius: 22px; background: var(--lime); color: var(--ink); font-size: 30px; font-weight: 800; line-height: 1.3; }
+  .fuente-abajo { position: absolute; left: var(--m); right: var(--m); bottom: 120px; }
+
+  /* cierre */
+  .prods { position: absolute; left: var(--m); right: var(--m); top: 430px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .prods .prod { height: 250px; }
+  .cierre__txt { position: absolute; left: var(--m); right: var(--m); top: 730px; }
+  .cierre__txt .n { font-size: 76px; color: var(--lime); text-transform: uppercase; }
+  .cierre__txt .lead { margin-top: 16px; font-size: 30px; }
+  .cierre .aviso { background: var(--ink-3); color: var(--soft); border: 1.5px solid var(--line); font-weight: 600; font-size: 26px; bottom: 140px; }
+  .cierre .aviso b { color: var(--paper); }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed portada">
+  <div class="foto"><img src="../fotos/estudio.jpg" alt=""></div>
+  <div class="velo velo--abajo"></div>
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">01 / 05</span></header>
+  <div class="abajo">
+    <h1 class="t1">La creatina no es sólo para <span class="res">el músculo.</span></h1>
+    <p class="lead">Qué dice la evidencia sobre el cerebro, la memoria y el ánimo.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02 · Energía del cerebro -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">02 / 05</span></header>
+  <div class="arriba">
+    <h2 class="t2">Tu cerebro <span class="res">también la usa.</span></h2>
+  </div>
+  <div class="dato">
+    <p class="n" style="font-size:210px">≈ 20 %</p>
+    <p>de la energía que gasta tu cuerpo en reposo se la lleva el cerebro. Y usa creatina para <b>recargar el ATP</b>, el combustible de las neuronas.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 03 · Memoria y atención -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">03 / 05</span></header>
+  <div class="arriba">
+    <h2 class="t2">Memoria y <span class="res--linea">atención.</span></h2>
+  </div>
+  <div class="dato">
+    <p class="n">16</p>
+    <p>ensayos clínicos con 492 adultos: quienes tomaron creatina mejoraron <b>la memoria, la atención y la velocidad para procesar información.</b></p>
+    <div class="chips"><span>Memoria</span><span>Atención</span><span>Velocidad</span></div>
+  </div>
+  <p class="fuente fuente-abajo">Xu y col., Frontiers in Nutrition, 2024 (metaanálisis). Los efectos fueron chicos y no hubo cambios en la función cognitiva general.</p>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 04 · Ansiedad -->
+<section class="slide ed">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">04 / 05</span></header>
+  <div class="arriba">
+    <h2 class="t2">¿Y la <span class="res">ansiedad?</span></h2>
+  </div>
+  <div class="dato">
+    <p class="n">5.257</p>
+    <p>personas en Corea: quienes comían más creatina tenían <b>menos probabilidad de ansiedad generalizada y de depresión.</b></p>
+  </div>
+  <p class="aviso">Es una asociación: no prueba que la creatina prevenga o trate la ansiedad.</p>
+  <p class="fuente fuente-abajo">Zanini, Baltic y Ostojic, Journal of the International Society of Sports Nutrition, 2025 (estudio observacional).</p>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 05 · Cierre -->
+<section class="slide ed cierre">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">05 / 05</span></header>
+  <div class="arriba">
+    <h2 class="t2">Lo que <span class="res">sí sabemos.</span></h2>
+  </div>
+  <div class="prods">
+    <div class="prod"><img src="../../public/productos/ena-creatina-micronizada-338443.webp" alt=""></div>
+    <div class="prod"><img src="../../public/productos/star-nutrition-creatina-monohidrato-a852d3.webp" alt=""></div>
+    <div class="prod"><img src="../../public/productos/ena-creatina-creapure-0df839.webp" alt=""></div>
+  </div>
+  <div class="cierre__txt">
+    <p class="n">3 a 5 g por día</p>
+    <p class="lead">Todos los días, también los de descanso. Es el suplemento deportivo más estudiado y el más seguro en personas sanas.</p>
+  </div>
+  <p class="aviso">Si estás pasando por un momento de ansiedad, <b>hablá con un profesional de la salud.</b> La creatina no reemplaza ningún tratamiento.</p>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+La creatina no es sólo para el músculo 🧠
+
+Tu cerebro gasta cerca del 20 % de la energía del cuerpo en reposo, y usa creatina para recargar el ATP, el combustible de las neuronas.
+
+¿Qué dice la evidencia?
+▪️ Un metaanálisis de 16 ensayos clínicos (Xu y col., 2024) encontró mejoras en memoria, atención y velocidad para procesar información. Los efectos fueron chicos.
+▪️ Un estudio con 5.257 personas en Corea (Zanini y col., 2025) vio que quienes comían más creatina tenían menos probabilidad de ansiedad generalizada y de depresión. Es una asociación, no una prueba de causa.
+
+Lo que sí sabemos: 3 a 5 g por día, todos los días, es la forma de tomarla. Y es uno de los suplementos más estudiados.
+
+Si estás pasando por un momento de ansiedad, hablá con un profesional. La creatina no reemplaza ningún tratamiento 💚
+
+📲 Creatinas en bulksuplementos.com.ar o por mensaje directo.
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#creatina #creatinamonohidrato #saludmental #cerebro #suplementos #nutriciondeportiva #carmendepatagones #viedma #bulk
+</script>
+</body>
+</html>

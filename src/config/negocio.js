@@ -71,7 +71,17 @@ export default {
     //   true  → efectivo sólo retirando/pagando en el local (con envío, sólo transferencia)
     //   false → efectivo también con envío
     efectivoSoloRetiro: true,
+
+    // Tope de los descuentos: ningún producto baja de su costo mayorista + este %.
+    // En los productos de margen chico el cliente ve un descuento menor (o ninguno).
+    margenMinimoPct: 5,
   },
+
+  // Códigos de referido (influencers). Cualquier cliente los puede usar, sin registrarse.
+  //   acumulaEfectivo: false → con pago en efectivo se aplica un solo descuento.
+  referidos: [
+    { codigo: 'CRISS10', pct: 10, de: 'Criss', acumulaEfectivo: false },
+  ],
 
   // Productos más vendidos: ids de src/data/productos.json, en orden.
   masVendidos: ['ena-creatina-micronizada', 'gentech-omega-3-epa-fish-oil', 'ena-citrato-de-magnesio', 'integralmedica-whey-100-pure'],

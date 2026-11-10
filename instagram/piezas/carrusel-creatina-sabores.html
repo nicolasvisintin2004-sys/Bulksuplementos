@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Carrusel · Creatina con sabor</title>
+<link rel="stylesheet" href="../marca.css">
+<link rel="stylesheet" href="../editorial.css">
+<style>
+  /* portada en papel: productos con fusión multiply para que el blanco se funda con el fondo */
+  .portada__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); top: 160px; }
+  .portada__txt .lead { margin-top: 24px; }
+  .vitrina { position: absolute; left: 0; right: 0; bottom: 110px; height: 820px; }
+  .vitrina img { position: absolute; bottom: 0; object-fit: contain; mix-blend-mode: multiply; }
+  .vitrina img:nth-child(1) { left: -70px; width: 560px; height: 600px; transform: rotate(-7deg); }
+  .vitrina img:nth-child(2) { left: 200px; width: 680px; height: 760px; z-index: 2; }
+  .vitrina img:nth-child(3) { right: -70px; width: 560px; height: 600px; transform: rotate(7deg); }
+
+  /* sabor: foto de fruta a sangre + producto en tarjeta */
+  .sabor .velo { background: linear-gradient(to top, rgb(10 10 10 / 0.97) 0%, rgb(10 10 10 / 0.85) 34%, rgb(10 10 10 / 0.25) 62%, rgb(10 10 10 / 0.35) 100%); }
+  .tarjetas { position: absolute; z-index: 3; left: 0; right: 0; top: 150px; display: flex; justify-content: center; gap: 28px; }
+  .tarjetas .prod { width: 560px; height: 560px; border-radius: 34px; box-shadow: 0 40px 80px rgb(0 0 0 / 0.55); }
+  .tarjetas .prod img { inset: 0; width: 100%; height: 100%; transform: scale(var(--z, 1.08)); }
+  .tarjetas--dos .prod { width: 450px; height: 520px; }
+  .sabor__txt { position: absolute; z-index: 3; left: var(--m); right: var(--m); bottom: 140px; }
+  .sabor__txt .chico { font-size: 24px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--lime); opacity: 1; }
+  .sabor__txt .t1 { margin-top: 8px; font-size: 104px; }
+  .sabor__txt .lead { margin-top: 10px; font-size: 30px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .chips span { padding: 12px 22px; border-radius: 999px; border: 2px solid rgb(243 243 239 / 0.3); font-size: 22px; font-weight: 700; color: var(--paper); }
+
+  /* cierre */
+  .cierre__txt { position: absolute; left: var(--m); right: var(--m); top: 160px; }
+  .cierre__txt .lead { margin-top: 24px; }
+  .neutras { position: absolute; left: var(--m); right: var(--m); top: 520px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .neutras .prod { height: 270px; }
+  .neutras p { font-size: 21px; font-weight: 700; color: var(--soft); margin-top: 10px; }
+  .cta { position: absolute; left: var(--m); right: var(--m); bottom: 140px; padding: 40px 44px; border-radius: 26px; background: var(--lime); color: var(--ink); }
+  .cta p:first-child { font-size: 24px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+  .cta .n { font-size: 112px; margin: 14px 0 10px; }
+  .cta p:last-child { font-size: 30px; font-weight: 600; line-height: 1.35; }
+</style>
+</head>
+<body data-tipo="carrusel">
+
+<!-- 01 · Portada -->
+<section class="slide ed ed--papel">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">01 / 06</span></header>
+  <div class="portada__txt">
+    <h1 class="t1">Tu creatina de siempre, <span class="res--linea">con sabor.</span></h1>
+    <p class="lead">Naranja, fruit punch, frutos rojos o limonada. Elegí la tuya.</p>
+  </div>
+  <div class="vitrina">
+    <img src="../../public/productos/ena-creatina-micronizada-ed7410.webp" alt="">
+    <img src="../../public/productos/star-nutrition-creatina-monohidrato-fb6609.webp" alt="">
+    <img src="../../public/productos/ena-creatina-micronizada-d6d90c.webp" alt="">
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+</section>
+
+<!-- 02–05 · Sabores (se arman desde la lista de abajo) -->
+<template id="sabor">
+  <section class="slide ed sabor">
+    <div class="foto"><img alt=""></div>
+    <div class="velo"></div>
+    <header class="ed-top"><span class="cat">Creatina</span><span class="pag"></span></header>
+    <div class="tarjetas"></div>
+    <div class="sabor__txt"><p class="chico"></p><h2 class="t1"></h2><p class="lead"></p><div class="chips"></div></div>
+    <footer class="ed-pie"><span class="wm">BULK</span><span class="sig">Deslizá</span></footer>
+  </section>
+</template>
+
+<!-- 06 · Neutra + cierre -->
+<section class="slide ed" id="cierre">
+  <header class="ed-top"><span class="cat">Creatina</span><span class="pag">06 / 06</span></header>
+  <div class="cierre__txt">
+    <h2 class="t2">¿La preferís <span class="res">sin sabor?</span></h2>
+    <p class="lead">La neutra va con todo: agua, jugo o tu batido de proteína.</p>
+  </div>
+  <div class="neutras">
+    <div><div class="prod"><img src="../../public/productos/ena-creatina-micronizada-338443.webp" alt=""></div><p>ENA Micronizada</p></div>
+    <div><div class="prod"><img src="../../public/productos/star-nutrition-creatina-monohidrato-a852d3.webp" alt=""></div><p>Star Nutrition</p></div>
+    <div><div class="prod"><img src="../../public/productos/ena-creatina-creapure-0df839.webp" alt=""></div><p>ENA Creapure</p></div>
+  </div>
+  <div class="cta">
+    <p>Escribinos</p>
+    <p class="n">CREATINA</p>
+    <p>por mensaje directo y te ayudamos a elegir la tuya.</p>
+  </div>
+  <footer class="ed-pie"><span class="wm">BULK</span><span class="h">bulksuplementos.com.ar</span></footer>
+</section>
+
+<script type="text/plain" id="descripcion">
+¿Naranja, fruit punch, frutos rojos o limonada? 🍊🍓🍋
+
+Tu creatina de siempre, en el sabor que más te guste. Mismos 5 g de creatina monohidrato por porción, más fácil de tomar todos los días.
+
+▪️ Naranja y Fruit Punch: ENA Creatina Micronizada
+▪️ Frutos rojos: Star Nutrition Creatina Monohidrato
+▪️ Lemonade: ENA Creatina + Magnesio
+▪️ Pink Lemonade y Blue Lemon: ENA Sport Creatina + Electrolitos
+
+¿La preferís sin sabor? La neutra va con todo: agua, jugo o tu batido.
+
+¿Cuál es tu favorito? Contanos en los comentarios 👇
+
+📩 Escribinos CREATINA por mensaje directo y te ayudamos a elegir.
+📲 bulksuplementos.com.ar
+📍 Dr. Baraja 253, Carmen de Patagones · Envíos a todo el país
+
+#creatina #creatinamonohidrato #suplementosdeportivos #gym #fitness #ena #starnutrition #carmendepatagones #viedma #bulk
+</script>
+
+<script>
+  const SABORES = [
+    { foto: 'naranja', pos: '50% 55%', sabor: 'Naranja', prods: ['ena-creatina-micronizada-ed7410'],
+      txt: 'ENA Creatina Micronizada', chips: ['5 g por porción', 'Monohidrato micronizado'] },
+    { foto: 'frutas-tropicales', pos: '50% 50%', sabor: 'Fruit Punch', prods: ['ena-creatina-micronizada-d6d90c'],
+      txt: 'ENA Creatina Micronizada', chips: ['5 g por porción', 'Monohidrato micronizado'] },
+    { foto: 'frutos-rojos', pos: '50% 50%', sabor: 'Frutos rojos', prods: ['star-nutrition-creatina-monohidrato-fb6609'],
+      txt: 'Star Nutrition Creatina Monohidrato · doypack 300 g', chips: ['5 g por porción', 'Importada de EE. UU.'] },
+    { foto: 'limon', pos: '50% 50%', sabor: 'Limonada', prods: ['ena-creatina-con-magnesio-58b702', 'ena-sport-creatina-electrolitos-eeba4e:1.45'],
+      txt: 'ENA Creatina + Magnesio (Lemonade) · ENA Sport Creatina + Electrolitos (Pink Lemonade)', chips: ['5 g de creatina por porción', 'Con magnesio o electrolitos'] },
+  ];
+  const tpl = document.getElementById('sabor');
+  const cierre = document.getElementById('cierre');
+  SABORES.forEach((s, i) => {
+    const el = tpl.content.cloneNode(true);
+    const f = el.querySelector('.foto img');
+    f.src = `../fotos/${s.foto}.jpg`;
+    f.style.objectPosition = s.pos;
+    el.querySelector('.pag').textContent = `0${i + 2} / 06`;
+    const t = el.querySelector('.tarjetas');
+    if (s.prods.length > 1) t.classList.add('tarjetas--dos');
+    t.innerHTML = s.prods.map((p) => { const [id, z] = p.split(':'); return `<div class="prod" style="--z:${z || 1.08}"><img src="../../public/productos/${id}.webp" alt=""></div>`; }).join('');
+    el.querySelector('.chico').textContent = `Sabor ${String(i + 1).padStart(2, '0')}`;
+    el.querySelector('.t1').textContent = s.sabor;
+    el.querySelector('.lead').textContent = s.txt;
+    el.querySelector('.chips').innerHTML = s.chips.map((c) => `<span>${c}</span>`).join('');
+    cierre.before(el);
+  });
+</script>
+</body>
+</html>
